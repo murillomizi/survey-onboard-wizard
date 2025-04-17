@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Select,
@@ -12,8 +11,7 @@ import {
   Volume2, 
   FileText, 
   Zap,
-  Send,
-  Linkedin 
+  Send 
 } from "lucide-react";
 
 interface SurveySelectProps {
@@ -44,7 +42,7 @@ const SurveySelect = ({
       case "triggers":
         return <Zap className="h-5 w-5 mr-2 text-survey-muted" />;
       case "channel":
-        return <Linkedin className="h-5 w-5 mr-2 text-survey-muted" />;
+        return <Send className="h-5 w-5 mr-2 text-survey-muted" />;
       default:
         return null;
     }
