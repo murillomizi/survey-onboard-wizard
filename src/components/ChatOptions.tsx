@@ -13,10 +13,11 @@ const ChatOptions = ({ options, onSelect }: ChatOptionProps) => {
       {options.map((option) => (
         <Button
           key={option.value}
-          className="bg-survey-card hover:bg-survey-card/80 text-survey-text border border-gray-700"
+          className="relative border border-survey-purple/30 bg-black/40 backdrop-blur-xl text-white hover:bg-survey-purple/20 transition-all duration-300 hover:shadow-[0_0_10px_rgba(155,135,245,0.5)] overflow-hidden group"
           onClick={() => onSelect(option.value)}
         >
-          {option.label}
+          <span className="relative z-10">{option.label}</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-survey-purple/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </Button>
       ))}
     </div>

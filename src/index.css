@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@200;300;400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,6 +98,36 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-survey-bg text-foreground antialiased overflow-x-hidden;
+    font-family: 'Exo 2', sans-serif;
   }
+}
+
+/* Custom animations */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(155, 135, 245, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(155, 135, 245, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(155, 135, 245, 0.3);
+  }
+}
+
+.glow-effect {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 10px rgba(155, 135, 245, 0.5);
+}
+
+.glass-morphism {
+  @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)];
+}
+
+.text-gradient {
+  @apply bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent;
 }

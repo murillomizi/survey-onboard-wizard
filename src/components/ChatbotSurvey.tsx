@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Upload, Paperclip } from "lucide-react";
+import { Send, Paperclip, Bot, CircleDot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
@@ -298,8 +298,8 @@ const ChatbotSurvey = () => {
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-survey-bg rounded-lg shadow-lg">
-      <div className="flex-1 p-4 overflow-y-auto">
+    <div className="flex flex-col h-[600px] bg-transparent">
+      <div className="flex-1 p-4 overflow-y-auto space-y-2 scrollbar-hide">
         {messages.map((message) => (
           <ChatMessage
             key={message.id}
@@ -309,7 +309,7 @@ const ChatbotSurvey = () => {
         ))}
         
         {isWaitingForResponse && (
-          <ChatMessage content="..." type="bot" isTyping={true} />
+          <ChatMessage content="" type="bot" isTyping={true} />
         )}
         
         {showOptions && (
@@ -322,7 +322,7 @@ const ChatbotSurvey = () => {
         )}
         
         {showSlider && (
-          <div className="mb-4 p-4 bg-survey-card rounded-lg">
+          <div className="mb-4 p-4 border border-white/10 bg-black/40 backdrop-blur-xl rounded-xl">
             <div className="mb-2">
               <span className="text-survey-text">{sliderValue} caracteres</span>
             </div>
@@ -340,7 +340,7 @@ const ChatbotSurvey = () => {
             </p>
             <Button 
               onClick={handleSliderComplete}
-              className="mt-2 bg-survey-purple hover:bg-survey-purple/90 text-white"
+              className="mt-2 bg-survey-purple hover:bg-survey-purple/90 text-white shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)]"
             >
               Confirmar
             </Button>
@@ -348,7 +348,7 @@ const ChatbotSurvey = () => {
         )}
         
         {currentStep === 8 && (
-          <div className="mb-4 bg-survey-card p-4 rounded-lg text-survey-text">
+          <div className="mb-4 border border-white/10 bg-black/40 backdrop-blur-xl p-4 rounded-xl text-survey-text">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
               Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
@@ -370,13 +370,13 @@ const ChatbotSurvey = () => {
         <div ref={chatEndRef} />
       </div>
       
-      <div className="p-4 border-t border-gray-700 bg-survey-card">
+      <div className="p-4 border-t border-gray-700/30 backdrop-blur-lg bg-black/40">
         <div className="flex items-center gap-2">
           {currentStep === 8 && (
             <Button
               type="button"
               onClick={triggerFileUpload}
-              className="bg-survey-purple hover:bg-survey-purple/90 text-white"
+              className="bg-survey-purple hover:bg-survey-purple/90 text-white shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)]"
             >
               <Paperclip size={18} />
               Upload CSV
@@ -385,26 +385,28 @@ const ChatbotSurvey = () => {
           
           {currentStep < 8 && showOptions === null && !showSlider && (
             <>
-              <Input
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Digite sua resposta..."
-                className="flex-1 bg-survey-bg text-survey-text border-gray-700"
-              />
-              <Button
-                onClick={handleSendMessage}
-                className="bg-survey-purple hover:bg-survey-purple/90 text-white"
-              >
-                <Send size={18} />
-              </Button>
+              <div className="relative flex-1">
+                <Input
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  placeholder="Digite sua resposta..."
+                  className="w-full bg-black/20 border-white/10 text-survey-text rounded-full pr-12 focus:border-survey-purple/50 focus:ring-1 focus:ring-survey-purple/30 focus:shadow-[0_0_8px_rgba(155,135,245,0.3)]"
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-survey-purple hover:bg-survey-purple/90 text-white shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)] p-0"
+                >
+                  <Send size={14} />
+                </Button>
+              </div>
             </>
           )}
           
           {currentStep === steps.length - 1 && (
             <Button
               onClick={handleSubmit}
-              className="w-full bg-survey-purple hover:bg-survey-purple/90 text-white"
+              className="w-full bg-survey-purple hover:bg-survey-purple/90 text-white rounded-full shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)]"
             >
               Continuar
             </Button>
