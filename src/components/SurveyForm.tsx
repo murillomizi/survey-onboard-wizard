@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { Upload, Globe, Send, Linkedin } from "lucide-react";
+import { Upload, Send, Send as ChannelIcon } from "lucide-react";
 import SurveySlider from "./SurveySlider";
 import SurveySelect from "./SurveySelect";
 
@@ -116,7 +116,7 @@ const SurveyForm = () => {
       <SurveySelect
         title="Canal"
         description="Escolha o canal de comunicação"
-        icon="channel"
+        icon="send"
         options={[
           { value: "linkedin", label: "LinkedIn" },
           { value: "cold-email", label: "Cold E-mail" }
@@ -129,7 +129,7 @@ const SurveyForm = () => {
         title="Tamanho"
         recommendedText="Recomendado: 350-500 caracteres para maior impacto na comunicação"
         initialValue={surveyData.tamanho}
-        max={500}
+        max={1000}
         onChange={(value) => setSurveyData({ ...surveyData, tamanho: value })}
       />
 
