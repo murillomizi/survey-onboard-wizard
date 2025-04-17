@@ -1,18 +1,54 @@
-
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import { Upload, Globe } from "lucide-react";
 import SurveySlider from "./SurveySlider";
 import SurveySelect from "./SurveySelect";
 
 const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState({
+    csvFile: null as File | null,
+    csvFileName: "",
+    websiteUrl: "",
     tamanho: 150,
     touchpoints: "3",
     tomVoz: "neutro",
     template: "proposta",
     gatilhos: "sem-gatilho"
   });
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file && file.type !== "text/csv") {
+      toast({
+        title: "Formato inválido",
+        description: "Por favor, selecione um arquivo CSV.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setSurveyData({
+      ...surveyData,
+      csvFile: file,
+      csvFileName: file ? file.name : ""
+    });
+  };
+
+  const handleWebsiteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSurveyData({
+      ...surveyData,
+      websiteUrl: e.target.value
+    });
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +62,56 @@ const SurveyForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-md">
+    <form onSubmit={handleSubmit} className="flex flex-col space-y-6 w-full max-w-md">
+      {/* CSV upload field */}
+      <div className="space-y-2">
+        <Label htmlFor="csvUpload" className="text-survey-text font-medium flex items-center gap-2">
+          <Upload size={18} className="text-survey-muted" />
+          Base de prospecção
+        </Label>
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            id="csvUpload"
+            accept=".csv"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <Input
+            readOnly
+            value={surveyData.csvFileName || ""}
+            placeholder="Nenhum arquivo selecionado"
+            className="bg-survey-card text-survey-text border-gray-700 flex-1"
+          />
+          <Button
+            type="button"
+            onClick={triggerFileInput}
+            className="bg-survey-purple hover:bg-survey-purple/90 text-white"
+          >
+            Buscar
+          </Button>
+        </div>
+        <p className="text-survey-muted text-sm italic">Importe sua base de prospecção em formato CSV</p>
+      </div>
+
+      {/* Website URL input */}
+      <div className="space-y-2">
+        <Label htmlFor="websiteUrl" className="text-survey-text font-medium flex items-center gap-2">
+          <Globe size={18} className="text-survey-muted" />
+          Site da empresa
+        </Label>
+        <Input
+          id="websiteUrl"
+          type="url"
+          placeholder="https://exemplo.com.br"
+          value={surveyData.websiteUrl}
+          onChange={handleWebsiteChange}
+          className="bg-survey-card text-survey-text border-gray-700"
+        />
+        <p className="text-survey-muted text-sm italic">Insira o site da empresa para personalização das mensagens</p>
+      </div>
+
       <SurveySlider
         title="Tamanho"
         recommendedText="Recomendado: 80-200 caracteres para maior taxa de resposta"
