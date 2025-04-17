@@ -30,6 +30,7 @@ const ChatbotSurvey = () => {
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
+    funnelStage: "", // New field for funnel stage
     csvFile: null as File | null,
     csvFileName: "",
     websiteUrl: "",
@@ -56,7 +57,18 @@ const ChatbotSurvey = () => {
       field: "canal"
     },
     {
-      question: "Ótimo! Agora, qual site da empresa você quer usar para personalizar as mensagens?",
+      question: "Ótimo! Em que estágio do funil de vendas está sua base de contatos?",
+      options: [
+        { value: "topo", label: "Topo de Funil" },
+        { value: "meio", label: "Meio de Funil" },
+        { value: "fim", label: "Fim de Funil" },
+        { value: "cliente", label: "Cliente Existente" },
+        { value: "inbound", label: "Leads de Ação de Inbound" }
+      ],
+      field: "funnelStage"
+    },
+    {
+      question: "Qual site da empresa você quer usar para personalizar as mensagens?",
       field: "websiteUrl",
       inputType: "text"
     },
@@ -271,6 +283,7 @@ const ChatbotSurvey = () => {
         const summaryContent = (
           <div>
             <p><strong>Canal:</strong> {getOptionLabel("canal", surveyData.canal)}</p>
+            <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", surveyData.funnelStage)}</p>
             <p><strong>Site:</strong> {surveyData.websiteUrl}</p>
             <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
             <p><strong>Touchpoints:</strong> {surveyData.touchpoints}</p>
@@ -381,7 +394,7 @@ const ChatbotSurvey = () => {
       {/* Input area */}
       <div className="p-4 border-t border-gray-700 bg-survey-card">
         <div className="flex items-center gap-2">
-          {currentStep === 7 && (
+          {currentStep === 8 && (
             <Button
               type="button"
               onClick={triggerFileUpload}
@@ -392,7 +405,7 @@ const ChatbotSurvey = () => {
             </Button>
           )}
           
-          {currentStep < 7 && showOptions === null && !showSlider && (
+          {currentStep < 8 && showOptions === null && !showSlider && (
             <>
               <Input
                 value={currentInput}
