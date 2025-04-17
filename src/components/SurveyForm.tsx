@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { Upload, Globe } from "lucide-react";
+import { Upload, Globe, Send, Linkedin } from "lucide-react";
 import SurveySlider from "./SurveySlider";
 import SurveySelect from "./SurveySelect";
 
 const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState({
+    canal: "linkedin",
     csvFile: null as File | null,
     csvFileName: "",
     websiteUrl: "",
@@ -111,6 +112,18 @@ const SurveyForm = () => {
         />
         <p className="text-survey-muted text-sm italic">Insira o site da empresa para personalização das mensagens</p>
       </div>
+
+      <SurveySelect
+        title="Canal"
+        description="Escolha o canal de comunicação"
+        icon="channel"
+        options={[
+          { value: "linkedin", label: "LinkedIn" },
+          { value: "cold-email", label: "Cold E-mail" }
+        ]}
+        defaultValue={surveyData.canal}
+        onChange={(value) => setSurveyData({ ...surveyData, canal: value })}
+      />
 
       <SurveySlider
         title="Tamanho"

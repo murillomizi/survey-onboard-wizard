@@ -11,14 +11,16 @@ import {
   CircleEllipsis, 
   Volume2, 
   FileText, 
-  Zap 
+  Zap,
+  Send,
+  Linkedin 
 } from "lucide-react";
 
 interface SurveySelectProps {
   title: string;
   description: string;
   options: { value: string; label: string }[];
-  icon: "touchpoints" | "voice" | "template" | "triggers";
+  icon: "touchpoints" | "voice" | "template" | "triggers" | "channel";
   onChange: (value: string) => void;
   defaultValue?: string;
 }
@@ -41,6 +43,8 @@ const SurveySelect = ({
         return <FileText className="h-5 w-5 mr-2 text-survey-muted" />;
       case "triggers":
         return <Zap className="h-5 w-5 mr-2 text-survey-muted" />;
+      case "channel":
+        return <Linkedin className="h-5 w-5 mr-2 text-survey-muted" />;
       default:
         return null;
     }
