@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +29,7 @@ const ChatbotSurvey = () => {
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
-    funnelStage: "", // New field for funnel stage
+    funnelStage: "",
     csvFile: null as File | null,
     csvFileName: "",
     websiteUrl: "",
@@ -41,12 +40,10 @@ const ChatbotSurvey = () => {
     gatilhos: ""
   });
 
-  // Scroll to the bottom when messages change
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Define the conversation flow
   const steps = [
     {
       question: "Olá! Vamos configurar sua sequência de mensagens. Qual canal você quer usar para sua comunicação?",
@@ -119,7 +116,8 @@ const ChatbotSurvey = () => {
       field: "gatilhos"
     },
     {
-      question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV:",
+      question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
+      description: "Dica: Inclua o máximo de informações possível, como nome, cargo, empresa, e-mail, histórico de interações, etc. Dados completos permitem que a IA crie estratégias de comunicação extremamente personalizadas e relevantes.",
       field: "csvFile",
       inputType: "file"
     },
@@ -130,7 +128,6 @@ const ChatbotSurvey = () => {
     }
   ];
 
-  // Add a new message
   const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
     setMessages((prev) => [
       ...prev,
@@ -138,10 +135,8 @@ const ChatbotSurvey = () => {
     ]);
   };
 
-  // Start or continue the conversation
   useEffect(() => {
     if (messages.length === 0) {
-      // Start the conversation
       addMessage(steps[0].question, "bot");
       
       if (steps[0].options) {
@@ -153,11 +148,9 @@ const ChatbotSurvey = () => {
     }
   }, []);
 
-  // Handle user text input
   const handleSendMessage = () => {
     if (!currentInput.trim() && !showSlider) return;
 
-    // Remove options and reset waiting state
     setShowOptions(null);
     setShowSlider(false);
     setIsWaitingForResponse(true);
@@ -165,65 +158,54 @@ const ChatbotSurvey = () => {
     const currentStepData = steps[currentStep];
     
     if (currentStepData.field === "websiteUrl") {
-      // Add user's website URL to messages and data
       addMessage(currentInput, "user");
       setSurveyData({ ...surveyData, websiteUrl: currentInput });
     }
 
     setCurrentInput("");
 
-    // Simulate bot typing delay
     setTimeout(() => {
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
   };
 
-  // Handle option selection
   const handleOptionSelect = (value: string) => {
     if (!showOptions) return;
     
     const selectedOption = showOptions.options.find(opt => opt.value === value);
     if (!selectedOption) return;
 
-    // Remove options and show waiting state
     setShowOptions(null);
     setIsWaitingForResponse(true);
 
-    // Add user's selection to messages
     addMessage(selectedOption.label, "user");
 
-    // Update survey data
     const fieldName = steps[currentStep].field as keyof typeof surveyData;
     setSurveyData(prev => ({ ...prev, [fieldName]: value }));
 
-    // Simulate bot typing delay
     setTimeout(() => {
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
   };
 
-  // Handle slider changes
   const handleSliderChange = (value: number[]) => {
     setSliderValue(value[0]);
   };
 
   const handleSliderComplete = () => {
-    // Add selected slider value to messages
     addMessage(`${sliderValue} caracteres`, "user");
     setSurveyData({ ...surveyData, tamanho: sliderValue });
     setShowSlider(false);
     setIsWaitingForResponse(true);
 
-    // Simulate bot typing delay
     setTimeout(() => {
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
   };
 
-  // Handle file upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file && file.type !== "text/csv") {
@@ -235,7 +217,6 @@ const ChatbotSurvey = () => {
       return;
     }
     
-    // Add file name to messages
     if (file) {
       addMessage(`Arquivo: ${file.name}`, "user");
       setSurveyData({
@@ -256,7 +237,6 @@ const ChatbotSurvey = () => {
     fileInputRef.current?.click();
   };
 
-  // Move to the next step in the conversation
   const moveToNextStep = () => {
     const nextStep = currentStep + 1;
     
@@ -264,7 +244,6 @@ const ChatbotSurvey = () => {
       setCurrentStep(nextStep);
       addMessage(steps[nextStep].question, "bot");
       
-      // Show options if this step has options
       if (steps[nextStep].options) {
         setShowOptions({
           options: steps[nextStep].options,
@@ -272,14 +251,11 @@ const ChatbotSurvey = () => {
         });
       }
       
-      // Show slider if this step needs a slider
       if (steps[nextStep].inputType === "slider") {
         setShowSlider(true);
       }
       
-      // Handle special step types
       if (steps[nextStep].inputType === "summary") {
-        // Display summary of all choices
         const summaryContent = (
           <div>
             <p><strong>Canal:</strong> {getOptionLabel("canal", surveyData.canal)}</p>
@@ -295,18 +271,15 @@ const ChatbotSurvey = () => {
         );
         addMessage(summaryContent, "bot");
         
-        // Add final confirmation message
         setTimeout(() => {
           addMessage("Tudo pronto para continuar?", "bot");
         }, 1000);
       }
     } else {
-      // Survey complete - show final message
       addMessage("Obrigado por completar a pesquisa! Clique em 'Continuar' para prosseguir.", "bot");
     }
   };
 
-  // Helper function to get option label from value
   const getOptionLabel = (field: string, value: string): string => {
     const step = steps.find(s => s.field === field);
     if (!step || !step.options) return value;
@@ -315,7 +288,6 @@ const ChatbotSurvey = () => {
     return option ? option.label : value;
   };
 
-  // Handle final submission
   const handleSubmit = () => {
     toast({
       title: "Configurações salvas!",
@@ -327,7 +299,6 @@ const ChatbotSurvey = () => {
 
   return (
     <div className="flex flex-col h-[600px] bg-survey-bg rounded-lg shadow-lg">
-      {/* Chat messages container */}
       <div className="flex-1 p-4 overflow-y-auto">
         {messages.map((message) => (
           <ChatMessage
@@ -341,7 +312,6 @@ const ChatbotSurvey = () => {
           <ChatMessage content="..." type="bot" isTyping={true} />
         )}
         
-        {/* Show options if available */}
         {showOptions && (
           <div className="mb-4">
             <ChatOptions
@@ -351,7 +321,6 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {/* Show slider if needed */}
         {showSlider && (
           <div className="mb-4 p-4 bg-survey-card rounded-lg">
             <div className="mb-2">
@@ -378,7 +347,18 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {/* File input (hidden) */}
+        {currentStep === 8 && (
+          <div className="mb-4 bg-survey-card p-4 rounded-lg text-survey-text">
+            <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
+            <p className="text-sm mb-2">
+              Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
+            </p>
+            <p className="text-xs text-survey-muted italic">
+              Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
+            </p>
+          </div>
+        )}
+        
         <input
           type="file"
           accept=".csv"
@@ -387,11 +367,9 @@ const ChatbotSurvey = () => {
           className="hidden"
         />
         
-        {/* Anchor for auto-scrolling */}
         <div ref={chatEndRef} />
       </div>
       
-      {/* Input area */}
       <div className="p-4 border-t border-gray-700 bg-survey-card">
         <div className="flex items-center gap-2">
           {currentStep === 8 && (
