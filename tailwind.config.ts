@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -67,7 +68,7 @@ export default {
 					card: '#222222',
 					purple: '#ffffff',
 					text: '#FFFFFF',
-					muted: '#888888'
+					muted: '#AAAAAA'
 				}
 			},
 			borderRadius: {
