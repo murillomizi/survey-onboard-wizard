@@ -64,11 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				survey: {
-					bg: '#1A1F2C',
+					bg: '#000000',
 					card: '#222222',
-					purple: '#9b87f5',
+					purple: '#ffffff',
 					text: '#FFFFFF',
-					muted: '#9F9EA1'
+					muted: '#888888'
 				}
 			},
 			borderRadius: {

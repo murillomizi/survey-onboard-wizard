@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, Bot, CircleDot } from "lucide-react";
+import { Send, Paperclip, CircleDot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
@@ -324,7 +324,7 @@ const ChatbotSurvey = () => {
         {showSlider && (
           <div className="mb-4 p-4 border border-white/10 bg-black/40 backdrop-blur-xl rounded-xl">
             <div className="mb-2">
-              <span className="text-survey-text">{sliderValue} caracteres</span>
+              <span className="text-white">{sliderValue} caracteres</span>
             </div>
             <Slider
               defaultValue={[350]}
@@ -335,12 +335,12 @@ const ChatbotSurvey = () => {
               onValueCommit={handleSliderComplete}
               className="mb-2"
             />
-            <p className="text-survey-muted text-sm italic">
+            <p className="text-gray-400 text-sm italic">
               Recomendado: 350-500 caracteres para maior impacto
             </p>
             <Button 
               onClick={handleSliderComplete}
-              className="mt-2 bg-survey-purple hover:bg-survey-purple/90 text-white shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)]"
+              className="mt-2 bg-white/10 hover:bg-white/20 text-white shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]"
             >
               Confirmar
             </Button>
@@ -348,12 +348,12 @@ const ChatbotSurvey = () => {
         )}
         
         {currentStep === 8 && (
-          <div className="mb-4 border border-white/10 bg-black/40 backdrop-blur-xl p-4 rounded-xl text-survey-text">
+          <div className="mb-4 border border-white/10 bg-black/40 backdrop-blur-xl p-4 rounded-xl text-white">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
               Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
             </p>
-            <p className="text-xs text-survey-muted italic">
+            <p className="text-xs text-gray-400 italic">
               Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
             </p>
           </div>
@@ -370,13 +370,13 @@ const ChatbotSurvey = () => {
         <div ref={chatEndRef} />
       </div>
       
-      <div className="p-4 border-t border-gray-700/30 backdrop-blur-lg bg-black/40">
+      <div className="p-4 border-t border-white/10 backdrop-blur-lg bg-black/40">
         <div className="flex items-center gap-2">
           {currentStep === 8 && (
             <Button
               type="button"
               onClick={triggerFileUpload}
-              className="bg-survey-purple hover:bg-survey-purple/90 text-white shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)]"
+              className="bg-white/10 hover:bg-white/20 text-white shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]"
             >
               <Paperclip size={18} />
               Upload CSV
@@ -391,11 +391,11 @@ const ChatbotSurvey = () => {
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                   placeholder="Digite sua resposta..."
-                  className="w-full bg-black/20 border-white/10 text-survey-text rounded-full pr-12 focus:border-survey-purple/50 focus:ring-1 focus:ring-survey-purple/30 focus:shadow-[0_0_8px_rgba(155,135,245,0.3)]"
+                  className="w-full bg-black/20 border-white/10 text-white rounded-full pr-12 focus:border-white/30 focus:ring-1 focus:ring-white/20 focus:shadow-[0_0_8px_rgba(255,255,255,0.1)]"
                 />
                 <Button
                   onClick={handleSendMessage}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-survey-purple hover:bg-survey-purple/90 text-white shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)] p-0"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)] p-0"
                 >
                   <Send size={14} />
                 </Button>
@@ -406,7 +406,7 @@ const ChatbotSurvey = () => {
           {currentStep === steps.length - 1 && (
             <Button
               onClick={handleSubmit}
-              className="w-full bg-survey-purple hover:bg-survey-purple/90 text-white rounded-full shadow-[0_0_8px_rgba(155,135,245,0.3)] hover:shadow-[0_0_12px_rgba(155,135,245,0.5)]"
+              className="w-full bg-white/10 hover:bg-white/20 text-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]"
             >
               Continuar
             </Button>
