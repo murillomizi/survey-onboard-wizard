@@ -13,7 +13,7 @@ const SurveyForm = () => {
     csvFile: null as File | null,
     csvFileName: "",
     websiteUrl: "",
-    tamanho: 150,
+    tamanho: 350,
     touchpoints: "3",
     tomVoz: "neutro",
     template: "proposta",
@@ -127,8 +127,9 @@ const SurveyForm = () => {
 
       <SurveySlider
         title="Tamanho"
-        recommendedText="Recomendado: 80-200 caracteres para maior taxa de resposta"
+        recommendedText="Recomendado: 350-500 caracteres para maior impacto na comunicação"
         initialValue={surveyData.tamanho}
+        max={500}
         onChange={(value) => setSurveyData({ ...surveyData, tamanho: value })}
       />
 

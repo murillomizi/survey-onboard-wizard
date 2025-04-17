@@ -9,15 +9,17 @@ interface SurveySliderProps {
   initialValue?: number;
   max?: number;
   step?: number;
+  min?: number;
 }
 
 const SurveySlider = ({
   title,
   recommendedText,
   onChange,
-  initialValue = 150,
-  max = 300,
-  step = 10
+  initialValue = 350,
+  max = 500,
+  step = 10,
+  min = 100
 }: SurveySliderProps) => {
   const [value, setValue] = useState<number>(initialValue);
 
@@ -35,6 +37,7 @@ const SurveySlider = ({
       <Slider
         value={[value]}
         max={max}
+        min={min}
         step={step}
         onValueChange={handleValueChange}
         className="py-4"
