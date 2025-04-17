@@ -1,11 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from "react";
+import SurveyForm from "@/components/SurveyForm";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-survey-bg flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md mb-8 text-center">
+        <h1 className="text-2xl font-bold text-survey-text mb-2">Configure sua sequência</h1>
+        <p className="text-survey-muted">Personalize os parâmetros para criar mensagens eficientes</p>
+      </div>
+      
+      <div className="w-full max-w-md bg-survey-card rounded-lg p-6 shadow-lg">
+        <SurveyForm />
+      </div>
+      
+      <div className="w-full max-w-md mt-4 text-center">
+        <button 
+          className="text-survey-muted hover:text-survey-purple text-sm"
+          onClick={() => window.history.back()}
+        >
+          Voltar
+        </button>
       </div>
     </div>
   );
