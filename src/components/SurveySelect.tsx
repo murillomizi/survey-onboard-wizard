@@ -1,3 +1,4 @@
+
 import React from "react";
 import { 
   Select,
@@ -18,7 +19,7 @@ interface SurveySelectProps {
   title: string;
   description: string;
   options: { value: string; label: string }[];
-  icon: "touchpoints" | "voice" | "template" | "triggers" | "channel";
+  icon: "touchpoints" | "voice" | "template" | "triggers" | "channel" | "send";
   onChange: (value: string) => void;
   defaultValue?: string;
 }
@@ -42,6 +43,7 @@ const SurveySelect = ({
       case "triggers":
         return <Zap className="h-5 w-5 mr-2 text-survey-muted" />;
       case "channel":
+      case "send":
         return <Send className="h-5 w-5 mr-2 text-survey-muted" />;
       default:
         return null;

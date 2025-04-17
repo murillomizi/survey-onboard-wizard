@@ -1,9 +1,10 @@
+
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { Upload, Send, Send as ChannelIcon } from "lucide-react";
+import { Upload, Send, Globe } from "lucide-react";
 import SurveySlider from "./SurveySlider";
 import SurveySelect from "./SurveySelect";
 
@@ -116,7 +117,7 @@ const SurveyForm = () => {
       <SurveySelect
         title="Canal"
         description="Escolha o canal de comunicação"
-        icon="send"
+        icon="channel"
         options={[
           { value: "linkedin", label: "LinkedIn" },
           { value: "cold-email", label: "Cold E-mail" }
