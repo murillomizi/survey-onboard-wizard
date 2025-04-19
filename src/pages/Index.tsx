@@ -27,7 +27,7 @@ const Index = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-gray-300 text-base"
         >
-          Converse com a nossa IA para personalizar a abordagem para sua base
+          Personalize sua estratégia com IA
         </motion.p>
       </motion.div>
       
