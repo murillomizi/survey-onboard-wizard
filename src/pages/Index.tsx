@@ -1,10 +1,11 @@
+
 import React from "react";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
 import { motion } from "framer-motion";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -35,7 +36,7 @@ const Index = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="w-full max-w-md bg-black/40 backdrop-blur-md border-2 border-white/20 rounded-xl overflow-hidden shadow-[0_0_25px_rgba(0,0,0,0.3)] hover:border-white/30 transition-all duration-300"
+        className="w-full max-w-md bg-white backdrop-blur-md border-2 border-gray-200 rounded-xl overflow-hidden shadow-[0_0_25px_rgba(0,0,0,0.1)] hover:border-gray-300 transition-all duration-300"
       >
         <ChatbotSurvey />
       </motion.div>
@@ -47,7 +48,7 @@ const Index = () => {
         className="w-full max-w-md mt-6 text-center"
       >
         <button 
-          className="text-gray-300 hover:text-white text-base transition-colors underline underline-offset-4"
+          className="text-gray-600 hover:text-black text-base transition-colors underline underline-offset-4"
           onClick={() => window.history.back()}
         >
           Voltar
