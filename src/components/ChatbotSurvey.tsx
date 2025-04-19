@@ -142,6 +142,8 @@ const ChatbotSurvey = () => {
   useEffect(() => {
     if (messages.length === 0) {
       const firstStep = steps[0];
+      addMessage(firstStep.question, "bot");
+      
       if (firstStep.options) {
         setShowOptions({
           options: firstStep.options,
