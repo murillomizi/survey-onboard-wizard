@@ -6,6 +6,7 @@ import { Send, Paperclip, CircleDot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
 
 interface Message {
   id: number;
@@ -127,6 +128,8 @@ const ChatbotSurvey = () => {
       inputType: "summary"
     }
   ];
+
+  const progressPercentage = Math.min(((currentStep + 1) / steps.length) * 100, 100);
 
   const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
     setMessages((prev) => [
@@ -298,8 +301,20 @@ const ChatbotSurvey = () => {
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-transparent">
-      <div className="flex-1 p-4 overflow-y-auto space-y-2 scrollbar-hide">
+    <div className="flex flex-col h-[600px] bg-white rounded-xl">
+      <div className="p-3 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-sm font-medium text-gray-600">
+            Passo {currentStep + 1} de {steps.length}
+          </div>
+          <div className="text-xs text-gray-400">
+            {Math.round(progressPercentage)}% concluído
+          </div>
+        </div>
+        <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
+      </div>
+      
+      <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
         {messages.map((message) => (
           <ChatMessage
             key={message.id}
@@ -322,9 +337,9 @@ const ChatbotSurvey = () => {
         )}
         
         {showSlider && (
-          <div className="mb-4 p-4 border border-white/10 bg-black/40 backdrop-blur-xl rounded-xl">
+          <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
             <div className="mb-2">
-              <span className="text-white">{sliderValue} caracteres</span>
+              <span className="text-gray-800">{sliderValue} caracteres</span>
             </div>
             <Slider
               defaultValue={[350]}
@@ -335,12 +350,12 @@ const ChatbotSurvey = () => {
               onValueCommit={handleSliderComplete}
               className="mb-2"
             />
-            <p className="text-gray-400 text-sm italic">
+            <p className="text-gray-500 text-sm italic">
               Recomendado: 350-500 caracteres para maior impacto
             </p>
             <Button 
               onClick={handleSliderComplete}
-              className="mt-2 bg-white/10 hover:bg-white/20 text-white shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+              className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
             >
               Confirmar
             </Button>
@@ -348,12 +363,12 @@ const ChatbotSurvey = () => {
         )}
         
         {currentStep === 8 && (
-          <div className="mb-4 border border-white/10 bg-black/40 backdrop-blur-xl p-4 rounded-xl text-white">
+          <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
               Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
             </p>
-            <p className="text-xs text-gray-400 italic">
+            <p className="text-xs text-gray-500 italic">
               Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
             </p>
           </div>
@@ -370,13 +385,13 @@ const ChatbotSurvey = () => {
         <div ref={chatEndRef} />
       </div>
       
-      <div className="p-4 border-t border-white/10 backdrop-blur-lg bg-black/40">
-        <div className="flex items-center gap-2">
+      <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
+        <div className="flex items-center gap-2 max-w-[600px] mx-auto">
           {currentStep === 8 && (
             <Button
               type="button"
               onClick={triggerFileUpload}
-              className="bg-white/10 hover:bg-white/20 text-white shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow transition-all duration-200"
             >
               <Paperclip size={18} />
               Upload CSV
@@ -391,11 +406,11 @@ const ChatbotSurvey = () => {
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                   placeholder="Digite sua resposta..."
-                  className="w-full bg-black/20 border-white/10 text-white rounded-full pr-12 focus:border-white/30 focus:ring-1 focus:ring-white/20 focus:shadow-[0_0_8px_rgba(255,255,255,0.1)]"
+                  className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
                 />
                 <Button
                   onClick={handleSendMessage}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)] p-0"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
                 >
                   <Send size={14} />
                 </Button>
@@ -406,7 +421,7 @@ const ChatbotSurvey = () => {
           {currentStep === steps.length - 1 && (
             <Button
               onClick={handleSubmit}
-              className="w-full bg-white/10 hover:bg-white/20 text-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.1)] hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
               Continuar
             </Button>

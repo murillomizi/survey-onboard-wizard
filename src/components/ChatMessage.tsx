@@ -15,11 +15,11 @@ interface ChatMessageProps {
 const ChatMessage = ({ content, type, isTyping = false }: ChatMessageProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "mb-4 flex items-start",
+        "flex items-start gap-3",
         type === "user" ? "justify-end" : "justify-start"
       )}
     >
@@ -27,17 +27,21 @@ const ChatMessage = ({ content, type, isTyping = false }: ChatMessageProps) => {
         <motion.div
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
+          whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
-          className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-white/30 bg-black/60 p-1 hover:border-white/50 transition-all duration-300"
+          className="flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600"
         >
-          <Bot size={20} className="text-white" />
+          <Bot size={18} />
         </motion.div>
       )}
       
       <div
         className={cn(
-          type === "user" ? "chat-bubble-user" : "chat-bubble-bot",
-          isTyping && "animate-pulse"
+          "max-w-[90%] rounded-[18px] px-4 py-3",
+          type === "user" 
+            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white" 
+            : "bg-white border border-gray-200 text-gray-800 shadow-sm",
+          isTyping && "min-w-[60px]"
         )}
       >
         {isTyping ? (
@@ -45,24 +49,24 @@ const ChatMessage = ({ content, type, isTyping = false }: ChatMessageProps) => {
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
-              className="h-2 w-2 rounded-full bg-white opacity-70"
+              className="h-2 w-2 rounded-full bg-gray-400"
             />
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, delay: 0.2, repeat: Infinity }}
-              className="h-2 w-2 rounded-full bg-white opacity-70"
+              className="h-2 w-2 rounded-full bg-gray-400"
             />
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, delay: 0.4, repeat: Infinity }}
-              className="h-2 w-2 rounded-full bg-white opacity-70"
+              className="h-2 w-2 rounded-full bg-gray-400"
             />
           </div>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="relative text-base"
+            className="text-[16px] leading-[1.6]"
           >
             {content}
           </motion.div>
@@ -73,10 +77,11 @@ const ChatMessage = ({ content, type, isTyping = false }: ChatMessageProps) => {
         <motion.div
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
+          whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
-          className="ml-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-white/30 bg-black/60 p-1 hover:border-white/50 transition-all duration-300"
+          className="flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-full bg-blue-100 text-blue-600"
         >
-          <User size={20} className="text-white" />
+          <User size={18} />
         </motion.div>
       )}
     </motion.div>

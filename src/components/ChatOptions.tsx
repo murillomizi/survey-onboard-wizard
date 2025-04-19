@@ -11,7 +11,7 @@ interface ChatOptionProps {
 const ChatOptions = ({ options, onSelect }: ChatOptionProps) => {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="flex flex-wrap gap-2 mt-3"
@@ -19,16 +19,16 @@ const ChatOptions = ({ options, onSelect }: ChatOptionProps) => {
       {options.map((option, index) => (
         <motion.div
           key={option.value}
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: index * 0.1 }}
+          transition={{ duration: 0.3, delay: index * 0.08 }}
+          whileHover={{ y: -2, scale: 1.02 }}
         >
           <Button
-            className="btn-option text-base font-medium relative overflow-hidden group"
+            className="bg-white border border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50 shadow-sm hover:shadow transition-all duration-200"
             onClick={() => onSelect(option.value)}
           >
-            <span className="relative z-10">{option.label}</span>
-            <div className="absolute inset-0 bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
+            {option.label}
           </Button>
         </motion.div>
       ))}
