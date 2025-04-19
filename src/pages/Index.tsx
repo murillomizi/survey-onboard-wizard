@@ -1,11 +1,10 @@
-
 import React from "react";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
 import { motion } from "framer-motion";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
