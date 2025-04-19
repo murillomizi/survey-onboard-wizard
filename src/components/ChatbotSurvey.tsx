@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,7 +66,7 @@ const ChatbotSurvey = () => {
       field: "funnelStage"
     },
     {
-      question: "Qual site da empresa você quer usar para personalizar as mensagens?",
+      question: "Qual é o site da sua empresa?",
       field: "websiteUrl",
       inputType: "text"
     },
