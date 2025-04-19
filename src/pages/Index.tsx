@@ -1,12 +1,10 @@
-
 import React from "react";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
-import { CircleDot } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-['Exo_2',sans-serif]">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -22,15 +20,6 @@ const Index = () => {
           >
             Mizi <span className="font-bold">AI</span>
           </motion.h1>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex items-center gap-1.5 text-sm text-gray-200 bg-white/5 px-2.5 py-1 rounded-full border border-white/20"
-          >
-            <CircleDot size={14} className="text-white animate-pulse" />
-            <span>Online</span>
-          </motion.div>
         </div>
         <motion.p
           initial={{ opacity: 0 }}
