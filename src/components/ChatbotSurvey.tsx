@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,11 +141,10 @@ const ChatbotSurvey = () => {
 
   useEffect(() => {
     if (messages.length === 0) {
-      addMessage(steps[0].question, "bot");
-      
-      if (steps[0].options) {
+      const firstStep = steps[0];
+      if (firstStep.options) {
         setShowOptions({
-          options: steps[0].options,
+          options: firstStep.options,
           step: 0
         });
       }
