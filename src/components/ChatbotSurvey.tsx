@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ const ChatbotSurvey = () => {
 
   const steps = [
     {
-      question: "Olá! Vamos configurar sua sequência de mensagens. Qual canal você quer usar para sua comunicação?",
+      question: "Olá! Vamos configurar sua sequência de mensagens. Escolha o canal para sua comunicação:",
       options: [
         { value: "linkedin", label: "LinkedIn" },
         { value: "cold-email", label: "Cold E-mail" }
@@ -56,7 +57,7 @@ const ChatbotSurvey = () => {
       field: "canal"
     },
     {
-      question: "Ótimo! Em que estágio do funil de vendas está sua base de contatos?",
+      question: "Em que estágio do funil de vendas está sua base de contatos?",
       options: [
         { value: "topo", label: "Topo de Funil" },
         { value: "meio", label: "Meio de Funil" },
