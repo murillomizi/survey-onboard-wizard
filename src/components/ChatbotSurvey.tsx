@@ -36,7 +36,6 @@ const ChatbotSurvey = () => {
     csvData: [] as any[],
     websiteUrl: "",
     tamanho: 350,
-    touchpoints: "",
     tomVoz: "",
     template: "",
     gatilhos: ""
@@ -75,14 +74,6 @@ const ChatbotSurvey = () => {
       question: "Vamos definir o tamanho da sua mensagem. Mova o controle deslizante para escolher o número de caracteres (recomendado: 350-500 caracteres para maior impacto):",
       field: "tamanho",
       inputType: "slider"
-    },
-    {
-      question: "Quantos touchpoints você planeja para esta sequência?",
-      options: [
-        { value: "1", label: "1" },
-        { value: "2", label: "2" }
-      ],
-      field: "touchpoints"
     },
     {
       question: "Qual tom de voz você prefere para suas mensagens?",
@@ -280,7 +271,6 @@ const ChatbotSurvey = () => {
             <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", surveyData.funnelStage)}</p>
             <p><strong>Site:</strong> {surveyData.websiteUrl}</p>
             <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
-            <p><strong>Touchpoints:</strong> {surveyData.touchpoints}</p>
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Template:</strong> {getOptionLabel("template", surveyData.template)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
@@ -316,7 +306,6 @@ const ChatbotSurvey = () => {
             funnel_stage: surveyData.funnelStage,
             website_url: surveyData.websiteUrl,
             message_length: surveyData.tamanho,
-            touchpoints: surveyData.touchpoints,
             tone_of_voice: surveyData.tomVoz,
             template: surveyData.template,
             persuasion_trigger: surveyData.gatilhos,
@@ -413,7 +402,7 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {currentStep === 8 && (
+        {currentStep === 7 && (
           <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
@@ -438,7 +427,7 @@ const ChatbotSurvey = () => {
       
       <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
         <div className="flex items-center gap-2 max-w-[600px] mx-auto">
-          {currentStep === 8 && (
+          {currentStep === 7 && (
             <Button
               type="button"
               onClick={triggerFileUpload}
@@ -449,7 +438,7 @@ const ChatbotSurvey = () => {
             </Button>
           )}
           
-          {currentStep < 8 && showOptions === null && !showSlider && (
+          {currentStep < 7 && showOptions === null && !showSlider && (
             <>
               <div className="relative flex-1">
                 <Input
