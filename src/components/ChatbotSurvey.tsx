@@ -98,10 +98,15 @@ const ChatbotSurvey = () => {
     {
       question: "Qual template você gostaria de usar?",
       options: [
-        { value: "proposta", label: "Proposta de Valor" },
-        { value: "solucao", label: "Solução de Problema" },
+        { value: "dor", label: "Foco na Dor" },
+        { value: "solucao", label: "Foco na Solução" },
         { value: "case", label: "Case de Sucesso" },
-        { value: "desconto", label: "Oferta com Desconto" }
+        { value: "desconto", label: "Desconto" },
+        { value: "evento", label: "Convite para Evento" },
+        { value: "relacional", label: "Relacional" },
+        { value: "demo", label: "Demonstração de Produto" },
+        { value: "teste", label: "Teste" },
+        { value: "conteudo", label: "Conteúdo" }
       ],
       field: "template"
     },
