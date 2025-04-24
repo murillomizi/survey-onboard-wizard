@@ -86,10 +86,12 @@ const ChatbotSurvey = () => {
     {
       question: "Qual tom de voz você prefere para suas mensagens?",
       options: [
-        { value: "amigavel", label: "Amigável" },
-        { value: "neutro", label: "Neutro" },
         { value: "formal", label: "Formal" },
-        { value: "autoritario", label: "Autoritário" }
+        { value: "informal", label: "Informal" },
+        { value: "neutro", label: "Neutro" },
+        { value: "consultivo", label: "Consultivo" },
+        { value: "curioso", label: "Curioso" },
+        { value: "inovador", label: "Inovador" }
       ],
       field: "tomVoz"
     },
