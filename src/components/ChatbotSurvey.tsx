@@ -1,5 +1,5 @@
-
 import React, { useState, useRef, useEffect } from "react";
+import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -35,6 +35,7 @@ const ChatbotSurvey = () => {
     funnelStage: "",
     csvFile: null as File | null,
     csvFileName: "",
+    csvData: [] as any[],
     websiteUrl: "",
     tamanho: 350,
     touchpoints: "",
@@ -233,18 +234,24 @@ const ChatbotSurvey = () => {
     }
     
     if (file) {
-      addMessage(`Arquivo: ${file.name}`, "user");
-      setSurveyData({
-        ...surveyData,
-        csvFile: file,
-        csvFileName: file.name
+      Papa.parse(file, {
+        complete: (results) => {
+          addMessage(`Arquivo: ${file.name}`, "user");
+          setSurveyData({
+            ...surveyData,
+            csvFile: file,
+            csvFileName: file.name,
+            csvData: results.data
+          });
+          
+          setIsWaitingForResponse(true);
+          setTimeout(() => {
+            setIsWaitingForResponse(false);
+            moveToNextStep();
+          }, 1000);
+        },
+        header: true
       });
-      
-      setIsWaitingForResponse(true);
-      setTimeout(() => {
-        setIsWaitingForResponse(false);
-        moveToNextStep();
-      }, 1000);
     }
   };
 
@@ -317,7 +324,8 @@ const ChatbotSurvey = () => {
             tone_of_voice: surveyData.tomVoz,
             template: surveyData.template,
             persuasion_trigger: surveyData.gatilhos,
-            csv_file_name: surveyData.csvFileName
+            csv_file_name: surveyData.csvFileName,
+            csv_data: surveyData.csvData
           }
         ])
         .select();

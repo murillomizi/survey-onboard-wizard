@@ -61,6 +61,7 @@ export type Database = {
         Row: {
           canal: string | null
           created_at: string | null
+          csv_data: Json | null
           csv_file_name: string | null
           funnel_stage: string | null
           id: string
@@ -74,6 +75,7 @@ export type Database = {
         Insert: {
           canal?: string | null
           created_at?: string | null
+          csv_data?: Json | null
           csv_file_name?: string | null
           funnel_stage?: string | null
           id?: string
@@ -87,6 +89,7 @@ export type Database = {
         Update: {
           canal?: string | null
           created_at?: string | null
+          csv_data?: Json | null
           csv_file_name?: string | null
           funnel_stage?: string | null
           id?: string
