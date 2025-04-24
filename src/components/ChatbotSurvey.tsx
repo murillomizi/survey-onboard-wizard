@@ -117,9 +117,13 @@ const ChatbotSurvey = () => {
       question: "Por último, gostaria de aplicar algum gatilho de persuasão?",
       options: [
         { value: "sem-gatilho", label: "Sem gatilho" },
+        { value: "reciprocidade", label: "Reciprocidade" },
+        { value: "compromisso", label: "Compromisso e Consistência" },
+        { value: "prova-social", label: "Prova Social" },
+        { value: "simpatia", label: "Simpatia" },
+        { value: "autoridade", label: "Autoridade" },
         { value: "escassez", label: "Escassez" },
-        { value: "urgencia", label: "Urgência" },
-        { value: "social", label: "Prova Social" }
+        { value: "consenso", label: "Consenso" }
       ],
       field: "gatilhos"
     },
