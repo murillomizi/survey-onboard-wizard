@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,7 +107,9 @@ const ChatbotSurvey = () => {
         { value: "relacional", label: "Relacional" },
         { value: "demo", label: "Demonstração de Produto" },
         { value: "teste", label: "Teste" },
-        { value: "conteudo", label: "Conteúdo" }
+        { value: "conteudo", label: "Conteúdo" },
+        { value: "diagnostico", label: "Diagnóstico Gratuito" },
+        { value: "assessment", label: "Oferta de Assessment" }
       ],
       field: "template"
     },
