@@ -194,8 +194,8 @@ const ChatbotSurvey = () => {
     }, 1000);
   };
 
-  const handleSliderChange = (value: number[]) => {
-    setSliderValue(value[0]);
+  const handleSliderChange = (val: number[]) => {
+    setSliderValue(val[0]);
   };
 
   const handleSliderComplete = () => {
@@ -345,13 +345,13 @@ const ChatbotSurvey = () => {
             <Slider
               defaultValue={[350]}
               max={1000}
+              min={100}
               step={10}
               value={[sliderValue]}
               onValueChange={handleSliderChange}
-              onValueCommit={handleSliderComplete}
               className="mb-2"
             />
-            <p className="text-gray-500 text-sm italic">
+            <p className="text-gray-500 text-sm mt-1 italic">
               Recomendado: 350-500 caracteres para maior impacto
             </p>
             <Button 
