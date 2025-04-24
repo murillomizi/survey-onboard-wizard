@@ -7,6 +7,7 @@ import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: number;
@@ -301,13 +302,49 @@ const ChatbotSurvey = () => {
     return option ? option.label : value;
   };
 
-  const handleSubmit = () => {
-    toast({
-      title: "Configurações salvas!",
-      description: "Suas preferências de mensagem foram salvas com sucesso.",
-    });
-    
-    console.log("Dados do formulário:", surveyData);
+  const handleSubmit = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('mizi_ai_surveys')
+        .insert([
+          {
+            canal: surveyData.canal,
+            funnel_stage: surveyData.funnelStage,
+            website_url: surveyData.websiteUrl,
+            message_length: surveyData.tamanho,
+            touchpoints: surveyData.touchpoints,
+            tone_of_voice: surveyData.tomVoz,
+            template: surveyData.template,
+            persuasion_trigger: surveyData.gatilhos,
+            csv_file_name: surveyData.csvFileName
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error saving survey:', error);
+        toast({
+          title: "Erro ao salvar",
+          description: "Não foi possível salvar suas respostas. Tente novamente.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Configurações salvas!",
+        description: "Suas preferências de mensagem foram salvas com sucesso.",
+      });
+      
+      console.log('Survey data saved:', data);
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

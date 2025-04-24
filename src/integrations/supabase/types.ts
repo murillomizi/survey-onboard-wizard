@@ -57,6 +57,48 @@ export type Database = {
         }
         Relationships: []
       }
+      mizi_ai_surveys: {
+        Row: {
+          canal: string | null
+          created_at: string | null
+          csv_file_name: string | null
+          funnel_stage: string | null
+          id: string
+          message_length: number | null
+          persuasion_trigger: string | null
+          template: string | null
+          tone_of_voice: string | null
+          touchpoints: string | null
+          website_url: string | null
+        }
+        Insert: {
+          canal?: string | null
+          created_at?: string | null
+          csv_file_name?: string | null
+          funnel_stage?: string | null
+          id?: string
+          message_length?: number | null
+          persuasion_trigger?: string | null
+          template?: string | null
+          tone_of_voice?: string | null
+          touchpoints?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          canal?: string | null
+          created_at?: string | null
+          csv_file_name?: string | null
+          funnel_stage?: string | null
+          id?: string
+          message_length?: number | null
+          persuasion_trigger?: string | null
+          template?: string | null
+          tone_of_voice?: string | null
+          touchpoints?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
