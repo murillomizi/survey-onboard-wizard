@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const ChatbotSurvey = () => {
   const [sliderValue, setSliderValue] = useState(350);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -274,7 +276,7 @@ const ChatbotSurvey = () => {
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Template:</strong> {getOptionLabel("template", surveyData.template)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
-            <p><strong>Arquivo:</strong> {surveyData.csvFileName || "Nenhum arquivo selecionado"}</p>
+            <p><strong>Arquivo CSV:</strong> {surveyData.csvData.length > 0 ? `${surveyData.csvData.length} registros carregados` : "Nenhum arquivo carregado"}</p>
           </div>
         );
         addMessage(summaryContent, "bot");
@@ -298,6 +300,27 @@ const ChatbotSurvey = () => {
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true);
+      
+      // Ensure we have the minimum required data
+      if (!surveyData.canal || !surveyData.funnelStage) {
+        toast({
+          title: "Campos obrigatórios",
+          description: "Por favor, preencha todos os campos obrigatórios.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Some simple validation to avoid huge payloads
+      let csvDataToSave = surveyData.csvData;
+      if (surveyData.csvData && surveyData.csvData.length > 100) {
+        // If the CSV data is too large, trim it to first 100 records
+        csvDataToSave = surveyData.csvData.slice(0, 100);
+        console.log('CSV data trimmed to 100 records to avoid payload size issues');
+      }
+      
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
         .insert([
@@ -309,7 +332,7 @@ const ChatbotSurvey = () => {
             tone_of_voice: surveyData.tomVoz,
             template: surveyData.template,
             persuasion_trigger: surveyData.gatilhos,
-            csv_data: surveyData.csvData
+            csv_data: csvDataToSave
           }
         ])
         .select();
@@ -321,6 +344,7 @@ const ChatbotSurvey = () => {
           description: "Não foi possível salvar suas respostas. Tente novamente.",
           variant: "destructive"
         });
+        setIsSubmitting(false);
         return;
       }
 
@@ -330,6 +354,7 @@ const ChatbotSurvey = () => {
       });
       
       console.log('Survey data saved:', data);
+      setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -337,6 +362,7 @@ const ChatbotSurvey = () => {
         description: "Ocorreu um erro inesperado. Tente novamente.",
         variant: "destructive"
       });
+      setIsSubmitting(false);
     }
   };
 
@@ -461,9 +487,10 @@ const ChatbotSurvey = () => {
           {currentStep === steps.length - 1 && (
             <Button
               onClick={handleSubmit}
+              disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
-              Continuar
+              {isSubmitting ? 'Salvando...' : 'Continuar'}
             </Button>
           )}
         </div>
