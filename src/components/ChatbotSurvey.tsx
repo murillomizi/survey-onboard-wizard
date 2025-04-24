@@ -33,8 +33,6 @@ const ChatbotSurvey = () => {
   const [surveyData, setSurveyData] = useState({
     canal: "",
     funnelStage: "",
-    csvFile: null as File | null,
-    csvFileName: "",
     csvData: [] as any[],
     websiteUrl: "",
     tamanho: 350,
@@ -236,13 +234,11 @@ const ChatbotSurvey = () => {
     if (file) {
       Papa.parse(file, {
         complete: (results) => {
-          addMessage(`Arquivo: ${file.name}`, "user");
-          setSurveyData({
-            ...surveyData,
-            csvFile: file,
-            csvFileName: file.name,
+          addMessage(`Arquivo processado com sucesso`, "user");
+          setSurveyData(prev => ({
+            ...prev,
             csvData: results.data
-          });
+          }));
           
           setIsWaitingForResponse(true);
           setTimeout(() => {
@@ -324,7 +320,6 @@ const ChatbotSurvey = () => {
             tone_of_voice: surveyData.tomVoz,
             template: surveyData.template,
             persuasion_trigger: surveyData.gatilhos,
-            csv_file_name: surveyData.csvFileName,
             csv_data: surveyData.csvData
           }
         ])
