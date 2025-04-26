@@ -12,7 +12,6 @@ export type Database = {
       "Data set final": {
         Row: {
           cargo: string | null
-          copy: string | null
           created_at: string
           email: string | null
           empresa: string | null
@@ -24,7 +23,6 @@ export type Database = {
         }
         Insert: {
           cargo?: string | null
-          copy?: string | null
           created_at?: string
           email?: string | null
           empresa?: string | null
@@ -36,7 +34,6 @@ export type Database = {
         }
         Update: {
           cargo?: string | null
-          copy?: string | null
           created_at?: string
           email?: string | null
           empresa?: string | null

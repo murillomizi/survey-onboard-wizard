@@ -40,8 +40,7 @@ const ChatbotSurvey = () => {
     tamanho: 350,
     tomVoz: "",
     template: "",
-    gatilhos: "",
-    cta: ""
+    gatilhos: ""
   });
 
   useEffect(() => {
@@ -119,25 +118,6 @@ const ChatbotSurvey = () => {
         { value: "consenso", label: "Consenso" }
       ],
       field: "gatilhos"
-    },
-    {
-      question: "Qual tipo de CTA (Call-to-Action) você deseja utilizar na sua mensagem?",
-      options: [
-        { value: "agendar", label: "Agendar uma reunião/demonstração" },
-        { value: "consulta", label: "Marcar uma consulta gratuita" },
-        { value: "responder", label: "Responder algumas perguntas" },
-        { value: "falar", label: "Falar com um especialista" },
-        { value: "diagnostico", label: "Receber um diagnóstico gratuito" },
-        { value: "proposta", label: "Solicitar uma proposta" },
-        { value: "cafe", label: "Tomar um café virtual" },
-        { value: "webinar", label: "Participar de um webinar" },
-        { value: "material", label: "Baixar material exclusivo" },
-        { value: "trial", label: "Iniciar período de teste" },
-        { value: "demo", label: "Ver uma demonstração" },
-        { value: "whatsapp", label: "Conversar pelo WhatsApp" },
-        { value: "personalizado", label: "CTA personalizado" }
-      ],
-      field: "cta"
     },
     {
       question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
@@ -323,7 +303,6 @@ const ChatbotSurvey = () => {
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Template:</strong> {getOptionLabel("template", surveyData.template)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
-            <p><strong>CTA:</strong> {getOptionLabel("cta", surveyData.cta)}</p>
             <p>
               <strong>Arquivo CSV:</strong> {csvFileName ? 
                 `${csvFileName} - ${surveyData.csvData.length} registros carregados` : 
@@ -405,7 +384,6 @@ const ChatbotSurvey = () => {
             tone_of_voice: surveyData.tomVoz,
             template: surveyData.template,
             persuasion_trigger: surveyData.gatilhos,
-            cta: surveyData.cta,
             csv_data: csvDataToSave
           }
         ])
