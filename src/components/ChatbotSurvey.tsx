@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -228,7 +227,6 @@ const ChatbotSurvey = () => {
       Papa.parse(file, {
         complete: (results) => {
           if (results.data && Array.isArray(results.data)) {
-            // Filter out empty rows (sometimes CSV files have empty lines at the end)
             const filteredData = results.data.filter(row => 
               row && typeof row === 'object' && Object.keys(row).length > 0
             );
@@ -324,11 +322,33 @@ const ChatbotSurvey = () => {
     return option ? option.label : value;
   };
 
+  const handleBack = () => {
+    if (currentStep <= 0) return;
+    
+    setMessages(prev => prev.slice(0, -2));
+    
+    const previousStep = currentStep - 1;
+    setCurrentStep(previousStep);
+    
+    setShowOptions(null);
+    setShowSlider(false);
+    setCurrentInput("");
+    
+    const prevStepData = steps[previousStep];
+    if (prevStepData.options) {
+      setShowOptions({
+        options: prevStepData.options,
+        step: previousStep
+      });
+    } else if (prevStepData.inputType === "slider") {
+      setShowSlider(true);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
       
-      // Ensure we have the minimum required data
       if (!surveyData.canal || !surveyData.funnelStage) {
         toast({
           title: "Campos obrigatórios",
@@ -339,10 +359,8 @@ const ChatbotSurvey = () => {
         return;
       }
       
-      // Some simple validation to avoid huge payloads
       let csvDataToSave = surveyData.csvData;
       if (surveyData.csvData && surveyData.csvData.length > 100) {
-        // If the CSV data is too large, trim it to first 100 records
         csvDataToSave = surveyData.csvData.slice(0, 100);
         console.log('CSV data trimmed to 100 records to avoid payload size issues');
       }
@@ -479,6 +497,17 @@ const ChatbotSurvey = () => {
       
       <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
         <div className="flex items-center gap-2 max-w-[600px] mx-auto">
+          {currentStep > 0 && (
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft size={18} />
+              Voltar
+            </Button>
+          )}
+          
           {currentStep === 7 && (
             <Button
               type="button"
