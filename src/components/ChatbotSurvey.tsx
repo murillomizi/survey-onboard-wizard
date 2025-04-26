@@ -422,8 +422,21 @@ const ChatbotSurvey = () => {
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
       <div className="p-3 border-b border-gray-100">
         <div className="flex items-center justify-between mb-1">
-          <div className="text-sm font-medium text-gray-600">
-            Passo {currentStep + 1} de {steps.length}
+          <div className="flex items-center gap-2">
+            {currentStep > 0 && (
+              <Button
+                onClick={handleBack}
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-gray-100"
+                title="Voltar para a pergunta anterior"
+              >
+                <ArrowLeft size={16} className="text-gray-500" />
+              </Button>
+            )}
+            <div className="text-sm font-medium text-gray-600">
+              Passo {currentStep + 1} de {steps.length}
+            </div>
           </div>
           <div className="text-xs text-gray-400">
             {Math.round(progressPercentage)}% concluído
@@ -505,17 +518,6 @@ const ChatbotSurvey = () => {
       
       <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
         <div className="flex items-center gap-2 max-w-[600px] mx-auto">
-          {currentStep > 0 && (
-            <Button
-              onClick={handleBack}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft size={18} />
-              Voltar
-            </Button>
-          )}
-          
           {currentStep === 7 && (
             <Button
               type="button"
