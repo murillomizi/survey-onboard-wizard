@@ -227,19 +227,45 @@ const ChatbotSurvey = () => {
     if (file) {
       Papa.parse(file, {
         complete: (results) => {
-          addMessage(`Arquivo processado com sucesso`, "user");
-          setSurveyData(prev => ({
-            ...prev,
-            csvData: results.data
-          }));
-          
-          setIsWaitingForResponse(true);
-          setTimeout(() => {
-            setIsWaitingForResponse(false);
-            moveToNextStep();
-          }, 1000);
+          if (results.data && Array.isArray(results.data)) {
+            // Filter out empty rows (sometimes CSV files have empty lines at the end)
+            const filteredData = results.data.filter(row => 
+              row && typeof row === 'object' && Object.keys(row).length > 0
+            );
+            
+            if (filteredData.length > 0) {
+              addMessage(`Arquivo processado com sucesso: ${filteredData.length} linhas carregadas`, "user");
+              setSurveyData(prev => ({
+                ...prev,
+                csvData: filteredData
+              }));
+              
+              console.log('CSV data processed:', filteredData.length, 'rows');
+              
+              setIsWaitingForResponse(true);
+              setTimeout(() => {
+                setIsWaitingForResponse(false);
+                moveToNextStep();
+              }, 1000);
+            } else {
+              toast({
+                title: "Arquivo vazio",
+                description: "O arquivo CSV não contém dados válidos.",
+                variant: "destructive"
+              });
+            }
+          }
         },
-        header: true
+        header: true,
+        skipEmptyLines: true,
+        error: (error) => {
+          console.error('Error parsing CSV:', error);
+          toast({
+            title: "Erro ao processar arquivo",
+            description: "Não foi possível ler o arquivo CSV. Verifique se o formato está correto.",
+            variant: "destructive"
+          });
+        }
       });
     }
   };
