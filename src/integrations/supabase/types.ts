@@ -11,25 +11,37 @@ export type Database = {
     Tables: {
       "Data set final": {
         Row: {
-          copy: string | null
+          cargo: string | null
           created_at: string
           email: string | null
           empresa: string | null
-          lead: string | null
+          "linkedin pessoal": string | null
+          "nº de funcionários": string | null
+          "primeiro nome": string | null
+          setor: string | null
+          website: string | null
         }
         Insert: {
-          copy?: string | null
+          cargo?: string | null
           created_at?: string
           email?: string | null
           empresa?: string | null
-          lead?: string | null
+          "linkedin pessoal"?: string | null
+          "nº de funcionários"?: string | null
+          "primeiro nome"?: string | null
+          setor?: string | null
+          website?: string | null
         }
         Update: {
-          copy?: string | null
+          cargo?: string | null
           created_at?: string
           email?: string | null
           empresa?: string | null
-          lead?: string | null
+          "linkedin pessoal"?: string | null
+          "nº de funcionários"?: string | null
+          "primeiro nome"?: string | null
+          setor?: string | null
+          website?: string | null
         }
         Relationships: []
       }

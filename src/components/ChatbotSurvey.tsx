@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, CircleDot } from "lucide-react";
+import { Send, Paperclip, CircleDot, ArrowLeft } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
@@ -30,6 +30,7 @@ const ChatbotSurvey = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [csvFileName, setCsvFileName] = useState<string | null>(null);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -224,6 +225,8 @@ const ChatbotSurvey = () => {
     }
     
     if (file) {
+      setCsvFileName(file.name);
+
       Papa.parse(file, {
         complete: (results) => {
           if (results.data && Array.isArray(results.data)) {
@@ -300,7 +303,12 @@ const ChatbotSurvey = () => {
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Template:</strong> {getOptionLabel("template", surveyData.template)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
-            <p><strong>Arquivo CSV:</strong> {surveyData.csvData.length > 0 ? `${surveyData.csvData.length} registros carregados` : "Nenhum arquivo carregado"}</p>
+            <p>
+              <strong>Arquivo CSV:</strong> {csvFileName ? 
+                `${csvFileName} - ${surveyData.csvData.length} registros carregados` : 
+                "Nenhum arquivo carregado"
+              }
+            </p>
           </div>
         );
         addMessage(summaryContent, "bot");
