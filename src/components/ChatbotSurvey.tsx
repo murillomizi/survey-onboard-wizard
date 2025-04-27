@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,7 @@ const ChatbotSurvey = () => {
     websiteUrl: "",
     tamanho: 350,
     tomVoz: "",
-    gatilhos: "",
-    cta: ""
+    gatilhos: ""
   });
 
   useEffect(() => {
@@ -102,21 +102,6 @@ const ChatbotSurvey = () => {
         { value: "consenso", label: "Consenso" }
       ],
       field: "gatilhos"
-    },
-    {
-      question: "Que tipo de Call-to-Action (CTA) você quer usar na sua mensagem?",
-      options: [
-        { value: "agendar", label: "Agendar uma Reunião/Demo" },
-        { value: "contato", label: "Solicitar Contato" },
-        { value: "download", label: "Download de Material" },
-        { value: "trial", label: "Teste Gratuito" },
-        { value: "webinar", label: "Inscrição em Webinar" },
-        { value: "newsletter", label: "Assinar Newsletter" },
-        { value: "orcamento", label: "Solicitar Orçamento" },
-        { value: "cafe", label: "Tomar um Café Virtual" },
-        { value: "pergunta", label: "Pergunta Aberta" }
-      ],
-      field: "cta"
     },
     {
       question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
@@ -301,7 +286,6 @@ const ChatbotSurvey = () => {
             <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
-            <p><strong>CTA:</strong> {getOptionLabel("cta", surveyData.cta)}</p>
             <p>
               <strong>Arquivo CSV:</strong> {csvFileName ? 
                 `${csvFileName} - ${surveyData.csvData.length} registros carregados` : 
@@ -381,7 +365,7 @@ const ChatbotSurvey = () => {
             website_url: surveyData.websiteUrl,
             message_length: surveyData.tamanho,
             tone_of_voice: surveyData.tomVoz,
-            cta: surveyData.cta,
+            persuasion_trigger: surveyData.gatilhos,
             csv_data: csvDataToSave
           }
         ])
@@ -516,7 +500,7 @@ const ChatbotSurvey = () => {
       
       <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
         <div className="flex items-center gap-2 max-w-[600px] mx-auto">
-          {currentStep === 7 && (
+          {currentStep === 6 && (
             <Button
               type="button"
               onClick={triggerFileUpload}
@@ -527,7 +511,7 @@ const ChatbotSurvey = () => {
             </Button>
           )}
           
-          {currentStep < 7 && showOptions === null && !showSlider && (
+          {currentStep < 6 && showOptions === null && !showSlider && (
             <>
               <div className="relative flex-1">
                 <Input
