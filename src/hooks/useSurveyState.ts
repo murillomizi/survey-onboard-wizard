@@ -21,7 +21,7 @@ export const useSurveyState = () => {
   const [processedCount, setProcessedCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [surveyId, setSurveyId] = useState<string | null>(null);
-  const checkProgressInterval = useRef<NodeJS.Timer | null>(null);
+  const checkProgressInterval = useRef<NodeJS.Timeout | null>(null);
 
   const [surveyData, setSurveyData] = useState<SurveyData>({
     canal: "",

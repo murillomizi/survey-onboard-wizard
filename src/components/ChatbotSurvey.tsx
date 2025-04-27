@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect } from "react";
 import Papa from 'papaparse';
+import { ArrowLeft } from "lucide-react"; // Added missing import
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import ChatMessage from "./ChatMessage";
