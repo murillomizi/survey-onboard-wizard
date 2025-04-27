@@ -24,6 +24,7 @@ const SurveyForm = () => {
   } = useSurveyForm();
 
   const handleFileSelect = (file: File, data: any[]) => {
+    console.log(`File selected: ${file.name}, Rows: ${data.length}`);
     setSurveyData({
       ...surveyData,
       csvFile: file,
@@ -37,7 +38,7 @@ const SurveyForm = () => {
     <>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-6 w-full max-w-md">
         <FileUpload
-          fileName={surveyData.csvFileName}
+          fileName={surveyData.csvFileName || "Nenhum arquivo selecionado"}
           onFileSelect={handleFileSelect}
         />
 

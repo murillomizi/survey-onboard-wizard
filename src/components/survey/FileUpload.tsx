@@ -34,6 +34,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ fileName, onFileSelect }) => {
           const data = results.data as any[];
           onFileSelect(file, data);
           console.log("CSV parsed:", data.length, "rows");
+          
+          toast({
+            title: "Arquivo processado",
+            description: `${file.name} (${data.length} registros) carregado com sucesso.`
+          });
         },
         error: (error) => {
           console.error("Error parsing CSV:", error);
