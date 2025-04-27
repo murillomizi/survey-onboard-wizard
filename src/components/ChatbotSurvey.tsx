@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -19,10 +18,50 @@ interface Message {
   type: "user" | "bot";
 }
 
+interface SurveyState {
+  currentStep: number;
+  messages: Message[];
+  surveyData: {
+    canal: string;
+    funnelStage: string;
+    websiteUrl: string;
+    tamanho: number;
+    tomVoz: string;
+    gatilhos: string;
+    csvData: any[];
+  };
+  lastSurveyId: string | null;
+  showResults: boolean;
+}
+
+const STORAGE_KEY = 'survey_state';
+
 const ChatbotSurvey = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const initialState = (): SurveyState => {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      return JSON.parse(savedState);
+    }
+    return {
+      currentStep: 0,
+      messages: [],
+      surveyData: {
+        canal: "",
+        funnelStage: "",
+        websiteUrl: "",
+        tamanho: 350,
+        tomVoz: "",
+        gatilhos: "",
+        csvData: []
+      },
+      lastSurveyId: null,
+      showResults: false
+    };
+  };
+
+  const [messages, setMessages] = useState<Message[]>(initialState().messages);
   const [currentInput, setCurrentInput] = useState("");
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(initialState().currentStep);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [showOptions, setShowOptions] = useState<{
     options: { value: string; label: string }[];
@@ -34,18 +73,21 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [lastSurveyId, setLastSurveyId] = useState<string | null>(null);
-  const [showResults, setShowResults] = useState(false);
+  const [lastSurveyId, setLastSurveyId] = useState<string | null>(initialState().lastSurveyId);
+  const [showResults, setShowResults] = useState(initialState().showResults);
 
-  const [surveyData, setSurveyData] = useState({
-    canal: "",
-    funnelStage: "",
-    csvData: [] as any[],
-    websiteUrl: "",
-    tamanho: 350,
-    tomVoz: "",
-    gatilhos: ""
-  });
+  const [surveyData, setSurveyData] = useState(initialState().surveyData);
+
+  useEffect(() => {
+    const state: SurveyState = {
+      currentStep,
+      messages,
+      surveyData,
+      lastSurveyId,
+      showResults
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }, [currentStep, messages, surveyData, lastSurveyId, showResults]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -319,6 +361,10 @@ const ChatbotSurvey = () => {
 
   const handleBack = () => {
     if (currentStep <= 0) return;
+    
+    if (currentStep === 1) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
     
     setMessages(prev => prev.slice(0, -2));
     

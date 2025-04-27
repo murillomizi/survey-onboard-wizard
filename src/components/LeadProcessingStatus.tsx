@@ -14,51 +14,57 @@ const LeadProcessingStatus = ({ surveyId }: LeadProcessingStatusProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchLeadCounts = async () => {
     if (!surveyId) return;
+    
+    try {
+      setIsLoading(true);
+      
+      const { data: surveyData, error: surveyError } = await supabase
+        .from('mizi_ai_surveys')
+        .select('csv_data')
+        .eq('id', surveyId)
+        .single();
 
-    const fetchLeadCounts = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Fetch the input lead count from mizi_ai_surveys
-        const { data: surveyData, error: surveyError } = await supabase
-          .from('mizi_ai_surveys')
-          .select('csv_data')
-          .eq('id', surveyId)
-          .single();
+      if (surveyError) throw surveyError;
+      
+      const csvData = surveyData?.csv_data;
+      const inputCount = Array.isArray(csvData) ? csvData.length : 0;
+      setInputLeads(inputCount);
 
-        if (surveyError) throw surveyError;
-        
-        // Check if csv_data is an array and then get the length
-        const csvData = surveyData?.csv_data;
-        const inputCount = Array.isArray(csvData) ? csvData.length : 0;
-        setInputLeads(inputCount);
+      const { data: processedData, error: processedError } = await supabase
+        .from('Data set final')
+        .select('*')
+        .eq('survey_id', surveyId);
 
-        // Fetch the processed lead count from Data set final 
-        const { data: processedData, error: processedError } = await supabase
-          .from('Data set final')
-          .select('count')
-          .eq('survey_id', surveyId)
-          .maybeSingle();
+      if (processedError) throw processedError;
+      
+      setProcessedLeads(processedData?.length || 0);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching lead counts:", error);
+      setError("Failed to load lead processing status");
+      setIsLoading(false);
+    }
+  };
 
-        // If no data is returned, we assume 0 processed leads
-        const processedCount = processedData ? Number(processedData.count) : 0;
-        setProcessedLeads(processedCount);
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching lead counts:", error);
-        setError("Failed to load lead processing status");
-        setIsLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchLeadCounts();
     
-    // Set up real-time listener for updates to processed leads
-    const channel = supabase
-      .channel('lead-processing-changes')
+    // Set up real-time listener for both tables
+    const miziChannel = supabase.channel('mizi-changes')
+      .on('postgres_changes', 
+        {
+          event: '*',
+          schema: 'public',
+          table: 'mizi_ai_surveys',
+          filter: `id=eq.${surveyId}`
+        },
+        () => fetchLeadCounts()
+      )
+      .subscribe();
+
+    const datasetChannel = supabase.channel('dataset-changes')
       .on('postgres_changes', 
         {
           event: '*',
@@ -66,15 +72,13 @@ const LeadProcessingStatus = ({ surveyId }: LeadProcessingStatusProps) => {
           table: 'Data set final',
           filter: `survey_id=eq.${surveyId}`
         },
-        (payload) => {
-          // Reload the processed leads count when data changes
-          fetchLeadCounts();
-        }
+        () => fetchLeadCounts()
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(miziChannel);
+      supabase.removeChannel(datasetChannel);
     };
   }, [surveyId]);
 
