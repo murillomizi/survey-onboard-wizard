@@ -9,6 +9,8 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import LeadProcessingStatus from "./LeadProcessingStatus";
+import TransformedDataTable from "./TransformedDataTable";
 
 interface Message {
   id: number;
@@ -31,6 +33,8 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [lastSurveyId, setLastSurveyId] = useState<string | null>(null);
+  const [showResults, setShowResults] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -365,7 +369,8 @@ const ChatbotSurvey = () => {
             message_length: surveyData.tamanho,
             tone_of_voice: surveyData.tomVoz,
             persuasion_trigger: surveyData.gatilhos,
-            csv_data: csvDataToSave
+            csv_data: csvDataToSave,
+            csv_file_name: csvFileName
           }
         ])
         .select();
@@ -387,6 +392,21 @@ const ChatbotSurvey = () => {
       });
       
       console.log('Survey data saved:', data);
+      
+      if (data && data.length > 0) {
+        setLastSurveyId(data[0].id);
+        
+        setShowResults(true);
+        
+        addMessage(
+          <div className="space-y-2">
+            <p>Seus dados foram enviados e estão sendo processados!</p>
+            <p className="text-sm text-gray-600">Em breve você verá os resultados abaixo.</p>
+          </div>, 
+          "bot"
+        );
+      }
+      
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -474,7 +494,7 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {currentStep === 7 && (
+        {currentStep === 6 && (
           <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
@@ -483,6 +503,13 @@ const ChatbotSurvey = () => {
             <p className="text-xs text-gray-500 italic">
               Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
             </p>
+          </div>
+        )}
+        
+        {showResults && lastSurveyId && (
+          <div className="mt-6 space-y-6 border-t pt-6">
+            <LeadProcessingStatus surveyId={lastSurveyId} />
+            <TransformedDataTable surveyId={lastSurveyId} websiteUrl={surveyData.websiteUrl} />
           </div>
         )}
         
@@ -530,14 +557,20 @@ const ChatbotSurvey = () => {
             </>
           )}
           
-          {currentStep === steps.length - 1 && (
+          {(currentStep === steps.length - 1 || showResults) && !isSubmitting && (
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || showResults}
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
-              {isSubmitting ? 'Salvando...' : 'Continuar'}
+              {isSubmitting ? 'Salvando...' : showResults ? 'Dados enviados' : 'Continuar'}
             </Button>
+          )}
+          
+          {isSubmitting && (
+            <div className="w-full flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            </div>
           )}
         </div>
       </div>
