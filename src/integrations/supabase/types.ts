@@ -9,48 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      "Data set final": {
-        Row: {
-          cargo: string | null
-          copy: string | null
-          created_at: string
-          email: string | null
-          empresa: string | null
-          id: string | null
-          "linkedin pessoal": string | null
-          "nº de funcionários": string | null
-          "primeiro nome": string | null
-          setor: string | null
-          website: string | null
-        }
-        Insert: {
-          cargo?: string | null
-          copy?: string | null
-          created_at?: string
-          email?: string | null
-          empresa?: string | null
-          id?: string | null
-          "linkedin pessoal"?: string | null
-          "nº de funcionários"?: string | null
-          "primeiro nome"?: string | null
-          setor?: string | null
-          website?: string | null
-        }
-        Update: {
-          cargo?: string | null
-          copy?: string | null
-          created_at?: string
-          email?: string | null
-          empresa?: string | null
-          id?: string | null
-          "linkedin pessoal"?: string | null
-          "nº de funcionários"?: string | null
-          "primeiro nome"?: string | null
-          setor?: string | null
-          website?: string | null
-        }
-        Relationships: []
-      }
       "Data set teste": {
         Row: {
           created_at: string
@@ -74,6 +32,59 @@ export type Database = {
           "volume de prospects"?: number | null
         }
         Relationships: []
+      }
+      mizi_ai_personalized_return: {
+        Row: {
+          cargo: string | null
+          copy: string | null
+          created_at: string
+          email: string | null
+          empresa: string | null
+          id: string
+          "linkedin pessoal": string | null
+          mizi_ai_id: string | null
+          "nº de funcionários": string | null
+          "primeiro nome": string | null
+          setor: string | null
+          website: string | null
+        }
+        Insert: {
+          cargo?: string | null
+          copy?: string | null
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          "linkedin pessoal"?: string | null
+          mizi_ai_id?: string | null
+          "nº de funcionários"?: string | null
+          "primeiro nome"?: string | null
+          setor?: string | null
+          website?: string | null
+        }
+        Update: {
+          cargo?: string | null
+          copy?: string | null
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          "linkedin pessoal"?: string | null
+          mizi_ai_id?: string | null
+          "nº de funcionários"?: string | null
+          "primeiro nome"?: string | null
+          setor?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mizi_ai_personalized_return_mizi_ai_id_fkey"
+            columns: ["mizi_ai_id"]
+            isOneToOne: false
+            referencedRelation: "mizi_ai_surveys"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mizi_ai_surveys: {
         Row: {
