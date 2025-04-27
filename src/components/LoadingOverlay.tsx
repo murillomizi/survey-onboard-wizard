@@ -16,7 +16,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   onDownload
 }) => {
   return (
-    <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-[9999]">
       <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
         {!isComplete ? (
           <div className="flex flex-col items-center space-y-4">
@@ -26,7 +26,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
             </h3>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div 
-                className="bg-survey-purple h-2.5 rounded-full" 
+                className="bg-survey-purple h-2.5 rounded-full transition-all duration-300" 
                 style={{ width: `${Math.max(5, (processedCount / totalCount) * 100)}%` }}
               ></div>
             </div>

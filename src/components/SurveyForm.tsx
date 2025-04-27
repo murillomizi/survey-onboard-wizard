@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,10 +96,15 @@ const SurveyForm = () => {
   // Function to check processing progress
   const checkProgress = async (surveyId: string) => {
     try {
-      const { count, error } = await supabase
+      console.log("Checking progress for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
+      
+      // Use { count: 'exact' } to get the count without caching
+      const { count, error, data } = await supabase
         .from("mizi_ai_personalized_return")
-        .select("*", { count: 'exact', head: true })
+        .select("*", { count: 'exact', head: false })
         .eq("mizi_ai_id", surveyId);
+      
+      console.log("Progress check response:", { count, error, dataLength: data?.length });
       
       if (error) {
         console.error("Error checking progress:", error);
@@ -110,9 +114,11 @@ const SurveyForm = () => {
       // Update processed count
       if (count !== null) {
         setProcessedCount(count);
+        console.log(`Processed ${count}/${totalCount} records`);
         
         // Check if processing is complete
         if (count >= totalCount) {
+          console.log("Processing complete!");
           setIsComplete(true);
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
@@ -129,6 +135,7 @@ const SurveyForm = () => {
     if (!processingId) return;
     
     try {
+      console.log("Fetching processed data for download...");
       // Fetch the processed data
       const { data, error } = await supabase
         .from("mizi_ai_personalized_return")
@@ -154,6 +161,7 @@ const SurveyForm = () => {
         return;
       }
       
+      console.log("Generating CSV with", data.length, "rows");
       // Convert to CSV
       const csv = Papa.unparse(data);
       
@@ -194,10 +202,12 @@ const SurveyForm = () => {
       return;
     }
     
+    console.log("Starting processing, showing loading overlay...");
     setIsProcessing(true);
     
     try {
       // Submit survey data to database
+      console.log("Saving survey data to database...");
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
         .insert([
@@ -228,9 +238,15 @@ const SurveyForm = () => {
 
       if (data && data.length > 0) {
         const surveyId = data[0].id;
+        console.log("Survey saved with ID:", surveyId);
         setProcessingId(surveyId);
         
         // Start polling for updates
+        console.log("Starting polling for updates...");
+        if (pollingRef.current) {
+          window.clearInterval(pollingRef.current);
+        }
+        
         pollingRef.current = window.setInterval(() => {
           checkProgress(surveyId);
         }, 2000);
