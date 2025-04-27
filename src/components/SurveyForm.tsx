@@ -7,6 +7,7 @@ import { Upload, Send, Globe } from "lucide-react";
 import SurveySlider from "./SurveySlider";
 import SurveySelect from "./SurveySelect";
 import LoadingProgress from "./LoadingProgress";
+import Papa from 'papaparse';
 
 const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState({
