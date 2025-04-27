@@ -22,7 +22,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   disabled = false
 }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full">
       {showFileUpload && (
         <Button
           type="button"
@@ -35,7 +35,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       )}
       
       {!showFileUpload && !disabled && (
-        <div className="relative flex-1">
+        <div className="relative w-full">
           <Input
             value={currentInput}
             onChange={(e) => onInputChange(e.target.value)}
@@ -54,3 +54,4 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     </div>
   );
 };
+
