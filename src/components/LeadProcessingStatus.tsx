@@ -30,11 +30,12 @@ const LeadProcessingStatus = ({ surveyId }: LeadProcessingStatusProps) => {
 
         if (surveyError) throw surveyError;
         
-        const inputCount = surveyData.csv_data ? surveyData.csv_data.length : 0;
+        // Check if csv_data is an array and then get the length
+        const csvData = surveyData?.csv_data;
+        const inputCount = Array.isArray(csvData) ? csvData.length : 0;
         setInputLeads(inputCount);
 
         // Fetch the processed lead count from Data set final 
-        // We're looking for records that match the survey_id
         const { data: processedData, error: processedError } = await supabase
           .from('Data set final')
           .select('count')
@@ -42,7 +43,7 @@ const LeadProcessingStatus = ({ surveyId }: LeadProcessingStatusProps) => {
           .maybeSingle();
 
         // If no data is returned, we assume 0 processed leads
-        const processedCount = processedData ? parseInt(processedData.count.toString()) : 0;
+        const processedCount = processedData ? Number(processedData.count) : 0;
         setProcessedLeads(processedCount);
         
         setIsLoading(false);
