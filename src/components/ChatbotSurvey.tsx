@@ -33,6 +33,10 @@ const ChatbotSurvey = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
   const [showLoading, setShowLoading] = useState(false);
+  const [processedCount, setProcessedCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const checkProgressInterval = useRef<number | null>(null);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -337,6 +341,21 @@ const ChatbotSurvey = () => {
     }
   };
 
+  const checkProcessingProgress = async (id: string, totalItems: number) => {
+    const { count } = await supabase
+      .from('Data set final')
+      .select('id', { count: 'exact' })
+      .eq('id', id);
+    
+    const processed = count || 0;
+    setProcessedCount(processed);
+    
+    if (processed < totalItems) {
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
     try {
       setShowLoading(true);
@@ -356,8 +375,10 @@ const ChatbotSurvey = () => {
       let csvDataToSave = surveyData.csvData;
       if (surveyData.csvData && surveyData.csvData.length > 100) {
         csvDataToSave = surveyData.csvData.slice(0, 100);
-        console.log('CSV data trimmed to 100 records to avoid payload size issues');
       }
+
+      const totalItems = csvDataToSave?.length || 0;
+      setTotalCount(totalItems);
       
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
@@ -374,8 +395,7 @@ const ChatbotSurvey = () => {
         ])
         .select();
 
-      if (error) {
-        console.error('Error saving survey:', error);
+      if (error || !data?.[0]?.id) {
         toast({
           title: "Erro ao salvar",
           description: "Não foi possível salvar suas respostas. Tente novamente.",
@@ -386,16 +406,22 @@ const ChatbotSurvey = () => {
         return;
       }
 
-      await new Promise(resolve => setTimeout(resolve, 6000));
+      setSurveyId(data[0].id);
 
-      toast({
-        title: "Configurações salvas!",
-        description: "Suas preferências de mensagem foram salvas com sucesso.",
-      });
-      
-      console.log('Survey data saved:', data);
-      setIsSubmitting(false);
-      setShowLoading(false);
+      checkProgressInterval.current = setInterval(async () => {
+        const isComplete = await checkProcessingProgress(data[0].id, totalItems);
+        
+        if (isComplete) {
+          clearInterval(checkProgressInterval.current!);
+          setIsSubmitting(false);
+          setShowLoading(false);
+          toast({
+            title: "Configurações salvas!",
+            description: "Suas preferências de mensagem foram salvas com sucesso.",
+          });
+        }
+      }, 1000) as unknown as number;
+
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -408,9 +434,17 @@ const ChatbotSurvey = () => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (checkProgressInterval.current) {
+        clearInterval(checkProgressInterval.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
-      {showLoading && <LoadingMessages />}
+      {showLoading && <LoadingMessages processedCount={processedCount} totalCount={totalCount} />}
       <div className="p-3 border-b border-gray-100">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">

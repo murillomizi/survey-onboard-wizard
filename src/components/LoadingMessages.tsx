@@ -31,7 +31,12 @@ const messages = [
   "Você está prestes a revolucionar suas abordagens..."
 ];
 
-const LoadingMessages = () => {
+interface LoadingMessagesProps {
+  processedCount: number;
+  totalCount: number;
+}
+
+const LoadingMessages = ({ processedCount, totalCount }: LoadingMessagesProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -47,7 +52,12 @@ const LoadingMessages = () => {
       <div className="max-w-md w-full mx-4">
         <div className="bg-white rounded-xl p-8 shadow-2xl">
           <div className="flex flex-col items-center text-center space-y-6">
-            <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
+              <span className="text-sm font-medium text-gray-500">
+                {processedCount}/{totalCount} processados
+              </span>
+            </div>
             <AnimatePresence mode="wait">
               <motion.p
                 key={currentIndex}
