@@ -39,8 +39,8 @@ const ChatbotSurvey = () => {
     websiteUrl: "",
     tamanho: 350,
     tomVoz: "",
-    template: "",
-    gatilhos: ""
+    gatilhos: "",
+    cta: ""
   });
 
   useEffect(() => {
@@ -90,22 +90,6 @@ const ChatbotSurvey = () => {
       field: "tomVoz"
     },
     {
-      question: "Qual template você gostaria de usar?",
-      options: [
-        { value: "dor", label: "Foco na Dor" },
-        { value: "solucao", label: "Foco na Solução" },
-        { value: "case", label: "Case de Sucesso" },
-        { value: "desconto", label: "Desconto" },
-        { value: "evento", label: "Convite para Evento" },
-        { value: "relacional", label: "Relacional" },
-        { value: "demo", label: "Demonstração de Produto" },
-        { value: "teste", label: "Teste" },
-        { value: "conteudo", label: "Conteúdo" },
-        { value: "diagnostico", label: "Diagnóstico Gratuito" }
-      ],
-      field: "template"
-    },
-    {
       question: "Por último, gostaria de aplicar algum gatilho de persuasão?",
       options: [
         { value: "sem-gatilho", label: "Sem gatilho" },
@@ -118,6 +102,21 @@ const ChatbotSurvey = () => {
         { value: "consenso", label: "Consenso" }
       ],
       field: "gatilhos"
+    },
+    {
+      question: "Que tipo de Call-to-Action (CTA) você quer usar na sua mensagem?",
+      options: [
+        { value: "agendar", label: "Agendar uma Reunião/Demo" },
+        { value: "contato", label: "Solicitar Contato" },
+        { value: "download", label: "Download de Material" },
+        { value: "trial", label: "Teste Gratuito" },
+        { value: "webinar", label: "Inscrição em Webinar" },
+        { value: "newsletter", label: "Assinar Newsletter" },
+        { value: "orcamento", label: "Solicitar Orçamento" },
+        { value: "cafe", label: "Tomar um Café Virtual" },
+        { value: "pergunta", label: "Pergunta Aberta" }
+      ],
+      field: "cta"
     },
     {
       question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
@@ -301,8 +300,8 @@ const ChatbotSurvey = () => {
             <p><strong>Site:</strong> {surveyData.websiteUrl}</p>
             <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
-            <p><strong>Template:</strong> {getOptionLabel("template", surveyData.template)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
+            <p><strong>CTA:</strong> {getOptionLabel("cta", surveyData.cta)}</p>
             <p>
               <strong>Arquivo CSV:</strong> {csvFileName ? 
                 `${csvFileName} - ${surveyData.csvData.length} registros carregados` : 
@@ -382,8 +381,7 @@ const ChatbotSurvey = () => {
             website_url: surveyData.websiteUrl,
             message_length: surveyData.tamanho,
             tone_of_voice: surveyData.tomVoz,
-            template: surveyData.template,
-            persuasion_trigger: surveyData.gatilhos,
+            cta: surveyData.cta,
             csv_data: csvDataToSave
           }
         ])
