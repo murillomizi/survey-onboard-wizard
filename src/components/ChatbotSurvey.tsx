@@ -9,7 +9,6 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
-import LoadingOverlay from "./LoadingOverlay";
 
 interface Message {
   id: number;
@@ -354,13 +353,11 @@ const ChatbotSurvey = () => {
   
   const checkProgress = async (surveyId: string) => {
     try {
-      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
+      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}`);
       
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: { surveyId }
       });
-      
-      console.log('Edge Function response:', data);
       
       if (error) {
         console.error("Error calling checkProgress Edge Function:", error);
@@ -370,22 +367,35 @@ const ChatbotSurvey = () => {
       if (data) {
         const count = data.count || 0;
         setProcessedCount(count);
-        console.log(`Processed ${count}/${surveyData.csvData.length} records (via Edge Function)`);
         
         if (count >= surveyData.csvData.length && count > 0) {
-          console.log("Processing complete! Setting isProcessingComplete to true");
-          setIsProcessingComplete(true);
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
             pollingRef.current = null;
           }
+          
+          addMessage(
+            <div className="space-y-2">
+              <p className="font-medium">🎉 Processamento concluído!</p>
+              <p className="text-gray-600">
+                Todos os {count} contatos foram processados com sucesso.
+              </p>
+              <Button
+                onClick={handleDownload}
+                className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+              >
+                Baixar Campanha Personalizada
+              </Button>
+            </div>,
+            "bot"
+          );
         }
       }
     } catch (error) {
       console.error("Error in checkProgress:", error);
     }
   };
-  
+
   const handleDownload = async () => {
     if (!processingId) {
       console.error("Cannot download: No processing ID available");
@@ -470,23 +480,18 @@ const ChatbotSurvey = () => {
         return;
       }
       
-      console.log("Starting processing, showing loading overlay...");
-      setIsProcessing(true);
-      
       try {
         const { data, error } = await supabase
           .from('mizi_ai_surveys')
-          .insert([
-            {
-              canal: surveyData.canal,
-              funnel_stage: surveyData.funnelStage,
-              website_url: surveyData.websiteUrl,
-              message_length: surveyData.tamanho,
-              tone_of_voice: surveyData.tomVoz,
-              persuasion_trigger: surveyData.gatilhos,
-              csv_data: surveyData.csvData
-            }
-          ])
+          .insert([{
+            canal: surveyData.canal,
+            funnel_stage: surveyData.funnelStage,
+            website_url: surveyData.websiteUrl,
+            message_length: surveyData.tamanho,
+            tone_of_voice: surveyData.tomVoz,
+            persuasion_trigger: surveyData.gatilhos,
+            csv_data: surveyData.csvData
+          }])
           .select();
   
         if (error) {
@@ -497,22 +502,26 @@ const ChatbotSurvey = () => {
             variant: "destructive"
           });
           setIsSubmitting(false);
-          setIsProcessing(false);
           return;
         }
-  
-        toast({
-          title: "Configurações salvas!",
-          description: "Suas preferências de mensagem foram salvas com sucesso.",
-        });
-        
-        console.log('Survey data saved:', data);
   
         if (data && data.length > 0) {
           const surveyId = data[0].id;
           console.log("Survey saved with ID:", surveyId);
           setProcessingId(surveyId);
           
+          addMessage(
+            <div className="space-y-2">
+              <p className="font-medium">✨ Processamento iniciado com sucesso!</p>
+              <p className="text-gray-600">ID do processamento: {surveyId}</p>
+              <p className="text-sm text-gray-500">
+                Você pode perguntar sobre o status do processamento a qualquer momento. 
+                Assim que o processamento for concluído, você será notificado aqui no chat.
+              </p>
+            </div>,
+            "bot"
+          );
+
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
           }
@@ -529,7 +538,6 @@ const ChatbotSurvey = () => {
           description: "Ocorreu um erro inesperado ao processar sua solicitação.",
           variant: "destructive"
         });
-        setIsProcessing(false);
       }
       
       setIsSubmitting(false);
@@ -541,21 +549,11 @@ const ChatbotSurvey = () => {
         variant: "destructive"
       });
       setIsSubmitting(false);
-      setIsProcessing(false);
     }
   };
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
-      {isProcessing && (
-        <LoadingOverlay 
-          processedCount={processedCount}
-          totalCount={surveyData.csvData.length}
-          isComplete={isProcessingComplete}
-          onDownload={handleDownload}
-          surveyId={processingId}
-        />
-      )}
       <div className="p-3 border-b border-gray-100">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
