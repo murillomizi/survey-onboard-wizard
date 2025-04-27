@@ -1,67 +1,84 @@
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.25.0";
+// Follow this setup guide to integrate the Deno language server with your editor:
+// https://deno.land/manual/getting_started/setup_your_environment
+// This enables autocomplete, go to definition, etc.
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
+
+console.log("Hello from checkProgress Edge Function!");
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Handle CORS preflight request
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
-  
+
   try {
+    // Get the current time for logging
+    const timestamp = new Date().toISOString();
+    
+    // Parse the request body
     const { surveyId } = await req.json();
     
-    if (!surveyId) {
-      console.error("Missing surveyId parameter");
-      return new Response(
-        JSON.stringify({ error: "Missing surveyId parameter" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-      );
-    }
+    console.log(`EdgeFunction checkProgress: Starting check for survey ID: ${surveyId}\n`);
     
-    // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Create a Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+    );
     
-    console.log(`EdgeFunction checkProgress: Starting check for survey ID: ${surveyId}`);
-    
-    // Get count directly using service role key for full access
-    const { data, error, count } = await supabase
-      .from("mizi_ai_personalized_return")
-      .select("*", { count: "exact" })
-      .eq("mizi_ai_id", surveyId);
+    // Query the processed rows
+    const { data, error, count } = await supabaseClient
+      .from('mizi_ai_personalized_return')
+      .select('*', { count: 'exact' })
+      .eq('mizi_ai_id', surveyId);
     
     if (error) {
-      console.error("EdgeFunction checkProgress: Error fetching count:", error);
+      console.error(`EdgeFunction checkProgress: Error querying data: ${error.message}`);
       return new Response(
         JSON.stringify({ error: error.message }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+        { 
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          status: 400 
+        }
       );
     }
     
-    const rowCount = count || 0;
-    console.log(`EdgeFunction checkProgress: Found ${rowCount} rows for survey ID ${surveyId}`);
+    const rowCount = data?.length || 0;
+    console.log(`EdgeFunction checkProgress: Found ${rowCount} rows for survey ID ${surveyId}\n`);
     
+    // Return the result
     return new Response(
       JSON.stringify({ 
         count: rowCount,
-        rows: data?.length || 0,
-        success: true,
-        timestamp: new Date().toISOString()
+        timestamp: timestamp,
+        status: 'success' 
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { 
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        status: 200 
+      }
     );
   } catch (error) {
-    console.error("EdgeFunction checkProgress: Unexpected error:", error);
+    console.error(`EdgeFunction checkProgress: Unhandled error: ${error.message}`);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      JSON.stringify({ 
+        error: 'An unhandled error occurred',
+        errorDetails: error.message,
+        timestamp: new Date().toISOString()
+      }),
+      { 
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        status: 500
+      }
     );
   }
 });

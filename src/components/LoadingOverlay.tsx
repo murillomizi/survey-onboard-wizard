@@ -23,6 +23,13 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
       console.log(`LoadingOverlay monitoring survey ID: ${surveyId}`);
     }
   }, [surveyId]);
+
+  useEffect(() => {
+    // Log when the component detects completion
+    if (isComplete) {
+      console.log("LoadingOverlay: Processing complete, showing download button");
+    }
+  }, [isComplete]);
   
   return (
     <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-[9999]">

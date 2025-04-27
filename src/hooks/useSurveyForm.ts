@@ -58,8 +58,8 @@ export const useSurveyForm = () => {
         setProcessedCount(count);
         console.log(`Processed ${count}/${totalCount} records (via Edge Function)`);
         
-        if (count >= totalCount && count > 0) {
-          console.log("Processing complete!");
+        if (count >= totalCount && totalCount > 0) {
+          console.log("Processing complete! Setting isComplete to true");
           setIsComplete(true);
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
@@ -150,10 +150,19 @@ export const useSurveyForm = () => {
   };
 
   const handleDownload = async () => {
-    if (!processingId) return;
+    if (!processingId) {
+      console.error("Cannot download: No processing ID available");
+      toast({
+        title: "Erro no download",
+        description: "ID de processamento não disponível.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     try {
-      console.log("Fetching processed data for download...");
+      console.log("Fetching processed data for download for ID:", processingId);
+      
       const { data, error } = await supabase
         .from("mizi_ai_personalized_return")
         .select("*")
@@ -170,6 +179,7 @@ export const useSurveyForm = () => {
       }
       
       if (!data || data.length === 0) {
+        console.error("No data found for processing ID:", processingId);
         toast({
           title: "Sem dados",
           description: "Não há dados processados para download.",

@@ -351,7 +351,7 @@ const ChatbotSurvey = () => {
   
   const checkProgress = async (surveyId: string) => {
     try {
-      console.log("Checking progress via Edge Function for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
+      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
       
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: { surveyId }
@@ -369,8 +369,8 @@ const ChatbotSurvey = () => {
         setProcessedCount(count);
         console.log(`Processed ${count}/${surveyData.csvData.length} records (via Edge Function)`);
         
-        if (count >= surveyData.csvData.length) {
-          console.log("Processing complete!");
+        if (count >= surveyData.csvData.length && count > 0) {
+          console.log("Processing complete! Setting isProcessingComplete to true");
           setIsProcessingComplete(true);
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
@@ -384,10 +384,13 @@ const ChatbotSurvey = () => {
   };
   
   const handleDownload = async () => {
-    if (!processingId) return;
+    if (!processingId) {
+      console.error("Cannot download: No processing ID available");
+      return;
+    }
     
     try {
-      console.log("Fetching processed data for download...");
+      console.log("Fetching processed data for download for ID:", processingId);
       const { data, error } = await supabase
         .from("mizi_ai_personalized_return")
         .select("*")
@@ -404,6 +407,7 @@ const ChatbotSurvey = () => {
       }
       
       if (!data || data.length === 0) {
+        console.error("No data found for download");
         toast({
           title: "Sem dados",
           description: "Não há dados processados disponíveis para download.",
