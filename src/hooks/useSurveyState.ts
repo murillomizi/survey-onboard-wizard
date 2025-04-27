@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { Message, SurveyData, WebhookStatus } from '../types/survey';
 import { toast } from "@/components/ui/use-toast";
@@ -70,26 +69,22 @@ export const useSurveyState = () => {
     }
 
     try {
-      // Create CSV content
       let csvContent = "";
       
-      // Add headers
       const headers = Object.keys(processedData[0]);
       csvContent += headers.join(",") + "\n";
       
-      // Add rows
       processedData.forEach(item => {
         const row = headers.map(header => {
           const value = item[header];
-          // Handle strings with commas by enclosing in quotes
-          return typeof value === 'string' && value.includes(',') 
-            ? `"${value}"`
-            : value;
+          if (typeof value === 'string' && value.includes(',')) {
+            return `"${value}"`;
+          }
+          return value;
         });
         csvContent += row.join(",") + "\n";
       });
 
-      // Generate timestamp for filename
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -99,7 +94,6 @@ export const useSurveyState = () => {
       
       const filename = `mizi-personalization-${year}${month}${day}-${hours}${minutes}.csv`;
 
-      // Create download link
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -124,7 +118,6 @@ export const useSurveyState = () => {
     }
   };
 
-  // Check for webhook URL in the settings
   const checkWebhookUrl = async () => {
     try {
       const { data, error } = await supabase
@@ -138,9 +131,12 @@ export const useSurveyState = () => {
         return null;
       }
       
-      if (data && data.value && data.value.url) {
-        setWebhookUrl(data.value.url);
-        return data.value.url;
+      if (data && data.value && typeof data.value === 'object') {
+        const valueObject = data.value as { url?: string };
+        if (valueObject.url) {
+          setWebhookUrl(valueObject.url);
+          return valueObject.url;
+        }
       }
       
       return null;
@@ -168,7 +164,6 @@ export const useSurveyState = () => {
         return;
       }
       
-      // Check if webhook URL exists
       const url = await checkWebhookUrl();
       if (!url) {
         toast({
@@ -220,7 +215,6 @@ export const useSurveyState = () => {
       setSurveyId(data[0].id);
       setWebhookStatus("processing");
 
-      // Start polling for progress
       checkProgressInterval.current = setInterval(async () => {
         const processedData = await fetchProcessedData(data[0].id);
         
