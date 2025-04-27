@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -342,18 +343,33 @@ const ChatbotSurvey = () => {
   };
 
   const checkProcessingProgress = async (id: string, totalItems: number) => {
-    const { count } = await supabase
-      .from('Data set final')
-      .select('id', { count: 'exact' })
-      .eq('id', id);
-    
-    const processed = count || 0;
-    setProcessedCount(processed);
-    
-    if (processed < totalItems) {
+    // Convertemos o id para string antes de usar na consulta
+    const stringId = String(id);
+    console.log("Checking progress for id:", stringId);
+
+    try {
+      const { count, error } = await supabase
+        .from('Data set final')
+        .select('id', { count: 'exact' })
+        .eq('id', stringId);
+      
+      if (error) {
+        console.error("Error checking progress:", error);
+        return false;
+      }
+      
+      const processed = count || 0;
+      console.log(`Progress: ${processed}/${totalItems} records processed`);
+      setProcessedCount(processed);
+      
+      if (processed < totalItems) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error("Exception in checkProcessingProgress:", err);
       return false;
     }
-    return true;
   };
 
   const handleSubmit = async () => {
@@ -407,9 +423,13 @@ const ChatbotSurvey = () => {
       }
 
       setSurveyId(data[0].id);
+      console.log("Survey saved with id:", data[0].id);
 
+      // Convertemos o UUID para string para consistência com o tipo de dados na tabela "Data set final"
+      const surveyIdString = String(data[0].id);
+      
       checkProgressInterval.current = setInterval(async () => {
-        const isComplete = await checkProcessingProgress(data[0].id, totalItems);
+        const isComplete = await checkProcessingProgress(surveyIdString, totalItems);
         
         if (isComplete) {
           clearInterval(checkProgressInterval.current!);
