@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Papa from 'papaparse';
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ const ChatbotSurvey = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const checkProgressInterval = useRef<number | null>(null);
+  const checkProgressInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -274,7 +274,9 @@ const ChatbotSurvey = () => {
         const isComplete = await checkProcessingProgress(surveyIdString, totalItems);
         
         if (isComplete) {
-          clearInterval(checkProgressInterval.current!);
+          if (checkProgressInterval.current) {
+            clearInterval(checkProgressInterval.current);
+          }
           setIsSubmitting(false);
           setShowLoading(false);
           toast({
@@ -282,7 +284,7 @@ const ChatbotSurvey = () => {
             description: "Suas preferências de mensagem foram salvas com sucesso.",
           });
         }
-      }, 1000);
+      }, 1000) as unknown as NodeJS.Timeout;
     }
   };
 
