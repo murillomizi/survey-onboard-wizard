@@ -16,6 +16,7 @@ export type Database = {
           created_at: string
           email: string | null
           empresa: string | null
+          id: string | null
           "linkedin pessoal": string | null
           "nº de funcionários": string | null
           "primeiro nome": string | null
@@ -28,6 +29,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           empresa?: string | null
+          id?: string | null
           "linkedin pessoal"?: string | null
           "nº de funcionários"?: string | null
           "primeiro nome"?: string | null
@@ -40,6 +42,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           empresa?: string | null
+          id?: string | null
           "linkedin pessoal"?: string | null
           "nº de funcionários"?: string | null
           "primeiro nome"?: string | null
