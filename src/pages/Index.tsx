@@ -1,9 +1,12 @@
 
-import React from "react";
-import ChatbotSurvey from "@/components/ChatbotSurvey";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
+import ChatbotSurvey from "@/components/ChatbotSurvey";
+import OnboardingWizard from "@/components/OnboardingWizard/OnboardingWizard";
 
 const Index = () => {
+  const [showWizard, setShowWizard] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
       <motion.div
@@ -32,13 +35,34 @@ const Index = () => {
         </motion.p>
       </motion.div>
       
+      <div className="w-full max-w-[800px] mb-8 flex justify-center">
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="px-6 py-2 mx-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all"
+          onClick={() => setShowWizard(false)}
+        >
+          Chat Survey
+        </motion.button>
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="px-6 py-2 mx-2 rounded-full bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition-all"
+          onClick={() => setShowWizard(true)}
+        >
+          New Onboarding Wizard
+        </motion.button>
+      </div>
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="w-full max-w-[650px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+        className="w-full max-w-[800px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
       >
-        <ChatbotSurvey />
+        {showWizard ? <OnboardingWizard /> : <ChatbotSurvey />}
       </motion.div>
       
       <motion.div
