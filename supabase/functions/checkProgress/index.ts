@@ -29,7 +29,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    console.log(`Edge function: Checking progress for survey ID: ${surveyId}`);
+    console.log(`EdgeFunction checkProgress: Starting check for survey ID: ${surveyId}`);
     
     // Get count directly using service role key for full access
     const { data, error, count } = await supabase
@@ -38,25 +38,27 @@ serve(async (req) => {
       .eq("mizi_ai_id", surveyId);
     
     if (error) {
-      console.error("Edge function: Error fetching count:", error);
+      console.error("EdgeFunction checkProgress: Error fetching count:", error);
       return new Response(
         JSON.stringify({ error: error.message }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
     
-    console.log(`Edge function: Found ${count || 0} rows for survey ID ${surveyId}`);
+    const rowCount = count || 0;
+    console.log(`EdgeFunction checkProgress: Found ${rowCount} rows for survey ID ${surveyId}`);
     
     return new Response(
       JSON.stringify({ 
-        count: count || 0,
+        count: rowCount,
         rows: data?.length || 0,
-        success: true 
+        success: true,
+        timestamp: new Date().toISOString()
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error in checkProgress function:", error);
+    console.error("EdgeFunction checkProgress: Unexpected error:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }

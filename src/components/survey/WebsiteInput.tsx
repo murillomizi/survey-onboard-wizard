@@ -14,18 +14,18 @@ const WebsiteInput: React.FC<WebsiteInputProps> = ({ value, onChange }) => {
     <div className="space-y-2">
       <Label htmlFor="websiteUrl" className="text-survey-text font-medium flex items-center gap-2">
         <Globe size={18} className="text-survey-muted" />
-        Site da empresa
+        Company Website
       </Label>
       <Input
         id="websiteUrl"
         type="url"
-        placeholder="https://exemplo.com.br"
+        placeholder="https://example.com"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="bg-survey-card text-survey-text border-gray-700"
       />
       <p className="text-survey-muted text-sm italic">
-        Insira o site da empresa para personalização das mensagens
+        Enter your company website for personalized messages
       </p>
     </div>
   );
