@@ -32,6 +32,7 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [csvRowCount, setCsvRowCount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [isProcessingComplete, setIsProcessingComplete] = useState(false);
@@ -232,6 +233,7 @@ const ChatbotSurvey = () => {
             );
             
             if (filteredData.length > 0) {
+              setCsvRowCount(filteredData.length);
               addMessage(`Arquivo processado com sucesso: ${filteredData.length} linhas carregadas`, "user");
               setSurveyData(prev => ({
                 ...prev,
@@ -291,8 +293,8 @@ const ChatbotSurvey = () => {
       }
       
       if (steps[nextStep].inputType === "summary") {
-        const csvInfo = csvFileName
-          ? `${csvFileName} (${surveyData.csvData.length} registros)`
+        const csvInfo = csvFileName && csvRowCount > 0
+          ? `${csvFileName} (${csvRowCount} registros)`
           : "Nenhum arquivo carregado";
 
         const summaryContent = (
