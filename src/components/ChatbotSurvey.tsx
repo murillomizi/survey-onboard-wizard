@@ -316,7 +316,7 @@ const ChatbotSurvey = () => {
         }, 1000);
       }
     } else {
-      addMessage("Obrigado por completar a pesquisa! Clique em 'Continuar' para prosseguir.", "bot");
+      addMessage("Clique em 'Consultar Status' para verificar o andamento do processamento.", "bot");
     }
   };
 
@@ -552,6 +552,61 @@ const ChatbotSurvey = () => {
     }
   };
 
+  const handleCheckStatus = async () => {
+    if (!processingId) {
+      addMessage(
+        "Nenhum processamento em andamento. Por favor, inicie um novo processamento.",
+        "bot"
+      );
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: { surveyId: processingId }
+      });
+      
+      if (error) {
+        console.error("Error checking progress:", error);
+        addMessage(
+          "Erro ao verificar o status do processamento. Tente novamente.",
+          "bot"
+        );
+        return;
+      }
+      
+      const count = data?.count || 0;
+      addMessage(
+        `Status do processamento: ${count}/${csvRowCount} contatos processados.`,
+        "bot"
+      );
+      
+      if (count >= csvRowCount && csvRowCount > 0) {
+        addMessage(
+          <div className="space-y-2">
+            <p className="font-medium">🎉 Processamento concluído!</p>
+            <p className="text-gray-600">
+              Todos os {count} contatos foram processados com sucesso.
+            </p>
+            <Button
+              onClick={handleDownload}
+              className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+            >
+              Baixar Campanha Personalizada
+            </Button>
+          </div>,
+          "bot"
+        );
+      }
+    } catch (error) {
+      console.error("Error in handleCheckStatus:", error);
+      addMessage(
+        "Erro ao verificar o status do processamento. Tente novamente.",
+        "bot"
+      );
+    }
+  };
+
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
       <div className="p-3 border-b border-gray-100">
@@ -627,18 +682,6 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {currentStep === 7 && (
-          <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
-            <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
-            <p className="text-sm mb-2">
-              Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
-            </p>
-            <p className="text-xs text-gray-500 italic">
-              Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
-            </p>
-          </div>
-        )}
-        
         <input
           type="file"
           accept=".csv"
@@ -685,11 +728,10 @@ const ChatbotSurvey = () => {
           
           {currentStep === steps.length - 1 && (
             <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
+              onClick={processingId ? handleCheckStatus : handleSubmit}
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
-              {isSubmitting ? 'Salvando...' : 'Continuar'}
+              {processingId ? 'Consultar Status' : (isSubmitting ? 'Salvando...' : 'Continuar')}
             </Button>
           )}
         </div>
