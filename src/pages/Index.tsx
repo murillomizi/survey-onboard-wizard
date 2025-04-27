@@ -10,7 +10,7 @@ const Index = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-[840px] text-center mt-8 mb-6"
+        className="w-full max-w-[800px] text-center mt-8 mb-6"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -40,16 +40,12 @@ const Index = () => {
           delay: 0.6,
           ease: "easeOut"
         }}
-        className="w-full max-w-[840px]"
+        className="w-full max-w-[800px]"
       >
         <div className="transform transition-all duration-500 hover:scale-[1.01]">
           <ChatbotSurvey />
         </div>
       </motion.div>
-      
-      <div className="w-full max-w-[840px] text-center mt-6 text-gray-500 text-sm">
-        <p>Processamento integrado com Make.com e Supabase</p>
-      </div>
     </div>
   );
 };

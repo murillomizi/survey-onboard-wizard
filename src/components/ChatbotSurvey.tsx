@@ -1,16 +1,15 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, CircleDot, ArrowLeft, Loader2 } from "lucide-react";
+import { Send, Paperclip, CircleDot, ArrowLeft } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
-import LeadProcessingStatus from "./LeadProcessingStatus";
-import TransformedDataTable from "./TransformedDataTable";
 
 interface Message {
   id: number;
@@ -18,89 +17,31 @@ interface Message {
   type: "user" | "bot";
 }
 
-interface SurveyState {
-  currentStep: number;
-  messages: Message[];
-  surveyData: {
-    canal: string;
-    funnelStage: string;
-    websiteUrl: string;
-    tamanho: number;
-    tomVoz: string;
-    gatilhos: string;
-    csvData: any[];
-  };
-  lastSurveyId: string | null;
-  showResults: boolean;
-}
-
-const STORAGE_KEY = 'survey_state';
-
 const ChatbotSurvey = () => {
-  const loadSavedState = (): SurveyState => {
-    try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        const parsedState = JSON.parse(savedState);
-        return parsedState;
-      }
-    } catch (error) {
-      console.error("Error loading saved state:", error);
-    }
-    
-    return {
-      currentStep: 0,
-      messages: [],
-      surveyData: {
-        canal: "",
-        funnelStage: "",
-        websiteUrl: "",
-        tamanho: 350,
-        tomVoz: "",
-        gatilhos: "",
-        csvData: []
-      },
-      lastSurveyId: null,
-      showResults: false
-    };
-  };
-
-  const initialState = loadSavedState();
-
-  const [messages, setMessages] = useState<Message[]>(initialState.messages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [currentInput, setCurrentInput] = useState("");
-  const [currentStep, setCurrentStep] = useState(initialState.currentStep);
+  const [currentStep, setCurrentStep] = useState(0);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [showOptions, setShowOptions] = useState<{
     options: { value: string; label: string }[];
     step: number;
   } | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [sliderValue, setSliderValue] = useState(initialState.surveyData.tamanho || 350);
+  const [sliderValue, setSliderValue] = useState(350);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [lastSurveyId, setLastSurveyId] = useState<string | null>(initialState.lastSurveyId);
-  const [showResults, setShowResults] = useState(initialState.showResults);
 
-  const [surveyData, setSurveyData] = useState(initialState.surveyData);
-
-  useEffect(() => {
-    const state: SurveyState = {
-      currentStep,
-      messages,
-      surveyData,
-      lastSurveyId,
-      showResults
-    };
-    
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.error("Error saving state to localStorage:", error);
-    }
-  }, [currentStep, messages, surveyData, lastSurveyId, showResults]);
+  const [surveyData, setSurveyData] = useState({
+    canal: "",
+    funnelStage: "",
+    csvData: [] as any[],
+    websiteUrl: "",
+    tamanho: 350,
+    tomVoz: "",
+    gatilhos: ""
+  });
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -185,7 +126,7 @@ const ChatbotSurvey = () => {
   };
 
   useEffect(() => {
-    if (messages.length === 0 && currentStep === 0) {
+    if (messages.length === 0) {
       const firstStep = steps[0];
       addMessage(firstStep.question, "bot");
       
@@ -195,8 +136,6 @@ const ChatbotSurvey = () => {
           step: 0
         });
       }
-    } else if (showResults && lastSurveyId) {
-      console.log("Showing results after page reload with surveyId:", lastSurveyId);
     }
   }, []);
 
@@ -377,10 +316,6 @@ const ChatbotSurvey = () => {
   const handleBack = () => {
     if (currentStep <= 0) return;
     
-    if (currentStep === 1) {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-    
     setMessages(prev => prev.slice(0, -2));
     
     const previousStep = currentStep - 1;
@@ -431,8 +366,7 @@ const ChatbotSurvey = () => {
             message_length: surveyData.tamanho,
             tone_of_voice: surveyData.tomVoz,
             persuasion_trigger: surveyData.gatilhos,
-            csv_data: csvDataToSave,
-            csv_file_name: csvFileName
+            csv_data: csvDataToSave
           }
         ])
         .select();
@@ -454,21 +388,6 @@ const ChatbotSurvey = () => {
       });
       
       console.log('Survey data saved:', data);
-      
-      if (data && data.length > 0) {
-        setLastSurveyId(data[0].id);
-        
-        setShowResults(true);
-        
-        addMessage(
-          <div className="space-y-2">
-            <p>Seus dados foram enviados e estão sendo processados!</p>
-            <p className="text-sm text-gray-600">Em breve você verá os resultados abaixo.</p>
-          </div>, 
-          "bot"
-        );
-      }
-      
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -556,7 +475,7 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
@@ -565,13 +484,6 @@ const ChatbotSurvey = () => {
             <p className="text-xs text-gray-500 italic">
               Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
             </p>
-          </div>
-        )}
-        
-        {showResults && lastSurveyId && (
-          <div className="mt-6 space-y-6 border-t pt-6">
-            <LeadProcessingStatus surveyId={lastSurveyId} />
-            <TransformedDataTable surveyId={lastSurveyId} websiteUrl={surveyData.websiteUrl} />
           </div>
         )}
         
@@ -619,20 +531,14 @@ const ChatbotSurvey = () => {
             </>
           )}
           
-          {(currentStep === steps.length - 1 || showResults) && !isSubmitting && (
+          {currentStep === steps.length - 1 && (
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting || showResults}
+              disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
-              {isSubmitting ? 'Salvando...' : showResults ? 'Dados enviados' : 'Continuar'}
+              {isSubmitting ? 'Salvando...' : 'Continuar'}
             </Button>
-          )}
-          
-          {isSubmitting && (
-            <div className="w-full flex justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-            </div>
           )}
         </div>
       </div>
