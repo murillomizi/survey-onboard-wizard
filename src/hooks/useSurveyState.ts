@@ -40,10 +40,11 @@ export const useSurveyState = () => {
   });
 
   const checkProcessingProgress = async (id: string, totalItems: number) => {
-    const stringId = String(id);
-    console.log("Checking progress for id:", stringId);
-
     try {
+      // Ensure id is a string
+      const stringId = String(id);
+      console.log("Checking progress for id:", stringId, "Expected total:", totalItems);
+
       const { count, error } = await supabase
         .from('Data set final')
         .select('id', { count: 'exact' })
@@ -81,7 +82,7 @@ export const useSurveyState = () => {
         });
         setIsSubmitting(false);
         setShowLoading(false);
-        return;
+        return null;
       }
       
       let csvDataToSave = surveyData.csvData;
@@ -91,6 +92,16 @@ export const useSurveyState = () => {
 
       const totalItems = csvDataToSave?.length || 0;
       setTotalCount(totalItems);
+      
+      console.log("Submitting survey with data:", {
+        canal: surveyData.canal,
+        funnel_stage: surveyData.funnelStage,
+        website_url: surveyData.websiteUrl,
+        message_length: surveyData.tamanho,
+        tone_of_voice: surveyData.tomVoz,
+        persuasion_trigger: surveyData.gatilhos,
+        csv_data_length: csvDataToSave?.length
+      });
       
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
@@ -107,7 +118,8 @@ export const useSurveyState = () => {
         ])
         .select();
 
-      if (error || !data?.[0]?.id) {
+      if (error) {
+        console.error("Error inserting survey:", error);
         toast({
           title: "Erro ao salvar",
           description: "Não foi possível salvar suas respostas. Tente novamente.",
@@ -115,12 +127,25 @@ export const useSurveyState = () => {
         });
         setIsSubmitting(false);
         setShowLoading(false);
-        return;
+        return null;
       }
 
-      setSurveyId(data[0].id);
-      console.log("Survey saved with id:", data[0].id);
-      return { id: data[0].id, totalItems };
+      if (!data || data.length === 0 || !data[0]?.id) {
+        console.error("No data returned from survey insert");
+        toast({
+          title: "Erro ao processar",
+          description: "Não recebemos confirmação do servidor. Tente novamente.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        setShowLoading(false);
+        return null;
+      }
+
+      const surveyId = data[0].id;
+      setSurveyId(surveyId);
+      console.log("Survey saved with id:", surveyId);
+      return { id: surveyId, totalItems };
 
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -131,6 +156,7 @@ export const useSurveyState = () => {
       });
       setIsSubmitting(false);
       setShowLoading(false);
+      return null;
     }
   };
 

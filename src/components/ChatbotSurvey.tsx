@@ -265,26 +265,47 @@ const ChatbotSurvey = () => {
   };
 
   const handleFinalSubmit = async () => {
-    const result = await submitSurvey();
-    if (result) {
-      const { id, totalItems } = result;
-      const surveyIdString = String(id);
+    try {
+      setShowLoading(true);
+      setIsSubmitting(true);
       
-      checkProgressInterval.current = setInterval(async () => {
-        const isComplete = await checkProcessingProgress(surveyIdString, totalItems);
+      const result = await submitSurvey();
+      if (result) {
+        const { id, totalItems } = result;
+        const surveyIdString = String(id);
+        console.log("Starting progress check for survey ID:", surveyIdString, "with", totalItems, "items");
         
-        if (isComplete) {
-          if (checkProgressInterval.current) {
-            clearInterval(checkProgressInterval.current);
+        checkProgressInterval.current = setInterval(async () => {
+          console.log("Checking progress for survey:", surveyIdString);
+          const isComplete = await checkProcessingProgress(surveyIdString, totalItems);
+          console.log("Progress check result:", isComplete);
+          
+          if (isComplete) {
+            if (checkProgressInterval.current) {
+              clearInterval(checkProgressInterval.current);
+            }
+            setIsSubmitting(false);
+            setShowLoading(false);
+            toast({
+              title: "Configurações salvas!",
+              description: "Suas preferências de mensagem foram salvas com sucesso.",
+            });
           }
-          setIsSubmitting(false);
-          setShowLoading(false);
-          toast({
-            title: "Configurações salvas!",
-            description: "Suas preferências de mensagem foram salvas com sucesso.",
-          });
-        }
-      }, 1000) as unknown as NodeJS.Timeout;
+        }, 1000) as unknown as NodeJS.Timeout;
+      } else {
+        console.error("Failed to get result from submitSurvey");
+        setIsSubmitting(false);
+        setShowLoading(false);
+      }
+    } catch (error) {
+      console.error("Error in handleFinalSubmit:", error);
+      setIsSubmitting(false);
+      setShowLoading(false);
+      toast({
+        title: "Erro ao processar",
+        description: "Houve um erro ao processar sua solicitação. Tente novamente.",
+        variant: "destructive"
+      });
     }
   };
 
