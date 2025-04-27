@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,6 @@ const ChatbotSurvey = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Cleanup polling on unmount
   useEffect(() => {
     return () => {
       if (pollingRef.current) {
@@ -351,12 +349,10 @@ const ChatbotSurvey = () => {
     }
   };
   
-  // Function to check processing progress
   const checkProgress = async (surveyId: string) => {
     try {
       console.log("Checking progress for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
       
-      // Use { count: 'exact' } to get the count without caching
       const { count, error, data } = await supabase
         .from("mizi_ai_personalized_return")
         .select("*", { count: 'exact', head: false })
@@ -369,12 +365,10 @@ const ChatbotSurvey = () => {
         return;
       }
       
-      // Update processed count
       if (count !== null) {
         setProcessedCount(count);
         console.log(`Processed ${count}/${surveyData.csvData.length} records`);
         
-        // Check if processing is complete
         if (count >= surveyData.csvData.length) {
           console.log("Processing complete!");
           setIsProcessingComplete(true);
@@ -394,7 +388,6 @@ const ChatbotSurvey = () => {
     
     try {
       console.log("Fetching processed data for download...");
-      // Fetch the processed data
       const { data, error } = await supabase
         .from("mizi_ai_personalized_return")
         .select("*")
@@ -420,10 +413,8 @@ const ChatbotSurvey = () => {
       }
       
       console.log("Generating CSV with", data.length, "rows");
-      // Convert to CSV
       const csv = Papa.unparse(data);
       
-      // Create blob and download link
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -476,8 +467,6 @@ const ChatbotSurvey = () => {
       setIsProcessing(true);
       
       try {
-        // Submit survey data to database
-        console.log("Saving survey data to database...");
         const { data, error } = await supabase
           .from('mizi_ai_surveys')
           .insert([
@@ -517,8 +506,6 @@ const ChatbotSurvey = () => {
           console.log("Survey saved with ID:", surveyId);
           setProcessingId(surveyId);
           
-          // Start polling for updates
-          console.log("Starting polling for updates...");
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
           }
@@ -559,6 +546,7 @@ const ChatbotSurvey = () => {
           totalCount={surveyData.csvData.length}
           isComplete={isProcessingComplete}
           onDownload={handleDownload}
+          surveyId={processingId}
         />
       )}
       <div className="p-3 border-b border-gray-100">

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,12 +115,6 @@ const SurveyForm = () => {
         console.error("Error checking progress:", countError);
         return;
       }
-
-      // Alternative direct count query for debugging
-      const { data, error } = await supabase
-        .rpc('get_personalized_return_count', { survey_id: surveyId });
-      
-      console.log(`Direct count RPC call result:`, data, error);
 
       // Get all rows for the survey ID to see detailed data
       const { data: detailData, error: detailError } = await supabase

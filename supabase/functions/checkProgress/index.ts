@@ -17,6 +17,7 @@ serve(async (req) => {
     const { surveyId } = await req.json();
     
     if (!surveyId) {
+      console.error("Missing surveyId parameter");
       return new Response(
         JSON.stringify({ error: "Missing surveyId parameter" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
@@ -28,7 +29,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    console.log(`Checking progress for survey ID: ${surveyId}`);
+    console.log(`Edge function: Checking progress for survey ID: ${surveyId}`);
     
     // Get count directly using service role key for full access
     const { data, error, count } = await supabase
@@ -37,12 +38,14 @@ serve(async (req) => {
       .eq("mizi_ai_id", surveyId);
     
     if (error) {
-      console.error("Error fetching count:", error);
+      console.error("Edge function: Error fetching count:", error);
       return new Response(
         JSON.stringify({ error: error.message }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
+    
+    console.log(`Edge function: Found ${count || 0} rows for survey ID ${surveyId}`);
     
     return new Response(
       JSON.stringify({ 
