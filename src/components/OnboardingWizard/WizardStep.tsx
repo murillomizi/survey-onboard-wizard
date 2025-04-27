@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
@@ -59,6 +58,14 @@ const WizardStep: React.FC<WizardStepProps> = ({
     );
   }
   
+  const getOptionLabel = (field: string, value: string): string => {
+    const step = steps.find(s => s.field === field);
+    if (!step || !step.options) return value;
+    
+    const option = step.options.find(opt => opt.value === value);
+    return option ? option.label : value;
+  };
+
   switch(step) {
     case 0: // Welcome step
       return (
