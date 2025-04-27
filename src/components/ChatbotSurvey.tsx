@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,11 @@ interface Message {
   type: "user" | "bot";
 }
 
-const ChatbotSurvey = () => {
+interface ChatbotSurveyProps {
+  initialSurveyId?: string | null;
+}
+
+const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
@@ -35,8 +40,9 @@ const ChatbotSurvey = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [isProcessingComplete, setIsProcessingComplete] = useState(false);
-  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(initialSurveyId);
   const pollingRef = useRef<number | null>(null);
+  const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -59,6 +65,154 @@ const ChatbotSurvey = () => {
       }
     };
   }, []);
+
+  // Handle loading a past chat based on initialSurveyId
+  useEffect(() => {
+    if (initialSurveyId) {
+      loadPastSurvey(initialSurveyId);
+    } else if (!isLoadingPastChat) {
+      // Only initialize a new chat if we're not loading a past one
+      initializeChat();
+    }
+  }, [initialSurveyId]);
+
+  const loadPastSurvey = async (surveyId: string) => {
+    try {
+      setIsLoadingPastChat(true);
+      setMessages([]); // Clear existing messages
+      
+      // Fetch survey data
+      const { data, error } = await supabase
+        .from('mizi_ai_surveys')
+        .select('*')
+        .eq('id', surveyId)
+        .single();
+      
+      if (error) {
+        console.error("Error fetching survey:", error);
+        toast({
+          title: "Erro ao carregar",
+          description: "Não foi possível carregar este chat.",
+          variant: "destructive"
+        });
+        setIsLoadingPastChat(false);
+        return;
+      }
+      
+      if (data) {
+        // Set the survey data
+        setSurveyData({
+          canal: data.canal || "",
+          funnelStage: data.funnel_stage || "",
+          csvData: data.csv_data || [],
+          websiteUrl: data.website_url || "",
+          tamanho: data.message_length || 350,
+          tomVoz: data.tone_of_voice || "",
+          gatilhos: data.persuasion_trigger || ""
+        });
+        
+        setProcessingId(data.id);
+        
+        if (data.csv_data) {
+          setCsvRowCount(data.csv_data.length);
+        }
+        
+        // Check if processing is complete
+        const { data: progressData } = await supabase.functions.invoke('checkProgress', {
+          body: { surveyId: data.id }
+        });
+        
+        // Rebuild the conversation steps
+        addMessage("Olá! Vamos configurar sua sequência de mensagens. Escolha o canal para sua comunicação:", "bot");
+        addMessage(getOptionLabel("canal", data.canal), "user");
+        
+        addMessage("Em que estágio do funil de vendas está sua base de contatos?", "bot");
+        addMessage(getOptionLabel("funnelStage", data.funnel_stage), "user");
+        
+        addMessage("Qual é o site da sua empresa?", "bot");
+        addMessage(data.website_url, "user");
+        
+        addMessage("Vamos definir o tamanho da sua mensagem. Mova o controle deslizante para escolher o número de caracteres (recomendado: 350-500 caracteres para maior impacto):", "bot");
+        addMessage(`${data.message_length} caracteres`, "user");
+        
+        addMessage("Qual tom de voz você prefere para suas mensagens?", "bot");
+        addMessage(getOptionLabel("tomVoz", data.tone_of_voice), "user");
+        
+        addMessage("Por último, gostaria de aplicar algum gatilho de persuasão?", "bot");
+        addMessage(getOptionLabel("gatilhos", data.persuasion_trigger), "user");
+        
+        addMessage("Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!", "bot");
+        
+        if (data.csv_data && data.csv_data.length > 0) {
+          addMessage(`Arquivo processado com sucesso: ${data.csv_data.length} linhas carregadas`, "user");
+        } else {
+          addMessage("Nenhum arquivo CSV carregado", "user");
+        }
+        
+        // Add summary message
+        const csvInfo = data.csv_data && data.csv_data.length > 0
+          ? `${data.csv_data.length} registros`
+          : "Nenhum arquivo carregado";
+        
+        const summaryContent = (
+          <div>
+            <p><strong>Canal:</strong> {getOptionLabel("canal", data.canal)}</p>
+            <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", data.funnel_stage)}</p>
+            <p><strong>Site:</strong> {data.website_url}</p>
+            <p><strong>Tamanho:</strong> {data.message_length} caracteres</p>
+            <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", data.tone_of_voice)}</p>
+            <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", data.persuasion_trigger)}</p>
+            <p>
+              <strong>Arquivo CSV:</strong> {csvInfo}
+            </p>
+          </div>
+        );
+        addMessage(summaryContent, "bot");
+        
+        // Set to the final step
+        setCurrentStep(steps.length - 1);
+        
+        // Check if processing is complete for the download button
+        if (progressData && progressData.isComplete) {
+          addMessage(
+            <div className="space-y-2">
+              <p className="font-medium">🎉 Processamento concluído!</p>
+              <p className="text-gray-600">
+                Todos os {progressData.count} contatos foram processados com sucesso.
+              </p>
+              <Button
+                onClick={handleDownload}
+                className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+              >
+                Baixar Campanha Personalizada
+              </Button>
+            </div>,
+            "bot"
+          );
+        } else {
+          addMessage("Clique em 'Consultar Status' para verificar o andamento do processamento.", "bot");
+        }
+      }
+    } catch (error) {
+      console.error("Error loading past survey:", error);
+    } finally {
+      setIsLoadingPastChat(false);
+    }
+  };
+
+  const initializeChat = () => {
+    if (messages.length === 0) {
+      const firstStep = steps[0];
+      addMessage(firstStep.question, "bot");
+      
+      if (firstStep.options) {
+        setShowOptions({
+          options: firstStep.options,
+          step: 0
+        });
+      }
+    }
+  };
 
   const steps = [
     {
@@ -137,20 +291,6 @@ const ChatbotSurvey = () => {
       { id: Date.now() + Math.random(), content, type }
     ]);
   };
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      const firstStep = steps[0];
-      addMessage(firstStep.question, "bot");
-      
-      if (firstStep.options) {
-        setShowOptions({
-          options: firstStep.options,
-          step: 0
-        });
-      }
-    }
-  }, []);
 
   const handleSendMessage = () => {
     if (!currentInput.trim() && !showSlider) return;
@@ -635,51 +775,59 @@ const ChatbotSurvey = () => {
       </div>
       
       <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            content={message.content}
-            type={message.type}
-          />
-        ))}
-        
-        {isWaitingForResponse && (
-          <ChatMessage content="" type="bot" isTyping={true} />
-        )}
-        
-        {showOptions && (
-          <div className="mb-4">
-            <ChatOptions
-              options={showOptions.options}
-              onSelect={handleOptionSelect}
-            />
+        {isLoadingPastChat ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
           </div>
-        )}
-        
-        {showSlider && (
-          <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
-            <div className="mb-2">
-              <span className="text-gray-800">{sliderValue} caracteres</span>
-            </div>
-            <Slider
-              defaultValue={[350]}
-              max={1000}
-              min={100}
-              step={10}
-              value={[sliderValue]}
-              onValueChange={handleSliderChange}
-              className="mb-2"
-            />
-            <p className="text-gray-500 text-sm mt-1 italic">
-              Recomendado: 350-500 caracteres para maior impacto
-            </p>
-            <Button 
-              onClick={handleSliderComplete}
-              className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
-            >
-              Confirmar
-            </Button>
-          </div>
+        ) : (
+          <>
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                content={message.content}
+                type={message.type}
+              />
+            ))}
+            
+            {isWaitingForResponse && (
+              <ChatMessage content="" type="bot" isTyping={true} />
+            )}
+            
+            {showOptions && (
+              <div className="mb-4">
+                <ChatOptions
+                  options={showOptions.options}
+                  onSelect={handleOptionSelect}
+                />
+              </div>
+            )}
+            
+            {showSlider && (
+              <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
+                <div className="mb-2">
+                  <span className="text-gray-800">{sliderValue} caracteres</span>
+                </div>
+                <Slider
+                  defaultValue={[350]}
+                  max={1000}
+                  min={100}
+                  step={10}
+                  value={[sliderValue]}
+                  onValueChange={handleSliderChange}
+                  className="mb-2"
+                />
+                <p className="text-gray-500 text-sm mt-1 italic">
+                  Recomendado: 350-500 caracteres para maior impacto
+                </p>
+                <Button 
+                  onClick={handleSliderComplete}
+                  className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
+                >
+                  Confirmar
+                </Button>
+              </div>
+            )}
+          </>
         )}
         
         <input

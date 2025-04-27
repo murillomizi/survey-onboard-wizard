@@ -1,83 +1,108 @@
 
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.22.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface ResponseData {
+  count: number;
+  isComplete?: boolean;
+  message?: string;
 }
 
-console.log("Hello from checkProgress Edge Function!");
-
 serve(async (req) => {
-  // Handle CORS preflight request
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
   }
 
   try {
-    // Get the current time for logging
-    const timestamp = new Date().toISOString();
-    
-    // Parse the request body
     const { surveyId } = await req.json();
-    
-    console.log(`EdgeFunction checkProgress: Starting check for survey ID: ${surveyId}\n`);
-    
-    // Create a Supabase client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
-    );
-    
-    // Query the processed rows
-    const { data, error, count } = await supabaseClient
-      .from('mizi_ai_personalized_return')
-      .select('*', { count: 'exact' })
-      .eq('mizi_ai_id', surveyId);
-    
-    if (error) {
-      console.error(`EdgeFunction checkProgress: Error querying data: ${error.message}`);
+
+    if (!surveyId) {
       return new Response(
-        JSON.stringify({ error: error.message }),
+        JSON.stringify({ error: "Missing surveyId parameter" }),
         { 
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
-          status: 400 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       );
     }
+
+    // Create Supabase client with service role key
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     
-    const rowCount = data?.length || 0;
-    console.log(`EdgeFunction checkProgress: Found ${rowCount} rows for survey ID ${surveyId}\n`);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get the survey to determine total rows
+    const { data: surveyData, error: surveyError } = await supabase
+      .from("mizi_ai_surveys")
+      .select("id, csv_data")
+      .eq("id", surveyId)
+      .single();
+
+    if (surveyError) {
+      console.error("Survey fetch error:", surveyError);
+      return new Response(
+        JSON.stringify({ error: "Error fetching survey data" }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    const totalRows = surveyData?.csv_data?.length || 0;
+
+    // Count how many processed rows we have for this survey
+    const { count, error: countError } = await supabase
+      .from("mizi_ai_personalized_return")
+      .select("id", { count: "exact", head: true })
+      .eq("mizi_ai_id", surveyId);
+
+    if (countError) {
+      console.error("Count error:", countError);
+      return new Response(
+        JSON.stringify({ error: "Error counting processed items" }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Determine if processing is complete
+    const isComplete = totalRows > 0 && count >= totalRows;
     
-    // Return the result
+    const responseData: ResponseData = { 
+      count: count || 0,
+      isComplete
+    };
+
+    // Return response with processed count and completion status
     return new Response(
-      JSON.stringify({ 
-        count: rowCount,
-        timestamp: timestamp,
-        status: 'success' 
-      }),
+      JSON.stringify(responseData),
       { 
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-        status: 200 
+        status: 200, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       }
     );
+
   } catch (error) {
-    console.error(`EdgeFunction checkProgress: Unhandled error: ${error.message}`);
+    console.error("Error processing request:", error);
+    
     return new Response(
-      JSON.stringify({ 
-        error: 'An unhandled error occurred',
-        errorDetails: error.message,
-        timestamp: new Date().toISOString()
-      }),
+      JSON.stringify({ error: "Internal server error", details: error.message }),
       { 
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-        status: 500
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       }
     );
   }
