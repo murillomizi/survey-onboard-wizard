@@ -291,6 +291,10 @@ const ChatbotSurvey = () => {
       }
       
       if (steps[nextStep].inputType === "summary") {
+        const csvInfo = csvFileName
+          ? `${csvFileName} (${surveyData.csvData.length} registros)`
+          : "Nenhum arquivo carregado";
+
         const summaryContent = (
           <div>
             <p><strong>Canal:</strong> {getOptionLabel("canal", surveyData.canal)}</p>
@@ -300,10 +304,7 @@ const ChatbotSurvey = () => {
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
             <p>
-              <strong>Arquivo CSV:</strong> {csvFileName ? 
-                `${csvFileName} - ${surveyData.csvData.length} registros carregados` : 
-                "Nenhum arquivo carregado"
-              }
+              <strong>Arquivo CSV:</strong> {csvInfo}
             </p>
           </div>
         );
