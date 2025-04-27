@@ -22,3 +22,5 @@ export interface SurveyData {
   tomVoz: string;
   gatilhos: string;
 }
+
+export type WebhookStatus = "idle" | "checking" | "processing" | "complete" | "error";
