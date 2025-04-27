@@ -1,52 +1,134 @@
-
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { Send, Paperclip, CircleDot, ArrowLeft } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
+import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
 import LoadingMessages from './LoadingMessages';
-import ChatInput from "./ChatInput";
-import { useSurveyState } from "@/hooks/useSurveyState";
-import { steps } from "@/config/surveySteps";
-import { Message } from "@/types/survey";
-import { toast } from "@/hooks/use-toast";
+
+interface Message {
+  id: number;
+  content: React.ReactNode;
+  type: "user" | "bot";
+}
 
 const ChatbotSurvey = () => {
-  const {
-    currentStep,
-    setCurrentStep,
-    isWaitingForResponse,
-    setIsWaitingForResponse,
-    showOptions,
-    setShowOptions,
-    showSlider,
-    setShowSlider,
-    sliderValue,
-    setSliderValue,
-    isSubmitting,
-    setIsSubmitting,
-    csvFileName,
-    setCsvFileName,
-    showLoading,
-    setShowLoading,
-    processedCount,
-    totalCount,
-    surveyData,
-    setSurveyData,
-    checkProcessingProgress,
-    handleSubmit: submitSurvey
-  } = useSurveyState();
-
   const [messages, setMessages] = useState<Message[]>([]);
+  const [currentInput, setCurrentInput] = useState("");
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
+  const [showOptions, setShowOptions] = useState<{
+    options: { value: string; label: string }[];
+    step: number;
+  } | null>(null);
+  const [showSlider, setShowSlider] = useState(false);
+  const [sliderValue, setSliderValue] = useState(350);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const checkProgressInterval = useRef<NodeJS.Timeout | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [showLoading, setShowLoading] = useState(false);
+  const [processedCount, setProcessedCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const checkProgressInterval = useRef<number | null>(null);
+
+  const [surveyData, setSurveyData] = useState({
+    canal: "",
+    funnelStage: "",
+    csvData: [] as any[],
+    websiteUrl: "",
+    tamanho: 350,
+    tomVoz: "",
+    gatilhos: ""
+  });
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const steps = [
+    {
+      question: "Olá! Vamos configurar sua sequência de mensagens. Escolha o canal para sua comunicação:",
+      options: [
+        { value: "linkedin", label: "LinkedIn" },
+        { value: "cold-email", label: "Cold E-mail" }
+      ],
+      field: "canal"
+    },
+    {
+      question: "Em que estágio do funil de vendas está sua base de contatos?",
+      options: [
+        { value: "topo", label: "Topo de Funil" },
+        { value: "meio", label: "Meio de Funil" },
+        { value: "fim", label: "Fim de Funil" },
+        { value: "cliente", label: "Cliente Existente" },
+        { value: "inbound", label: "Leads de Ação de Inbound" }
+      ],
+      field: "funnelStage"
+    },
+    {
+      question: "Qual é o site da sua empresa?",
+      field: "websiteUrl",
+      inputType: "text"
+    },
+    {
+      question: "Vamos definir o tamanho da sua mensagem. Mova o controle deslizante para escolher o número de caracteres (recomendado: 350-500 caracteres para maior impacto):",
+      field: "tamanho",
+      inputType: "slider"
+    },
+    {
+      question: "Qual tom de voz você prefere para suas mensagens?",
+      options: [
+        { value: "formal", label: "Formal" },
+        { value: "informal", label: "Informal" },
+        { value: "neutro", label: "Neutro" },
+        { value: "consultivo", label: "Consultivo" },
+        { value: "curioso", label: "Curioso" },
+        { value: "inovador", label: "Inovador" }
+      ],
+      field: "tomVoz"
+    },
+    {
+      question: "Por último, gostaria de aplicar algum gatilho de persuasão?",
+      options: [
+        { value: "sem-gatilho", label: "Sem gatilho" },
+        { value: "reciprocidade", label: "Reciprocidade" },
+        { value: "compromisso", label: "Compromisso e Consistência" },
+        { value: "prova-social", label: "Prova Social" },
+        { value: "simpatia", label: "Simpatia" },
+        { value: "autoridade", label: "Autoridade" },
+        { value: "escassez", label: "Escassez" },
+        { value: "consenso", label: "Consenso" }
+      ],
+      field: "gatilhos"
+    },
+    {
+      question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
+      description: "Dica: Inclua o máximo de informações possível, como nome, cargo, empresa, e-mail, histórico de interações, etc. Dados completos permitem que a IA crie estratégias de comunicação extremamente personalizadas e relevantes.",
+      field: "csvFile",
+      inputType: "file"
+    },
+    {
+      question: "Perfeito! Aqui está o resumo das suas escolhas:",
+      field: "summary",
+      inputType: "summary"
+    }
+  ];
+
+  const progressPercentage = Math.min(((currentStep + 1) / steps.length) * 100, 100);
+
+  const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now(), content, type }
+    ]);
+  };
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -62,20 +144,8 @@ const ChatbotSurvey = () => {
     }
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (checkProgressInterval.current) {
-        clearInterval(checkProgressInterval.current);
-      }
-    };
-  }, []);
-
-  const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
-    setMessages((prev) => [...prev, { id: Date.now(), content, type }]);
-  };
-
-  const handleSendMessage = (input: string) => {
-    if (!input.trim() && !showSlider) return;
+  const handleSendMessage = () => {
+    if (!currentInput.trim() && !showSlider) return;
 
     setShowOptions(null);
     setShowSlider(false);
@@ -84,9 +154,11 @@ const ChatbotSurvey = () => {
     const currentStepData = steps[currentStep];
     
     if (currentStepData.field === "websiteUrl") {
-      addMessage(input, "user");
-      setSurveyData({ ...surveyData, websiteUrl: input });
+      addMessage(currentInput, "user");
+      setSurveyData({ ...surveyData, websiteUrl: currentInput });
     }
+
+    setCurrentInput("");
 
     setTimeout(() => {
       setIsWaitingForResponse(false);
@@ -188,6 +260,10 @@ const ChatbotSurvey = () => {
     }
   };
 
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   const moveToNextStep = () => {
     const nextStep = currentStep + 1;
     
@@ -252,6 +328,7 @@ const ChatbotSurvey = () => {
     
     setShowOptions(null);
     setShowSlider(false);
+    setCurrentInput("");
     
     const prevStepData = steps[previousStep];
     if (prevStepData.options) {
@@ -264,52 +341,106 @@ const ChatbotSurvey = () => {
     }
   };
 
-  const handleFinalSubmit = async () => {
+  const checkProcessingProgress = async (id: string, totalItems: number) => {
+    const { count } = await supabase
+      .from('Data set final')
+      .select('id', { count: 'exact' })
+      .eq('id', id);
+    
+    const processed = count || 0;
+    setProcessedCount(processed);
+    
+    if (processed < totalItems) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
     try {
       setShowLoading(true);
       setIsSubmitting(true);
       
-      const result = await submitSurvey();
-      if (result) {
-        const { id, totalItems } = result;
-        const surveyIdString = String(id);
-        console.log("Starting progress check for survey ID:", surveyIdString, "with", totalItems, "items");
-        
-        checkProgressInterval.current = setInterval(async () => {
-          console.log("Checking progress for survey:", surveyIdString);
-          const isComplete = await checkProcessingProgress(surveyIdString, totalItems);
-          console.log("Progress check result:", isComplete);
-          
-          if (isComplete) {
-            if (checkProgressInterval.current) {
-              clearInterval(checkProgressInterval.current);
-            }
-            setIsSubmitting(false);
-            setShowLoading(false);
-            toast({
-              title: "Configurações salvas!",
-              description: "Suas preferências de mensagem foram salvas com sucesso.",
-            });
-          }
-        }, 1000) as unknown as NodeJS.Timeout;
-      } else {
-        console.error("Failed to get result from submitSurvey");
+      if (!surveyData.canal || !surveyData.funnelStage) {
+        toast({
+          title: "Campos obrigatórios",
+          description: "Por favor, preencha todos os campos obrigatórios.",
+          variant: "destructive"
+        });
         setIsSubmitting(false);
         setShowLoading(false);
+        return;
       }
+      
+      let csvDataToSave = surveyData.csvData;
+      if (surveyData.csvData && surveyData.csvData.length > 100) {
+        csvDataToSave = surveyData.csvData.slice(0, 100);
+      }
+
+      const totalItems = csvDataToSave?.length || 0;
+      setTotalCount(totalItems);
+      
+      const { data, error } = await supabase
+        .from('mizi_ai_surveys')
+        .insert([
+          {
+            canal: surveyData.canal,
+            funnel_stage: surveyData.funnelStage,
+            website_url: surveyData.websiteUrl,
+            message_length: surveyData.tamanho,
+            tone_of_voice: surveyData.tomVoz,
+            persuasion_trigger: surveyData.gatilhos,
+            csv_data: csvDataToSave
+          }
+        ])
+        .select();
+
+      if (error || !data?.[0]?.id) {
+        toast({
+          title: "Erro ao salvar",
+          description: "Não foi possível salvar suas respostas. Tente novamente.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        setShowLoading(false);
+        return;
+      }
+
+      setSurveyId(data[0].id);
+
+      checkProgressInterval.current = setInterval(async () => {
+        const isComplete = await checkProcessingProgress(data[0].id, totalItems);
+        
+        if (isComplete) {
+          clearInterval(checkProgressInterval.current!);
+          setIsSubmitting(false);
+          setShowLoading(false);
+          toast({
+            title: "Configurações salvas!",
+            description: "Suas preferências de mensagem foram salvas com sucesso.",
+          });
+        }
+      }, 1000) as unknown as number;
+
     } catch (error) {
-      console.error("Error in handleFinalSubmit:", error);
-      setIsSubmitting(false);
-      setShowLoading(false);
+      console.error('Error in handleSubmit:', error);
       toast({
-        title: "Erro ao processar",
-        description: "Houve um erro ao processar sua solicitação. Tente novamente.",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
         variant: "destructive"
       });
+      setIsSubmitting(false);
+      setShowLoading(false);
     }
   };
 
-  const progressPercentage = Math.min(((currentStep + 1) / steps.length) * 100, 100);
+  useEffect(() => {
+    return () => {
+      if (checkProgressInterval.current) {
+        clearInterval(checkProgressInterval.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
@@ -361,27 +492,99 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
+        {showSlider && (
+          <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
+            <div className="mb-2">
+              <span className="text-gray-800">{sliderValue} caracteres</span>
+            </div>
+            <Slider
+              defaultValue={[350]}
+              max={1000}
+              min={100}
+              step={10}
+              value={[sliderValue]}
+              onValueChange={handleSliderChange}
+              className="mb-2"
+            />
+            <p className="text-gray-500 text-sm mt-1 italic">
+              Recomendado: 350-500 caracteres para maior impacto
+            </p>
+            <Button 
+              onClick={handleSliderComplete}
+              className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
+            >
+              Confirmar
+            </Button>
+          </div>
+        )}
+        
+        {currentStep === 7 && (
+          <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
+            <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
+            <p className="text-sm mb-2">
+              Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
+            </p>
+            <p className="text-xs text-gray-500 italic">
+              Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
+            </p>
+          </div>
+        )}
+        
+        <input
+          type="file"
+          accept=".csv"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        
         <div ref={chatEndRef} />
       </div>
       
-      <input
-        type="file"
-        accept=".csv"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-      />
-      
-      <ChatInput
-        currentStep={currentStep}
-        showOptions={!!showOptions}
-        showSlider={showSlider}
-        onSendMessage={handleSendMessage}
-        onFileUpload={() => fileInputRef.current?.click()}
-        isSubmitting={isSubmitting}
-        stepsLength={steps.length}
-        handleSubmit={handleFinalSubmit}
-      />
+      <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
+        <div className="flex items-center gap-2 max-w-[600px] mx-auto">
+          {currentStep === 6 && (
+            <Button
+              type="button"
+              onClick={triggerFileUpload}
+              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow transition-all duration-200"
+            >
+              <Paperclip size={18} />
+              Upload CSV
+            </Button>
+          )}
+          
+          {currentStep < 6 && showOptions === null && !showSlider && (
+            <>
+              <div className="relative flex-1">
+                <Input
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  placeholder="Digite sua resposta..."
+                  className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
+                >
+                  <Send size={14} />
+                </Button>
+              </div>
+            </>
+          )}
+          
+          {currentStep === steps.length - 1 && (
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
+            >
+              {isSubmitting ? 'Salvando...' : 'Continuar'}
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
