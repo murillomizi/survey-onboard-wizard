@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import LoadingMessages from './LoadingMessages';
 
 interface Message {
   id: number;
@@ -32,6 +32,7 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [showLoading, setShowLoading] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -338,6 +339,7 @@ const ChatbotSurvey = () => {
 
   const handleSubmit = async () => {
     try {
+      setShowLoading(true);
       setIsSubmitting(true);
       
       if (!surveyData.canal || !surveyData.funnelStage) {
@@ -347,6 +349,7 @@ const ChatbotSurvey = () => {
           variant: "destructive"
         });
         setIsSubmitting(false);
+        setShowLoading(false);
         return;
       }
       
@@ -379,8 +382,11 @@ const ChatbotSurvey = () => {
           variant: "destructive"
         });
         setIsSubmitting(false);
+        setShowLoading(false);
         return;
       }
+
+      await new Promise(resolve => setTimeout(resolve, 6000));
 
       toast({
         title: "Configurações salvas!",
@@ -389,6 +395,7 @@ const ChatbotSurvey = () => {
       
       console.log('Survey data saved:', data);
       setIsSubmitting(false);
+      setShowLoading(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -397,11 +404,13 @@ const ChatbotSurvey = () => {
         variant: "destructive"
       });
       setIsSubmitting(false);
+      setShowLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
+      {showLoading && <LoadingMessages />}
       <div className="p-3 border-b border-gray-100">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
