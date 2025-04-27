@@ -59,7 +59,15 @@ serve(async (req) => {
       );
     }
 
-    const totalRows = surveyData?.csv_data?.length || 0;
+    // Safely handle the csv_data field which might not be an array
+    let totalRows = 0;
+    if (surveyData?.csv_data) {
+      if (Array.isArray(surveyData.csv_data)) {
+        totalRows = surveyData.csv_data.length;
+      } else {
+        console.warn("csv_data is not an array:", typeof surveyData.csv_data);
+      }
+    }
 
     // Count how many processed rows we have for this survey
     const { count, error: countError } = await supabase

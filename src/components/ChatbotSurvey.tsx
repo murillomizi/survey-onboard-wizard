@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -66,12 +65,10 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
     };
   }, []);
 
-  // Handle loading a past chat based on initialSurveyId
   useEffect(() => {
     if (initialSurveyId) {
       loadPastSurvey(initialSurveyId);
     } else if (!isLoadingPastChat) {
-      // Only initialize a new chat if we're not loading a past one
       initializeChat();
     }
   }, [initialSurveyId]);
@@ -79,9 +76,8 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
   const loadPastSurvey = async (surveyId: string) => {
     try {
       setIsLoadingPastChat(true);
-      setMessages([]); // Clear existing messages
-      
-      // Fetch survey data
+      setMessages([]);
+
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
         .select('*')
@@ -100,11 +96,12 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
       }
       
       if (data) {
-        // Set the survey data
+        const csvDataArray = Array.isArray(data.csv_data) ? data.csv_data : [];
+        
         setSurveyData({
           canal: data.canal || "",
           funnelStage: data.funnel_stage || "",
-          csvData: data.csv_data || [],
+          csvData: csvDataArray,
           websiteUrl: data.website_url || "",
           tamanho: data.message_length || 350,
           tomVoz: data.tone_of_voice || "",
@@ -113,16 +110,14 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         
         setProcessingId(data.id);
         
-        if (data.csv_data) {
-          setCsvRowCount(data.csv_data.length);
+        if (csvDataArray.length > 0) {
+          setCsvRowCount(csvDataArray.length);
         }
         
-        // Check if processing is complete
         const { data: progressData } = await supabase.functions.invoke('checkProgress', {
           body: { surveyId: data.id }
         });
         
-        // Rebuild the conversation steps
         addMessage("Olá! Vamos configurar sua sequência de mensagens. Escolha o canal para sua comunicação:", "bot");
         addMessage(getOptionLabel("canal", data.canal), "user");
         
@@ -143,15 +138,14 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         
         addMessage("Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!", "bot");
         
-        if (data.csv_data && data.csv_data.length > 0) {
-          addMessage(`Arquivo processado com sucesso: ${data.csv_data.length} linhas carregadas`, "user");
+        if (csvDataArray.length > 0) {
+          addMessage(`Arquivo processado com sucesso: ${csvDataArray.length} linhas carregadas`, "user");
         } else {
           addMessage("Nenhum arquivo CSV carregado", "user");
         }
         
-        // Add summary message
-        const csvInfo = data.csv_data && data.csv_data.length > 0
-          ? `${data.csv_data.length} registros`
+        const csvInfo = csvDataArray.length > 0
+          ? `${csvDataArray.length} registros`
           : "Nenhum arquivo carregado";
         
         const summaryContent = (
@@ -169,10 +163,8 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         );
         addMessage(summaryContent, "bot");
         
-        // Set to the final step
         setCurrentStep(steps.length - 1);
         
-        // Check if processing is complete for the download button
         if (progressData && progressData.isComplete) {
           addMessage(
             <div className="space-y-2">
@@ -508,7 +500,9 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         const count = data.count || 0;
         setProcessedCount(count);
         
-        if (count >= surveyData.csvData.length && count > 0) {
+        const csvDataLength = Array.isArray(surveyData.csvData) ? surveyData.csvData.length : 0;
+        
+        if (count >= csvDataLength && csvDataLength > 0) {
           if (pollingRef.current) {
             window.clearInterval(pollingRef.current);
             pollingRef.current = null;
@@ -610,7 +604,7 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         return;
       }
       
-      if (!surveyData.csvData || surveyData.csvData.length === 0) {
+      if (!Array.isArray(surveyData.csvData) || surveyData.csvData.length === 0) {
         toast({
           title: "Dados insuficientes",
           description: "Por favor, faça upload de um arquivo CSV com dados para processar.",
