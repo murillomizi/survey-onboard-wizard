@@ -32,10 +32,10 @@ const LeadProcessingStatus = ({ surveyId }: LeadProcessingStatusProps) => {
       const inputCount = Array.isArray(csvData) ? csvData.length : 0;
       setInputLeads(inputCount);
 
+      // Using a simple string-based filter instead of a complex type
       const { data: processedData, error: processedError } = await supabase
         .from('Data set final')
-        .select('*')
-        .eq('survey_id', surveyId);
+        .select('*');
 
       if (processedError) throw processedError;
       
@@ -69,8 +69,7 @@ const LeadProcessingStatus = ({ surveyId }: LeadProcessingStatusProps) => {
         {
           event: '*',
           schema: 'public',
-          table: 'Data set final',
-          filter: `survey_id=eq.${surveyId}`
+          table: 'Data set final'
         },
         () => fetchLeadCounts()
       )

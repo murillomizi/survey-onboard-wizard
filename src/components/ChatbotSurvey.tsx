@@ -37,11 +37,17 @@ interface SurveyState {
 const STORAGE_KEY = 'survey_state';
 
 const ChatbotSurvey = () => {
-  const initialState = (): SurveyState => {
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
-      return JSON.parse(savedState);
+  const loadSavedState = (): SurveyState => {
+    try {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        return parsedState;
+      }
+    } catch (error) {
+      console.error("Error loading saved state:", error);
     }
+    
     return {
       currentStep: 0,
       messages: [],
@@ -59,24 +65,26 @@ const ChatbotSurvey = () => {
     };
   };
 
-  const [messages, setMessages] = useState<Message[]>(initialState().messages);
+  const initialState = loadSavedState();
+
+  const [messages, setMessages] = useState<Message[]>(initialState.messages);
   const [currentInput, setCurrentInput] = useState("");
-  const [currentStep, setCurrentStep] = useState(initialState().currentStep);
+  const [currentStep, setCurrentStep] = useState(initialState.currentStep);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [showOptions, setShowOptions] = useState<{
     options: { value: string; label: string }[];
     step: number;
   } | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [sliderValue, setSliderValue] = useState(350);
+  const [sliderValue, setSliderValue] = useState(initialState.surveyData.tamanho || 350);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [lastSurveyId, setLastSurveyId] = useState<string | null>(initialState().lastSurveyId);
-  const [showResults, setShowResults] = useState(initialState().showResults);
+  const [lastSurveyId, setLastSurveyId] = useState<string | null>(initialState.lastSurveyId);
+  const [showResults, setShowResults] = useState(initialState.showResults);
 
-  const [surveyData, setSurveyData] = useState(initialState().surveyData);
+  const [surveyData, setSurveyData] = useState(initialState.surveyData);
 
   useEffect(() => {
     const state: SurveyState = {
@@ -86,7 +94,12 @@ const ChatbotSurvey = () => {
       lastSurveyId,
       showResults
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving state to localStorage:", error);
+    }
   }, [currentStep, messages, surveyData, lastSurveyId, showResults]);
 
   useEffect(() => {
@@ -172,7 +185,7 @@ const ChatbotSurvey = () => {
   };
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && currentStep === 0) {
       const firstStep = steps[0];
       addMessage(firstStep.question, "bot");
       
@@ -182,6 +195,8 @@ const ChatbotSurvey = () => {
           step: 0
         });
       }
+    } else if (showResults && lastSurveyId) {
+      console.log("Showing results after page reload with surveyId:", lastSurveyId);
     }
   }, []);
 

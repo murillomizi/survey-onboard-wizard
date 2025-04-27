@@ -41,18 +41,13 @@ const TransformedDataTable = ({ surveyId, websiteUrl }: TransformedDataTableProp
       try {
         setIsLoading(true);
         
-        // Fetch data from "Data set final" table
         let query = supabase
           .from('Data set final')
           .select('*');
           
-        // If we have a websiteUrl, we can use it to filter the results
         if (websiteUrl) {
           query = query.eq('website', websiteUrl);
         }
-        
-        // Filter by survey_id if it's added to the Data set final table
-        // query = query.eq('survey_id', surveyId);
         
         const { data, error: fetchError } = await query;
         
