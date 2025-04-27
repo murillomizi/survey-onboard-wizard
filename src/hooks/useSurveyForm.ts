@@ -39,35 +39,24 @@ export const useSurveyForm = () => {
 
   const checkProgress = async (surveyId: string) => {
     try {
-      console.log(`Checking progress for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
+      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
       
-      const startTime = performance.now();
+      // Usar a Edge Function em vez de uma consulta direta ao banco de dados
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: { surveyId }
+      });
       
-      const { data: countData, error: countError } = await supabase
-        .from("mizi_ai_personalized_return")
-        .select("count", { count: "exact", head: false })
-        .eq("mizi_ai_id", surveyId);
+      console.log('Edge Function response:', data);
       
-      const endTime = performance.now();
-      console.log(`Progress check query execution time: ${endTime - startTime}ms`);
-      console.log(`Progress check raw response:`, countData);
-      
-      if (countError) {
-        console.error("Error checking progress:", countError);
+      if (error) {
+        console.error("Error calling checkProgress Edge Function:", error);
         return;
       }
 
-      const { data: detailData, error: detailError } = await supabase
-        .from("mizi_ai_personalized_return")
-        .select("*")
-        .eq("mizi_ai_id", surveyId);
-      
-      if (detailError) {
-        console.error("Error fetching detail data:", detailError);
-      } else if (detailData) {
-        const count = detailData.length;
+      if (data) {
+        const count = data.count || 0;
         setProcessedCount(count);
-        console.log(`Processed ${count}/${totalCount} records`);
+        console.log(`Processed ${count}/${totalCount} records (via Edge Function)`);
         
         if (count >= totalCount && count > 0) {
           console.log("Processing complete!");

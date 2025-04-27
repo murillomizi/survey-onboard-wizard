@@ -351,23 +351,23 @@ const ChatbotSurvey = () => {
   
   const checkProgress = async (surveyId: string) => {
     try {
-      console.log("Checking progress for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
+      console.log("Checking progress via Edge Function for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
       
-      const { count, error, data } = await supabase
-        .from("mizi_ai_personalized_return")
-        .select("*", { count: 'exact', head: false })
-        .eq("mizi_ai_id", surveyId);
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: { surveyId }
+      });
       
-      console.log("Progress check response:", { count, error, dataLength: data?.length });
+      console.log('Edge Function response:', data);
       
       if (error) {
-        console.error("Error checking progress:", error);
+        console.error("Error calling checkProgress Edge Function:", error);
         return;
       }
-      
-      if (count !== null) {
+
+      if (data) {
+        const count = data.count || 0;
         setProcessedCount(count);
-        console.log(`Processed ${count}/${surveyData.csvData.length} records`);
+        console.log(`Processed ${count}/${surveyData.csvData.length} records (via Edge Function)`);
         
         if (count >= surveyData.csvData.length) {
           console.log("Processing complete!");
