@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 interface LoadingOverlayProps {
@@ -7,14 +7,23 @@ interface LoadingOverlayProps {
   totalCount: number;
   isComplete: boolean;
   onDownload: () => void;
+  surveyId: string | null;
 }
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   processedCount,
   totalCount,
   isComplete,
-  onDownload
+  onDownload,
+  surveyId
 }) => {
+  useEffect(() => {
+    // Display the survey ID in the console for debugging
+    if (surveyId) {
+      console.log(`LoadingOverlay monitoring survey ID: ${surveyId}`);
+    }
+  }, [surveyId]);
+  
   return (
     <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-[9999]">
       <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
@@ -33,6 +42,9 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
             <p className="text-gray-600 text-center">
               Processados {processedCount}/{totalCount} contatos
             </p>
+            {surveyId && (
+              <p className="text-xs text-gray-400">ID: {surveyId}</p>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center space-y-4">

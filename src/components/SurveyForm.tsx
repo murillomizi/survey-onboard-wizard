@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,28 +97,50 @@ const SurveyForm = () => {
   // Function to check processing progress
   const checkProgress = async (surveyId: string) => {
     try {
-      console.log("Checking progress for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
+      console.log(`Checking progress for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
       
-      // Use { count: 'exact' } to get the count without caching
-      const { count, error, data } = await supabase
+      const startTime = performance.now();
+      
+      // Use exact SQL query to fetch count
+      const { data: countData, error: countError } = await supabase
         .from("mizi_ai_personalized_return")
-        .select("*", { count: 'exact', head: false })
+        .select("count", { count: "exact", head: false })
         .eq("mizi_ai_id", surveyId);
       
-      console.log("Progress check response:", { count, error, dataLength: data?.length });
+      const endTime = performance.now();
       
-      if (error) {
-        console.error("Error checking progress:", error);
+      console.log(`Progress check query execution time: ${endTime - startTime}ms`);
+      console.log(`Progress check raw response:`, countData);
+      
+      if (countError) {
+        console.error("Error checking progress:", countError);
         return;
       }
 
-      // Update processed count
-      if (count !== null) {
+      // Alternative direct count query for debugging
+      const { data, error } = await supabase
+        .rpc('get_personalized_return_count', { survey_id: surveyId });
+      
+      console.log(`Direct count RPC call result:`, data, error);
+
+      // Get all rows for the survey ID to see detailed data
+      const { data: detailData, error: detailError } = await supabase
+        .from("mizi_ai_personalized_return")
+        .select("*")
+        .eq("mizi_ai_id", surveyId);
+      
+      console.log(`Current rows for survey ID ${surveyId}:`, detailData?.length || 0);
+      
+      if (detailError) {
+        console.error("Error fetching detail data:", detailError);
+      } else if (detailData) {
+        // Update processed count based on actual rows returned
+        const count = detailData.length;
         setProcessedCount(count);
         console.log(`Processed ${count}/${totalCount} records`);
         
         // Check if processing is complete
-        if (count >= totalCount) {
+        if (count >= totalCount && count > 0) {
           console.log("Processing complete!");
           setIsComplete(true);
           if (pollingRef.current) {
@@ -204,6 +227,8 @@ const SurveyForm = () => {
     
     console.log("Starting processing, showing loading overlay...");
     setIsProcessing(true);
+    setProcessedCount(0);
+    setIsComplete(false);
     
     try {
       // Submit survey data to database
@@ -240,6 +265,9 @@ const SurveyForm = () => {
         const surveyId = data[0].id;
         console.log("Survey saved with ID:", surveyId);
         setProcessingId(surveyId);
+        
+        // First check immediately
+        await checkProgress(surveyId);
         
         // Start polling for updates
         console.log("Starting polling for updates...");
@@ -411,6 +439,7 @@ const SurveyForm = () => {
           totalCount={totalCount}
           isComplete={isComplete}
           onDownload={handleDownload}
+          surveyId={processingId}
         />
       )}
     </>
