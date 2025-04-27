@@ -4,12 +4,13 @@ import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, CircleDot, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, ArrowLeft } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import LoadingOverlay from "./LoadingOverlay";
 
 interface Message {
   id: number;
@@ -32,6 +33,11 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processedCount, setProcessedCount] = useState(0);
+  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const pollingRef = useRef<number | null>(null);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -46,6 +52,15 @@ const ChatbotSurvey = () => {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) {
+        window.clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
 
   const steps = [
     {
@@ -121,7 +136,7 @@ const ChatbotSurvey = () => {
   const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
     setMessages((prev) => [
       ...prev,
-      { id: Date.now(), content, type }
+      { id: Date.now() + Math.random(), content, type }
     ]);
   };
 
@@ -335,6 +350,103 @@ const ChatbotSurvey = () => {
       setShowSlider(true);
     }
   };
+  
+  // Function to check processing progress
+  const checkProgress = async (surveyId: string) => {
+    try {
+      console.log("Checking progress for survey ID:", surveyId, "Timestamp:", new Date().toISOString());
+      
+      // Use { count: 'exact' } to get the count without caching
+      const { count, error, data } = await supabase
+        .from("mizi_ai_personalized_return")
+        .select("*", { count: 'exact', head: false })
+        .eq("mizi_ai_id", surveyId);
+      
+      console.log("Progress check response:", { count, error, dataLength: data?.length });
+      
+      if (error) {
+        console.error("Error checking progress:", error);
+        return;
+      }
+      
+      // Update processed count
+      if (count !== null) {
+        setProcessedCount(count);
+        console.log(`Processed ${count}/${surveyData.csvData.length} records`);
+        
+        // Check if processing is complete
+        if (count >= surveyData.csvData.length) {
+          console.log("Processing complete!");
+          setIsProcessingComplete(true);
+          if (pollingRef.current) {
+            window.clearInterval(pollingRef.current);
+            pollingRef.current = null;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error in checkProgress:", error);
+    }
+  };
+  
+  const handleDownload = async () => {
+    if (!processingId) return;
+    
+    try {
+      console.log("Fetching processed data for download...");
+      // Fetch the processed data
+      const { data, error } = await supabase
+        .from("mizi_ai_personalized_return")
+        .select("*")
+        .eq("mizi_ai_id", processingId);
+      
+      if (error) {
+        console.error("Error fetching processed data:", error);
+        toast({
+          title: "Erro ao baixar",
+          description: "Não foi possível baixar os resultados processados.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (!data || data.length === 0) {
+        toast({
+          title: "Sem dados",
+          description: "Não há dados processados disponíveis para download.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      console.log("Generating CSV with", data.length, "rows");
+      // Convert to CSV
+      const csv = Papa.unparse(data);
+      
+      // Create blob and download link
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `campanha_personalizada_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Download iniciado",
+        description: "Sua campanha personalizada está sendo baixada.",
+      });
+      
+    } catch (error) {
+      console.error("Error in handleDownload:", error);
+      toast({
+        title: "Erro ao baixar",
+        description: "Ocorreu um erro ao tentar baixar o arquivo.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -350,44 +462,82 @@ const ChatbotSurvey = () => {
         return;
       }
       
-      let csvDataToSave = surveyData.csvData;
-      if (surveyData.csvData && surveyData.csvData.length > 100) {
-        csvDataToSave = surveyData.csvData.slice(0, 100);
-        console.log('CSV data trimmed to 100 records to avoid payload size issues');
-      }
-      
-      const { data, error } = await supabase
-        .from('mizi_ai_surveys')
-        .insert([
-          {
-            canal: surveyData.canal,
-            funnel_stage: surveyData.funnelStage,
-            website_url: surveyData.websiteUrl,
-            message_length: surveyData.tamanho,
-            tone_of_voice: surveyData.tomVoz,
-            persuasion_trigger: surveyData.gatilhos,
-            csv_data: csvDataToSave
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error saving survey:', error);
+      if (!surveyData.csvData || surveyData.csvData.length === 0) {
         toast({
-          title: "Erro ao salvar",
-          description: "Não foi possível salvar suas respostas. Tente novamente.",
+          title: "Dados insuficientes",
+          description: "Por favor, faça upload de um arquivo CSV com dados para processar.",
           variant: "destructive"
         });
         setIsSubmitting(false);
         return;
       }
-
-      toast({
-        title: "Configurações salvas!",
-        description: "Suas preferências de mensagem foram salvas com sucesso.",
-      });
       
-      console.log('Survey data saved:', data);
+      console.log("Starting processing, showing loading overlay...");
+      setIsProcessing(true);
+      
+      try {
+        // Submit survey data to database
+        console.log("Saving survey data to database...");
+        const { data, error } = await supabase
+          .from('mizi_ai_surveys')
+          .insert([
+            {
+              canal: surveyData.canal,
+              funnel_stage: surveyData.funnelStage,
+              website_url: surveyData.websiteUrl,
+              message_length: surveyData.tamanho,
+              tone_of_voice: surveyData.tomVoz,
+              persuasion_trigger: surveyData.gatilhos,
+              csv_data: surveyData.csvData
+            }
+          ])
+          .select();
+  
+        if (error) {
+          console.error('Error saving survey:', error);
+          toast({
+            title: "Erro ao salvar",
+            description: "Não foi possível salvar suas respostas. Tente novamente.",
+            variant: "destructive"
+          });
+          setIsSubmitting(false);
+          setIsProcessing(false);
+          return;
+        }
+  
+        toast({
+          title: "Configurações salvas!",
+          description: "Suas preferências de mensagem foram salvas com sucesso.",
+        });
+        
+        console.log('Survey data saved:', data);
+  
+        if (data && data.length > 0) {
+          const surveyId = data[0].id;
+          console.log("Survey saved with ID:", surveyId);
+          setProcessingId(surveyId);
+          
+          // Start polling for updates
+          console.log("Starting polling for updates...");
+          if (pollingRef.current) {
+            window.clearInterval(pollingRef.current);
+          }
+          
+          pollingRef.current = window.setInterval(() => {
+            checkProgress(surveyId);
+          }, 2000);
+        }
+        
+      } catch (error) {
+        console.error('Error in form submission:', error);
+        toast({
+          title: "Erro ao processar",
+          description: "Ocorreu um erro inesperado ao processar sua solicitação.",
+          variant: "destructive"
+        });
+        setIsProcessing(false);
+      }
+      
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -397,11 +547,20 @@ const ChatbotSurvey = () => {
         variant: "destructive"
       });
       setIsSubmitting(false);
+      setIsProcessing(false);
     }
   };
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
+      {isProcessing && (
+        <LoadingOverlay 
+          processedCount={processedCount}
+          totalCount={surveyData.csvData.length}
+          isComplete={isProcessingComplete}
+          onDownload={handleDownload}
+        />
+      )}
       <div className="p-3 border-b border-gray-100">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
