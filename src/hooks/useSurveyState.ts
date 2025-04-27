@@ -1,5 +1,6 @@
+
 import { useState, useRef } from 'react';
-import { Message, SurveyData, WebhookStatus } from '../types/survey';
+import { Message, SurveyData } from '../types/survey';
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,10 +22,6 @@ export const useSurveyState = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [surveyId, setSurveyId] = useState<string | null>(null);
   const checkProgressInterval = useRef<NodeJS.Timeout | null>(null);
-  const [webhookStatus, setWebhookStatus] = useState<WebhookStatus>("idle");
-  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
-  const [processedData, setProcessedData] = useState<any[]>([]);
-  const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
 
   const [surveyData, setSurveyData] = useState<SurveyData>({
     canal: "",
@@ -36,121 +33,10 @@ export const useSurveyState = () => {
     gatilhos: ""
   });
 
-  const fetchProcessedData = async (surveyId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('Data set final')
-        .select('*')
-        .eq('id', surveyId);
-
-      if (error) {
-        console.error('Error fetching processed data:', error);
-        return;
-      }
-
-      if (data) {
-        setProcessedData(data);
-        return data;
-      }
-    } catch (error) {
-      console.error('Error in fetchProcessedData:', error);
-    }
-    return [];
-  };
-
-  const downloadCsv = () => {
-    if (!processedData || processedData.length === 0) {
-      toast({
-        title: "Sem dados para download",
-        description: "Não há dados processados disponíveis para download.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      let csvContent = "";
-      
-      const headers = Object.keys(processedData[0]);
-      csvContent += headers.join(",") + "\n";
-      
-      processedData.forEach(item => {
-        const row = headers.map(header => {
-          const value = item[header];
-          if (typeof value === 'string' && value.includes(',')) {
-            return `"${value}"`;
-          }
-          return value;
-        });
-        csvContent += row.join(",") + "\n";
-      });
-
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      
-      const filename = `mizi-personalization-${year}${month}${day}-${hours}${minutes}.csv`;
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Download iniciado",
-        description: `O arquivo ${filename} está sendo baixado.`,
-      });
-    } catch (error) {
-      console.error('Error downloading CSV:', error);
-      toast({
-        title: "Erro no download",
-        description: "Não foi possível gerar o arquivo CSV.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const checkWebhookUrl = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('settings')
-        .select('value')
-        .eq('id', 'webhook_url')
-        .single();
-
-      if (error) {
-        console.error('Error fetching webhook URL:', error);
-        return null;
-      }
-      
-      if (data && data.value && typeof data.value === 'object') {
-        const valueObject = data.value as { url?: string };
-        if (valueObject.url) {
-          setWebhookUrl(valueObject.url);
-          return valueObject.url;
-        }
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error checking webhook URL:', error);
-      return null;
-    }
-  };
-
   const handleSubmit = async () => {
     try {
       setShowLoading(true);
       setIsSubmitting(true);
-      setWebhookStatus("checking");
       
       if (!surveyData.canal || !surveyData.funnelStage) {
         toast({
@@ -160,20 +46,6 @@ export const useSurveyState = () => {
         });
         setIsSubmitting(false);
         setShowLoading(false);
-        setWebhookStatus("error");
-        return;
-      }
-      
-      const url = await checkWebhookUrl();
-      if (!url) {
-        toast({
-          title: "Webhook não configurado",
-          description: "A URL do webhook não está configurada. Por favor, configure-a antes de continuar.",
-          variant: "destructive"
-        });
-        setIsSubmitting(false);
-        setShowLoading(false);
-        setWebhookStatus("error");
         return;
       }
       
@@ -208,17 +80,18 @@ export const useSurveyState = () => {
         });
         setIsSubmitting(false);
         setShowLoading(false);
-        setWebhookStatus("error");
         return;
       }
 
       setSurveyId(data[0].id);
-      setWebhookStatus("processing");
 
       checkProgressInterval.current = setInterval(async () => {
-        const processedData = await fetchProcessedData(data[0].id);
+        const { count } = await supabase
+          .from('Data set final')
+          .select('id', { count: 'exact' })
+          .eq('id', data[0].id);
         
-        const processed = processedData?.length || 0;
+        const processed = count || 0;
         setProcessedCount(processed);
         
         if (processed >= totalItems) {
@@ -227,14 +100,12 @@ export const useSurveyState = () => {
           }
           setIsSubmitting(false);
           setShowLoading(false);
-          setWebhookStatus("complete");
-          setIsProcessingComplete(true);
           toast({
-            title: "Processamento concluído!",
-            description: "Todos os dados foram processados com sucesso.",
+            title: "Configurações salvas!",
+            description: "Suas preferências de mensagem foram salvas com sucesso.",
           });
         }
-      }, 2000);
+      }, 1000);
 
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -245,7 +116,6 @@ export const useSurveyState = () => {
       });
       setIsSubmitting(false);
       setShowLoading(false);
-      setWebhookStatus("error");
     }
   };
 
@@ -279,14 +149,6 @@ export const useSurveyState = () => {
     surveyData,
     setSurveyData,
     checkProgressInterval,
-    webhookStatus,
-    setWebhookStatus,
-    isProcessingComplete,
-    setIsProcessingComplete,
-    processedData,
-    setProcessedData,
-    fetchProcessedData,
-    downloadCsv,
     handleSubmit
   };
 };

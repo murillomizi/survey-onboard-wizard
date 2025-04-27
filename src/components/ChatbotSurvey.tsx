@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect } from "react";
 import Papa from 'papaparse';
-import { ArrowLeft } from "lucide-react"; // Fixed import
+import { ArrowLeft } from "lucide-react"; // Added missing import
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import ChatMessage from "./ChatMessage";
@@ -40,10 +40,7 @@ const ChatbotSurvey = () => {
     totalCount,
     surveyData,
     setSurveyData,
-    handleSubmit,
-    webhookStatus,
-    isProcessingComplete,
-    downloadCsv
+    handleSubmit
   } = useSurveyState();
 
   useEffect(() => {
@@ -215,7 +212,7 @@ const ChatbotSurvey = () => {
         }, 1000);
       }
     } else {
-      addMessage("Obrigado por completar a pesquisa! Clique em 'Comece' para prosseguir.", "bot");
+      addMessage("Obrigado por completar a pesquisa! Clique em 'Continuar' para prosseguir.", "bot");
     }
   };
 
@@ -266,15 +263,7 @@ const ChatbotSurvey = () => {
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
-      {showLoading && (
-        <LoadingMessages 
-          processedCount={processedCount} 
-          totalCount={totalCount} 
-          webhookStatus={webhookStatus}
-          isProcessingComplete={isProcessingComplete}
-          onDownload={downloadCsv}
-        />
-      )}
+      {showLoading && <LoadingMessages processedCount={processedCount} totalCount={totalCount} />}
       <div className="p-3 border-b border-gray-100">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
@@ -367,7 +356,7 @@ const ChatbotSurvey = () => {
               disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
-              {isSubmitting ? 'Processando...' : 'Comece'}
+              {isSubmitting ? 'Salvando...' : 'Continuar'}
             </Button>
           )}
 
