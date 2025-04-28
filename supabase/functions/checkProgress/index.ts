@@ -1,125 +1,105 @@
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.5.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? ""
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-
+/**
+ * Edge function para verificar o progresso do processamento
+ */
 serve(async (req) => {
-  // This is needed if you're planning to invoke your function from a browser.
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
-
+  
   try {
-    // Create a Supabase client with the service role key
-    const supabase = createClient(
-      SUPABASE_URL,
-      SUPABASE_SERVICE_ROLE_KEY
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') as string;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
+    const supabase = createClient(supabaseUrl, supabaseKey);
     
-    const { surveyId, fetchData } = await req.json()
-    console.log(`Checking progress for survey ID: ${surveyId}, fetchData: ${fetchData}`)
-
+    // Obter parâmetros da requisição
+    const { surveyId, fetchData } = await req.json();
+    console.log(`Checking progress for survey ID: ${surveyId}, fetchData: ${fetchData}`);
+    
     if (!surveyId) {
       return new Response(
-        JSON.stringify({ error: 'Survey ID is required' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
+        JSON.stringify({ error: 'Missing survey ID' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-
-    // Verify if the survey exists
+    
+    // Obter dados do survey
     const { data: surveyData, error: surveyError } = await supabase
       .from('mizi_ai_surveys')
-      .select('*')
+      .select('csv_data')
       .eq('id', surveyId)
-      .single()
-    
-    if (surveyError || !surveyData) {
-      return new Response(
-        JSON.stringify({ error: 'Survey not found', details: surveyError }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
+      .single();
+      
+    if (surveyError) {
+      console.error('Error fetching survey data:', surveyError);
+      throw surveyError;
     }
-
-    // Count the number of processed entries in the personalized return table
+    
+    // Calcular número total de linhas
+    const totalEntries = Array.isArray(surveyData?.csv_data) ? surveyData.csv_data.length : 0;
+    console.log(`Survey has ${totalEntries} entries`);
+    
+    // Contar registros processados
     const { count, error: countError } = await supabase
       .from('mizi_ai_personalized_return')
-      .select('*', { count: 'exact', head: true })
-      .eq('mizi_ai_id', surveyId)
-    
+      .select('id', { count: 'exact', head: true })
+      .eq('mizi_ai_id', surveyId);
+      
     if (countError) {
-      return new Response(
-        JSON.stringify({ error: 'Error counting processed entries', details: countError }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
+      console.error('Error counting processed records:', countError);
+      throw countError;
     }
-
-    // CSV data length for comparison
-    const csvDataLength = Array.isArray(surveyData.csv_data) ? surveyData.csv_data.length : 0
-    console.log(`Survey has ${csvDataLength} entries, ${count} processed`)
     
-    // If the client wants to fetch the processed data
-    let processedData = null
-    if (fetchData) {
+    const processedCount = count || 0;
+    console.log(`${processedCount} processed`);
+    
+    // Verificar se está completo
+    const isComplete = totalEntries > 0 && processedCount >= totalEntries;
+    
+    // Se precisar retornar dados processados
+    let processedData;
+    if (fetchData && isComplete) {
       const { data, error } = await supabase
         .from('mizi_ai_personalized_return')
         .select('*')
-        .eq('mizi_ai_id', surveyId)
-      
+        .eq('mizi_ai_id', surveyId);
+        
       if (error) {
-        return new Response(
-          JSON.stringify({ error: 'Error fetching processed data', details: error }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        )
+        console.error('Error fetching processed data:', error);
+        throw error;
       }
-
-      processedData = data
-      console.log(`Retrieved ${data?.length || 0} processed records for download`)
+      
+      processedData = data;
     }
-
-    // Determine if processing is complete
-    const isComplete = csvDataLength > 0 && count >= csvDataLength
-
-    return new Response(
-      JSON.stringify({
-        count,
-        total: csvDataLength,
-        isComplete,
-        surveyId,
-        processedData: fetchData ? processedData : null
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    )
     
-  } catch (error) {
-    console.error('Error in Edge Function:', error)
+    // Retornar resposta
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      JSON.stringify({ 
+        count: processedCount, 
+        total: totalEntries,
+        isComplete,
+        processedData
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error('Error in checkProgress edge function:', error);
+    
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
-    )
+    );
   }
-})
+});

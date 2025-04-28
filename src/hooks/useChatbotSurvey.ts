@@ -1,8 +1,6 @@
-
 import { useState, useEffect } from "react";
-import { useSurveyForm } from "@/hooks/useSurveyForm";
+import { useSurveyManager } from "@/hooks/useSurveyManager";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 export interface StepOption {
   value: string;
@@ -98,117 +96,37 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   
-  const surveyForm = useSurveyForm();
+  const surveyForm = useSurveyManager(initialSurveyId);
 
   useEffect(() => {
     if (initialSurveyId) {
-      loadPastSurvey(initialSurveyId);
+      setIsLoadingPastChat(true);
+      
+      const timer = setTimeout(() => {
+        setIsLoadingPastChat(false);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
     }
   }, [initialSurveyId]);
 
   const loadPastSurvey = async (surveyId: string) => {
+    if (!surveyId) return null;
+    
     try {
       setIsLoadingPastChat(true);
-      console.log("Loading survey with ID:", surveyId);
-      
-      const { data, error } = await supabase
-        .from('mizi_ai_surveys')
-        .select('*')
-        .eq('id', surveyId)
-        .single();
-      
-      if (error) {
-        console.error("Error fetching survey:", error);
-        toast({
-          title: "Erro ao carregar",
-          description: "Não foi possível carregar este chat.",
-          variant: "destructive"
-        });
-        throw error;
-      }
-      
-      if (data) {
-        console.log("Survey data loaded:", data);
-        const csvDataArray = Array.isArray(data.csv_data) ? data.csv_data : [];
-        
-        surveyForm.setSurveyData({
-          ...surveyForm.surveyData,
-          canal: data.canal || "",
-          touchpoints: data.funnel_stage || "3",
-          funnelStage: data.funnel_stage || "",
-          websiteUrl: data.website_url || "",
-          tamanho: data.message_length || 350,
-          tomVoz: data.tone_of_voice || "",
-          gatilhos: data.persuasion_trigger || "",
-          csvFileName: data.csv_file_name || "",
-          csvFile: null,
-          template: surveyForm.surveyData.template
-        });
-        
-        if (csvDataArray.length > 0) {
-          console.log(`Loaded ${csvDataArray.length} CSV entries`);
-          surveyForm.setParsedCsvData(csvDataArray);
-          surveyForm.setTotalCount(csvDataArray.length);
-        }
-        
-        // Check completion status
-        if (data.id) {
-          try {
-            const progressData = await surveyForm.checkProgress(data.id);
-            if (progressData && progressData.isComplete) {
-              surveyForm.setIsComplete(true);
-            }
-          } catch (err) {
-            console.error("Error checking progress:", err);
-          }
-        }
-      }
-      
-      return data;
-      
-    } catch (error) {
-      console.error("Error loading past survey:", error);
-      toast({
-        title: "Erro ao carregar chat",
-        description: "Ocorreu um erro ao carregar o chat selecionado.",
-        variant: "destructive"
-      });
-      throw error;
+      return await surveyForm.loadSurvey?.(surveyId);
     } finally {
-      setIsLoadingPastChat(false);
+      setTimeout(() => {
+        setIsLoadingPastChat(false);
+      }, 500);
     }
   };
 
   const handleFileUpload = async (file: File): Promise<boolean> => {
-    if (file.type !== "text/csv") {
-      toast({
-        title: "Formato inválido",
-        description: "Por favor, selecione um arquivo CSV.",
-        variant: "destructive"
-      });
-      return false;
-    }
-    
-    try {
-      surveyForm.setSurveyData(prevData => ({
-        ...prevData,
-        csvFile: file,
-        csvFileName: file.name
-      }));
-      
-      return true;
-    } catch (error) {
-      console.error("Error handling file upload:", error);
-      toast({
-        title: "Erro ao processar arquivo",
-        description: "Não foi possível processar o arquivo CSV.",
-        variant: "destructive"
-      });
-      return false;
-    }
+    return surveyForm.handleFileUpload(file);
   };
 
   return {
@@ -227,10 +145,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     isLoadingPastChat,
     loadPastSurvey,
     surveyForm,
-    handleFileUpload: async (file: File): Promise<boolean> => {
-      return handleFileUpload(file);
-    },
-    isSubmitting,
-    setIsSubmitting
+    handleFileUpload,
+    isSubmitting: surveyForm.isSubmitting
   };
 };

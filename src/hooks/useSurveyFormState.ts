@@ -14,6 +14,9 @@ interface SurveyFormState {
   funnelStage: string;
 }
 
+/**
+ * @deprecated Use o hook useSurveyManager em vez disso
+ */
 export const useSurveyFormState = () => {
   const [surveyData, setSurveyData] = useState<SurveyFormState>({
     canal: "linkedin",

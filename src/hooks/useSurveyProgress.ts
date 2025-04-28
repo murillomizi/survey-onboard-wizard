@@ -1,51 +1,43 @@
 
-import { useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { useRef, useCallback } from "react";
+import { SurveyController } from "@/controllers/SurveyController";
 
+/**
+ * @deprecated Use o hook useSurveyManager em vez disso
+ */
 export const useSurveyProgress = (onProgressUpdate: (count: number) => void) => {
   const pollingRef = useRef<number | null>(null);
 
-  const checkProgress = async (surveyId: string) => {
+  const checkProgress = useCallback(async (surveyId: string) => {
     try {
-      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
+      console.log(`Verificando progresso para ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
       
-      const { data, error } = await supabase.functions.invoke('checkProgress', {
-        body: { surveyId }
-      });
+      const status = await SurveyController.checkProgress(surveyId);
       
-      console.log('Edge Function response:', data);
-      
-      if (error) {
-        console.error("Error calling checkProgress Edge Function:", error);
-        return null;
-      }
-
-      if (data) {
-        const count = data.count || 0;
-        onProgressUpdate(count);
+      if (status) {
+        onProgressUpdate(status.processedCount);
       }
       
-      return data;
+      return status;
     } catch (error) {
       console.error("Error in checkProgress:", error);
       return null;
     }
-  };
+  }, [onProgressUpdate]);
 
-  const stopPolling = () => {
+  const stopPolling = useCallback(() => {
     if (pollingRef.current) {
       window.clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
-  };
+  }, []);
 
-  const startPolling = (surveyId: string) => {
+  const startPolling = useCallback((surveyId: string) => {
     stopPolling();
     pollingRef.current = window.setInterval(() => {
       checkProgress(surveyId);
     }, 2000);
-  };
+  }, [checkProgress, stopPolling]);
 
   return {
     checkProgress,
