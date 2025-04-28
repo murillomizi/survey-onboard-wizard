@@ -8,16 +8,18 @@ import SurveyHeader from "./survey/SurveyHeader";
 import SurveyMessages from "./survey/SurveyMessages";
 import SurveyFooter from "./survey/SurveyFooter";
 import FileHandler from "./survey/FileHandler";
+import { ChatSummary } from "./survey/ChatSummary";
 
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
   onSubmitSuccess?: (surveyId: string) => void;
-  isLoading?: boolean;  // Add this line to include the isLoading prop
+  isLoading?: boolean;
 }
 
 const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({ 
   initialSurveyId = null, 
-  onSubmitSuccess 
+  onSubmitSuccess,
+  isLoading = false
 }) => {
   const { messages, setMessages, addMessage } = useChatMessages();
   const {
@@ -39,12 +41,83 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   } = useChatbotSurvey(initialSurveyId);
 
   useEffect(() => {
+    console.log("ChatbotSurvey received initialSurveyId:", initialSurveyId);
     if (initialSurveyId) {
-      loadPastSurvey(initialSurveyId);
+      resetAndLoadPastSurvey(initialSurveyId);
     } else if (!isLoadingPastChat) {
       initializeChat();
     }
   }, [initialSurveyId]);
+
+  const resetAndLoadPastSurvey = async (surveyId: string) => {
+    console.log("Resetting chat and loading survey:", surveyId);
+    // Reset messages to start fresh
+    setMessages([]);
+    
+    // Reset UI states
+    setShowOptions(null);
+    setShowSlider(false);
+    setCurrentInput("");
+    
+    // Load the selected survey data
+    await loadPastSurvey(surveyId);
+    
+    // Rebuild the chat history based on the loaded data
+    rebuildChatHistory();
+  };
+
+  const rebuildChatHistory = () => {
+    console.log("Rebuilding chat history with data:", surveyForm.surveyData);
+    
+    // Add welcome message
+    addMessage(steps[0].question, "bot");
+    
+    // Add user selection for channel
+    const channelLabel = getOptionLabel("canal", surveyForm.surveyData.canal);
+    addMessage(channelLabel, "user");
+    
+    // Add funnel stage question and user's answer
+    addMessage(steps[1].question, "bot");
+    const funnelLabel = getOptionLabel("funnelStage", surveyForm.surveyData.funnelStage);
+    addMessage(funnelLabel, "user");
+    
+    // Add website URL question and user's answer
+    addMessage(steps[2].question, "bot");
+    addMessage(surveyForm.surveyData.websiteUrl, "user");
+    
+    // Add message size question and user's answer
+    addMessage(steps[3].question, "bot");
+    addMessage(`${surveyForm.surveyData.tamanho} caracteres`, "user");
+    
+    // Add tone of voice question and user's answer
+    addMessage(steps[4].question, "bot");
+    const toneLabel = getOptionLabel("tomVoz", surveyForm.surveyData.tomVoz);
+    addMessage(toneLabel, "user");
+    
+    // Add triggers question and user's answer
+    addMessage(steps[5].question, "bot");
+    const triggerLabel = getOptionLabel("gatilhos", surveyForm.surveyData.gatilhos);
+    addMessage(triggerLabel, "user");
+    
+    // Add CSV upload question
+    addMessage(steps[6].question, "bot");
+    
+    // Add CSV file upload confirmation if available
+    if (surveyForm.csvFileName) {
+      addMessage(`Arquivo processado com sucesso: ${surveyForm.totalCount} linhas carregadas`, "user");
+    }
+    
+    // Add summary question and content
+    addMessage(steps[7].question, "bot");
+    const summaryContent = (
+      <ChatSummary surveyData={surveyForm.surveyData} csvFileName={surveyForm.csvFileName} totalCount={surveyForm.totalCount} />
+    );
+    addMessage(summaryContent, "bot");
+    addMessage("Tudo pronto para continuar?", "bot");
+    
+    // Set current step to the end
+    setCurrentStep(7);
+  };
 
   const initializeChat = () => {
     if (messages.length === 0) {
@@ -175,23 +248,14 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       }
       
       if (steps[nextStep].inputType === "summary") {
-        const csvInfo = surveyForm.csvFileName && surveyForm.totalCount > 0
-          ? `${surveyForm.csvFileName} (${surveyForm.totalCount} registros)`
-          : "Nenhum arquivo carregado";
-
         const summaryContent = (
-          <div>
-            <p><strong>Canal:</strong> {getOptionLabel("canal", surveyForm.surveyData.canal)}</p>
-            <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", surveyForm.surveyData.funnelStage)}</p>
-            <p><strong>Site:</strong> {surveyForm.surveyData.websiteUrl}</p>
-            <p><strong>Tamanho:</strong> {surveyForm.surveyData.tamanho} caracteres</p>
-            <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyForm.surveyData.tomVoz)}</p>
-            <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyForm.surveyData.gatilhos)}</p>
-            <p>
-              <strong>Arquivo CSV:</strong> {csvInfo}
-            </p>
-          </div>
+          <ChatSummary 
+            surveyData={surveyForm.surveyData} 
+            csvFileName={surveyForm.csvFileName} 
+            totalCount={surveyForm.totalCount} 
+          />
         );
+        
         addMessage(summaryContent, "bot");
         
         setTimeout(() => {
@@ -278,7 +342,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       
       <SurveyMessages
         messages={messages}
-        isWaitingForResponse={isWaitingForResponse}
+        isWaitingForResponse={isWaitingForResponse || isLoadingPastChat || isLoading}
         showOptions={showOptions}
         showSlider={showSlider}
         sliderValue={sliderValue}

@@ -17,6 +17,8 @@ const Index = () => {
     try {
       setIsLoading(true);
       console.log("Loading survey ID:", surveyId);
+      
+      // Set the selected survey ID first
       setSelectedSurveyId(surveyId);
       setShowSurveyForm(true);
       

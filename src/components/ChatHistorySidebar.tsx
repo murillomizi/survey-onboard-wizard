@@ -42,6 +42,8 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
   const fetchChatHistory = async () => {
     try {
       setLoading(true);
+      console.log("Fetching chat history...");
+      
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
         .select('id, created_at, canal, funnel_stage')
@@ -59,6 +61,8 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
 
       // For each survey, check if processing is complete
       if (data) {
+        console.log("Fetched chat history:", data.length, "items");
+        
         const updatedData = await Promise.all(data.map(async (item) => {
           try {
             const { data: progressData } = await supabase.functions.invoke('checkProgress', {
@@ -114,13 +118,18 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
     return `${channel} - ${funnel}`;
   };
 
-  const handleSelectItem = (surveyId: string) => {
+  const handleSelectItem = (surveyId: string, e: React.MouseEvent) => {
+    // Prevent any default behavior that might cause page reload
+    e.preventDefault();
+    e.stopPropagation();
+    
     console.log("Survey selected:", surveyId);
-    // Prevenção do comportamento padrão que possa estar causando reload
     onSelectSurvey(surveyId);
   };
 
-  const handleNewCampaignClick = () => {
+  const handleNewCampaignClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onNewCampaign();
   };
 
@@ -157,7 +166,7 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     isActive={currentSurveyId === item.id}
-                    onClick={() => handleSelectItem(item.id)}
+                    onClick={(e) => handleSelectItem(item.id, e as React.MouseEvent)}
                     className="w-full"
                   >
                     <div className="flex flex-col items-start w-full">
