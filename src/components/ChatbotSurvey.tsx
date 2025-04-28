@@ -41,15 +41,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   const { addMessage } = useChatMessages();
 
-  // Auto-check status effect from previous implementation
-  useEffect(() => {
-    if (initialSurveyId && !isLoadingPastChat) {
-      const checkProcessingStatus = async () => {
-        await handleCheckStatus();
-      };
-      checkProcessingStatus();
-    }
-  }, [initialSurveyId, isLoadingPastChat, handleCheckStatus]);
+  // Removida a verificação automática de status
 
   const handleFileChange = async (file: File) => {
     const success = await surveyForm.handleFileUpload(file);

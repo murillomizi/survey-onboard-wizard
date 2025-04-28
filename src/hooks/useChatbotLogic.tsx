@@ -142,6 +142,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     console.log("Adding completion message");
     console.log(`Completion data: processedCount=${surveyForm.processedCount}, totalCount=${surveyForm.totalCount}`);
     
+    // Adiciona a mensagem de conclusão apenas se não foi adicionada antes
     if (!completionMessageAddedRef.current) {
       addMessage(
         <CompletionMessage
