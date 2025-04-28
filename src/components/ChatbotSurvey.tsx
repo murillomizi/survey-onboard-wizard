@@ -18,9 +18,10 @@ interface Message {
 
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
+  onSubmitSuccess?: (surveyId: string) => void;
 }
 
-const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
+const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurveyProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
@@ -651,6 +652,10 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
           const surveyId = data[0].id;
           console.log("Survey saved with ID:", surveyId);
           setProcessingId(surveyId);
+          
+          if (onSubmitSuccess) {
+            onSubmitSuccess(surveyId);
+          }
           
           addMessage(
             <div className="space-y-2">

@@ -1,13 +1,15 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
 import ChatHistorySidebar from "@/components/ChatHistorySidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
   const [showSurveyForm, setShowSurveyForm] = useState(true);
+  const [refresh, setRefresh] = useState(0); // Add a refresh key to force re-rendering
 
   const handleSelectSurvey = (surveyId: string) => {
     setSelectedSurveyId(surveyId);
@@ -15,8 +17,31 @@ const Index = () => {
   };
 
   const handleNewCampaign = () => {
+    // Reset the survey ID to null to start a fresh chat
     setSelectedSurveyId(null);
     setShowSurveyForm(true);
+    // Force a refresh of the ChatbotSurvey component
+    setRefresh(prev => prev + 1);
+  };
+
+  // Function to handle successful form submission
+  const handleFormSubmit = async (newSurveyId: string) => {
+    // Update the selected survey ID to the new one
+    setSelectedSurveyId(newSurveyId);
+    
+    // Wait briefly to ensure data is available
+    setTimeout(async () => {
+      try {
+        // Refresh the chat history sidebar to show the new entry
+        const sidebar = document.querySelector('[data-sidebar="sidebar"]');
+        if (sidebar) {
+          // Trigger a rerender if needed
+          setRefresh(prev => prev + 1);
+        }
+      } catch (error) {
+        console.error("Error refreshing after submission:", error);
+      }
+    }, 500);
   };
 
   return (
@@ -67,7 +92,11 @@ const Index = () => {
           >
             <div className="transform transition-all duration-500 hover:scale-[1.01]">
               {showSurveyForm && (
-                <ChatbotSurvey initialSurveyId={selectedSurveyId} />
+                <ChatbotSurvey 
+                  key={refresh} // Add a key prop to force remounting when refresh changes
+                  initialSurveyId={selectedSurveyId} 
+                  onSubmitSuccess={handleFormSubmit}
+                />
               )}
             </div>
           </motion.div>

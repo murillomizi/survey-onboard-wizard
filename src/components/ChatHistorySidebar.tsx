@@ -113,13 +113,17 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId }: 
     return `${channel} - ${funnel}`;
   };
 
+  const handleNewCampaignClick = () => {
+    onNewCampaign();
+  };
+
   return (
     <Sidebar side="left" className="bg-white border-r border-gray-200" data-state="expanded">
       <SidebarHeader className="pb-0">
         <div className="flex justify-between items-center p-2">
           <h2 className="text-lg font-semibold text-gray-800">Histórico</h2>
           <Button 
-            onClick={onNewCampaign}
+            onClick={handleNewCampaignClick}
             className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center gap-1 hover:opacity-90"
             size="sm"
           >
