@@ -100,6 +100,8 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
     handleDownload,
     isLoading,
     isSubmitting: state.isProcessing,
-    csvFileName: state.surveyData.csvFileName
+    csvFileName: state.surveyData.csvFileName,
+    // Explicitly adding loadSurvey to the returned object
+    loadSurvey
   };
 };
