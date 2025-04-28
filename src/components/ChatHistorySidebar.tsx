@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Clock, Loader2 } from "lucide-react";
+import { PlusCircle, Clock, Loader2, CheckCircle } from "lucide-react";
 import { SurveyController } from "@/controllers/SurveyController";
 
 interface ChatHistorySidebarProps {
@@ -21,6 +21,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   const [chatHistory, setChatHistory] = useState<{
     id: string;
     created_at: string;
+    isComplete: boolean;
   }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +30,16 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
       setIsLoading(true);
       try {
         const history = await SurveyController.getChatHistory();
-        setChatHistory(history);
+        const historyWithStatus = await Promise.all(
+          history.map(async (chat) => {
+            const status = await SurveyController.checkProgress(chat.id);
+            return {
+              ...chat,
+              isComplete: status.isComplete
+            };
+          })
+        );
+        setChatHistory(historyWithStatus);
       } catch (error) {
         console.error("Error fetching chat history:", error);
       } finally {
@@ -79,7 +89,11 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                 onClick={() => onSelectSurvey(chat.id)}
               >
                 <div className="flex items-center text-gray-600 w-full">
-                  <Clock className="mr-2 h-4 w-4" />
+                  {chat.isComplete ? (
+                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                  ) : (
+                    <Clock className="mr-2 h-4 w-4" />
+                  )}
                   {new Date(chat.created_at).toLocaleString('pt-BR', {
                     day: '2-digit',
                     month: '2-digit',
@@ -98,4 +112,3 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
 };
 
 export default ChatHistorySidebar;
-
