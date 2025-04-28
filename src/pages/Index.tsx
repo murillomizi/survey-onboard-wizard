@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
@@ -58,26 +57,11 @@ const Index = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-[800px] text-center mt-8 mb-6"
+            className="w-full max-w-[800px] flex items-center gap-3 mb-4"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex items-center justify-center gap-3 mb-4"
-            >
-              <h1 className="text-5xl font-light text-gray-800 tracking-wide">
-                Mizi <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">AI</span>
-              </h1>
-            </motion.div>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-gray-600 text-lg"
-            >
-              Personalize sua abordagem com IA
-            </motion.p>
+            <h1 className="text-2xl font-light text-gray-800 tracking-wide">
+              Mizi <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">AI</span>
+            </h1>
           </motion.div>
           
           <motion.div
@@ -93,7 +77,7 @@ const Index = () => {
             <div className="transform transition-all duration-500 hover:scale-[1.01]">
               {showSurveyForm && (
                 <ChatbotSurvey 
-                  key={refresh} // Add a key prop to force remounting when refresh changes
+                  key={refresh}
                   initialSurveyId={selectedSurveyId} 
                   onSubmitSuccess={handleFormSubmit}
                 />
