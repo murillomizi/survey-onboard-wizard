@@ -1,7 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSurveyForm } from "@/hooks/useSurveyForm";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface StepOption {
@@ -98,9 +98,16 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   
   const surveyForm = useSurveyForm();
+
+  useEffect(() => {
+    if (initialSurveyId) {
+      loadPastSurvey(initialSurveyId);
+    }
+  }, [initialSurveyId]);
 
   const loadPastSurvey = async (surveyId: string) => {
     try {
@@ -127,13 +134,13 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
         surveyForm.setSurveyData({
           ...surveyForm.surveyData,
           canal: data.canal || "",
-          touchpoints: data.funnel_stage || "",
+          touchpoints: data.touchpoints || "3",
           funnelStage: data.funnel_stage || "",
           websiteUrl: data.website_url || "",
           tamanho: data.message_length || 350,
           tomVoz: data.tone_of_voice || "",
           gatilhos: data.persuasion_trigger || "",
-          csvFileName: "",
+          csvFileName: data.csv_file_name || "",
           csvFile: null,
           template: surveyForm.surveyData.template
         });
@@ -142,12 +149,52 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
           surveyForm.setParsedCsvData(csvDataArray);
           surveyForm.setTotalCount(csvDataArray.length);
         }
+        
+        // Check if processing is complete
+        if (data.id) {
+          try {
+            await surveyForm.checkProgress(data.id);
+          } catch (err) {
+            console.error("Error checking progress:", err);
+          }
+        }
       }
       
     } catch (error) {
       console.error("Error loading past survey:", error);
     } finally {
       setIsLoadingPastChat(false);
+    }
+  };
+
+  // Função para lidar com o upload de arquivo CSV
+  const handleFileUpload = async (file: File): Promise<boolean> => {
+    if (file.type !== "text/csv") {
+      toast({
+        title: "Formato inválido",
+        description: "Por favor, selecione um arquivo CSV.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    try {
+      // Atualiza o estado com o arquivo selecionado
+      surveyForm.setSurveyData(prevData => ({
+        ...prevData,
+        csvFile: file,
+        csvFileName: file.name
+      }));
+      
+      return true;
+    } catch (error) {
+      console.error("Error handling file upload:", error);
+      toast({
+        title: "Erro ao processar arquivo",
+        description: "Não foi possível processar o arquivo CSV.",
+        variant: "destructive"
+      });
+      return false;
     }
   };
 
@@ -166,6 +213,9 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     setSliderValue,
     isLoadingPastChat,
     loadPastSurvey,
-    surveyForm
+    surveyForm,
+    handleFileUpload,
+    isSubmitting,
+    setIsSubmitting
   };
 };

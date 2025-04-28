@@ -1,18 +1,35 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
 import ChatHistorySidebar from "@/components/ChatHistorySidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
   const [showSurveyForm, setShowSurveyForm] = useState(true);
   const [refresh, setRefresh] = useState(0); // Add a refresh key to force re-rendering
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSelectSurvey = (surveyId: string) => {
-    setSelectedSurveyId(surveyId);
-    setShowSurveyForm(true);
+  const handleSelectSurvey = async (surveyId: string) => {
+    try {
+      setIsLoading(true);
+      setSelectedSurveyId(surveyId);
+      setShowSurveyForm(true);
+      // Force a refresh of the ChatbotSurvey component
+      setRefresh(prev => prev + 1);
+    } catch (error) {
+      console.error("Error selecting survey:", error);
+      toast({
+        title: "Erro ao carregar chat",
+        description: "Não foi possível carregar os dados do chat selecionado.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNewCampaign = () => {
@@ -50,6 +67,7 @@ const Index = () => {
           onSelectSurvey={handleSelectSurvey}
           onNewCampaign={handleNewCampaign}
           currentSurveyId={selectedSurveyId}
+          refresh={refresh}
         />
         
         <div className="flex-1 flex flex-col items-center justify-start p-4">
@@ -80,6 +98,7 @@ const Index = () => {
                   key={refresh}
                   initialSurveyId={selectedSurveyId} 
                   onSubmitSuccess={handleFormSubmit}
+                  isLoading={isLoading}
                 />
               )}
             </div>

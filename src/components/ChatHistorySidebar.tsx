@@ -20,6 +20,7 @@ interface ChatHistoryProps {
   onSelectSurvey: (surveyId: string) => void;
   onNewCampaign: () => void;
   currentSurveyId: string | null;
+  refresh?: number;
 }
 
 interface ChatHistoryItem {
@@ -30,13 +31,13 @@ interface ChatHistoryItem {
   isProcessed?: boolean;
 }
 
-const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId }: ChatHistoryProps) => {
+const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, refresh = 0 }: ChatHistoryProps) => {
   const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchChatHistory();
-  }, []);
+  }, [refresh]);
 
   const fetchChatHistory = async () => {
     try {
@@ -113,6 +114,11 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId }: 
     return `${channel} - ${funnel}`;
   };
 
+  const handleSelectItem = (surveyId: string) => {
+    console.log("Survey selected:", surveyId);
+    onSelectSurvey(surveyId);
+  };
+
   const handleNewCampaignClick = () => {
     onNewCampaign();
   };
@@ -150,7 +156,7 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId }: 
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     isActive={currentSurveyId === item.id}
-                    onClick={() => onSelectSurvey(item.id)}
+                    onClick={() => handleSelectItem(item.id)}
                     className="w-full"
                   >
                     <div className="flex flex-col items-start w-full">
