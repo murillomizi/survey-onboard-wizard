@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -187,10 +188,17 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
           gatilhos: data.persuasion_trigger || ""
         });
         
-        setProcessingId(data.id);
+        setProgress(prev => ({
+          ...prev,
+          processingId: data.id
+        }));
         
         if (csvDataArray.length > 0) {
-          setCsvRowCount(csvDataArray.length);
+          // Update csvRowCount through the surveyData state
+          setSurveyData(prev => ({
+            ...prev,
+            csvData: csvDataArray
+          }));
         }
         
         const { data: progressData } = await supabase.functions.invoke('checkProgress', {
@@ -253,10 +261,10 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
               </p>
               <Button
                 onClick={handleDownload}
-                disabled={isDownloading}
+                disabled={progress.isDownloading}
                 className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
               >
-                {isDownloading ? (
+                {progress.isDownloading ? (
                   <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" />
                     Gerando arquivo...
@@ -406,7 +414,10 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       link.href = url;
       link.setAttribute('download', `campanha_personalizada_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
-      link.click();
+      
+      // Add type assertion to resolve the click() TypeScript error
+      (link as HTMLAnchorElement).click();
+      
       document.body.removeChild(link);
       
       toast({
@@ -478,7 +489,10 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         if (data && data.length > 0) {
           const surveyId = data[0].id;
           console.log("Survey saved with ID:", surveyId);
-          setProcessingId(surveyId);
+          setProgress(prev => ({
+            ...prev,
+            processingId: surveyId
+          }));
           
           if (onSubmitSuccess) {
             onSubmitSuccess(surveyId);
@@ -564,10 +578,10 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
             </p>
             <Button
               onClick={handleDownload}
-              disabled={isDownloading}
+              disabled={progress.isDownloading}
               className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
             >
-              {isDownloading ? (
+              {progress.isDownloading ? (
                 <>
                   <Loader className="mr-2 h-4 w-4 animate-spin" />
                   Gerando arquivo...
@@ -697,7 +711,13 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         currentInput={currentInput}
         onInputChange={setCurrentInput}
         onSendMessage={handleSendMessage}
-        onFileUpload={() => document.querySelector('input[type="file"]')?.click()}
+        onFileUpload={() => {
+          // Use type assertion to fix Element.click error
+          const fileInput = document.querySelector('input[type="file"]');
+          if (fileInput) {
+            (fileInput as HTMLElement).click();
+          }
+        }}
         onSubmit={handleSubmit}
         onCheckStatus={handleCheckStatus}
         isSubmitting={isSubmitting}
