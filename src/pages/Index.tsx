@@ -18,13 +18,18 @@ const Index = () => {
       setIsLoading(true);
       console.log("Loading survey ID:", surveyId);
       
-      // Set the selected survey ID first
-      setSelectedSurveyId(surveyId);
-      setShowSurveyForm(true);
+      // Importante: primeiro definir o ID selecionado
+      setSelectedSurveyId(null); // Definimos como null primeiro para forçar uma recarga completa
       
-      // Importante: Forcamos um refresh do componente ChatbotSurvey para garantir 
-      // que os dados mais recentes sejam carregados
-      setRefresh(prev => prev + 1);
+      // Atraso breve para garantir que o estado foi limpo
+      setTimeout(() => {
+        setSelectedSurveyId(surveyId);
+        setShowSurveyForm(true);
+        
+        // Forçamos um refresh do componente ChatbotSurvey
+        setRefresh(prev => prev + 1);
+      }, 50);
+      
     } catch (error) {
       console.error("Error selecting survey:", error);
       toast({

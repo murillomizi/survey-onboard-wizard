@@ -51,19 +51,24 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   const resetAndLoadPastSurvey = async (surveyId: string) => {
     console.log("Resetting chat and loading survey:", surveyId);
-    // Reset messages to start fresh
-    setMessages([]);
-    
-    // Reset UI states
-    setShowOptions(null);
-    setShowSlider(false);
-    setCurrentInput("");
-    
-    // Load the selected survey data
-    await loadPastSurvey(surveyId);
-    
-    // Rebuild the chat history based on the loaded data
-    rebuildChatHistory();
+    try {
+      // Reset messages to start fresh - IMPORTANT: clear messages first
+      setMessages([]);
+      
+      // Reset UI states
+      setShowOptions(null);
+      setShowSlider(false);
+      setCurrentInput("");
+      
+      // Load the selected survey data
+      await loadPastSurvey(surveyId);
+      
+      // Rebuild the chat history based on the loaded data
+      // Only call this after the data is loaded
+      rebuildChatHistory();
+    } catch (error) {
+      console.error("Error in resetAndLoadPastSurvey:", error);
+    }
   };
 
   const rebuildChatHistory = () => {
@@ -83,7 +88,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     
     // Add website URL question and user's answer
     addMessage(steps[2].question, "bot");
-    addMessage(surveyForm.surveyData.websiteUrl, "user");
+    addMessage(surveyForm.surveyData.websiteUrl || "", "user");
     
     // Add message size question and user's answer
     addMessage(steps[3].question, "bot");
@@ -110,7 +115,11 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     // Add summary question and content
     addMessage(steps[7].question, "bot");
     const summaryContent = (
-      <ChatSummary surveyData={surveyForm.surveyData} csvFileName={surveyForm.csvFileName} totalCount={surveyForm.totalCount} />
+      <ChatSummary 
+        surveyData={surveyForm.surveyData} 
+        csvFileName={surveyForm.csvFileName} 
+        totalCount={surveyForm.totalCount} 
+      />
     );
     addMessage(summaryContent, "bot");
     addMessage("Tudo pronto para continuar?", "bot");

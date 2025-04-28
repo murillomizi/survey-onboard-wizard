@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSurveyForm } from "@/hooks/useSurveyForm";
 import { useToast } from "@/components/ui/use-toast";
@@ -127,12 +126,13 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
           description: "Não foi possível carregar este chat.",
           variant: "destructive"
         });
-        return;
+        throw error;
       }
       
       if (data) {
         console.log("Survey data loaded:", data);
         const csvDataArray = Array.isArray(data.csv_data) ? data.csv_data : [];
+        
         surveyForm.setSurveyData({
           ...surveyForm.surveyData,
           canal: data.canal || "",
@@ -153,15 +153,17 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
           surveyForm.setTotalCount(csvDataArray.length);
         }
         
-        // Check if processing is complete
         if (data.id) {
           try {
             await surveyForm.checkProgress(data.id);
+            surveyForm.setProcessingId(data.id);
           } catch (err) {
             console.error("Error checking progress:", err);
           }
         }
       }
+      
+      return data;
       
     } catch (error) {
       console.error("Error loading past survey:", error);
@@ -170,12 +172,12 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
         description: "Ocorreu um erro ao carregar o chat selecionado.",
         variant: "destructive"
       });
+      throw error;
     } finally {
       setIsLoadingPastChat(false);
     }
   };
 
-  // Função para lidar com o upload de arquivo CSV
   const handleFileUpload = async (file: File): Promise<boolean> => {
     if (file.type !== "text/csv") {
       toast({
@@ -187,7 +189,6 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     }
     
     try {
-      // Atualiza o estado com o arquivo selecionado
       surveyForm.setSurveyData(prevData => ({
         ...prevData,
         csvFile: file,
@@ -222,7 +223,9 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     isLoadingPastChat,
     loadPastSurvey,
     surveyForm,
-    handleFileUpload,
+    handleFileUpload: async (file: File): Promise<boolean> => {
+      return handleFileUpload(file);
+    },
     isSubmitting,
     setIsSubmitting
   };
