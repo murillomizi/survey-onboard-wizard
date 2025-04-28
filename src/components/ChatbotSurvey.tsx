@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader } from "lucide-react";
@@ -177,14 +176,14 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     console.log("Adding completion message");
     
     const totalRows = surveyForm.totalCount || 0;
-    const count = surveyForm.processedCount || 0;
+    const processedCount = surveyForm.processedCount || 0;
     
     if (!completionMessageAddedRef.current) {
       addMessage(
         <div className="space-y-2">
           <p className="font-medium">🎉 Processamento concluído!</p>
           <p className="text-gray-600">
-            Todos os {count > 0 ? count : totalRows} contatos foram processados com sucesso.
+            Todos os {processedCount} contatos foram processados com sucesso.
           </p>
           <Button
             onClick={() => surveyForm.handleDownload()}
