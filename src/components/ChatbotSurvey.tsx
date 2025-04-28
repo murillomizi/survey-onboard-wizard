@@ -1,16 +1,15 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, CircleDot, ArrowLeft } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
-import LoadingProgress from "./LoadingProgress";
-import ResultsPage from "./ResultsPage";
 
 interface Message {
   id: number;
@@ -33,10 +32,6 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [showLoading, setShowLoading] = useState(false);
-  const [currentSurveyId, setCurrentSurveyId] = useState<string | null>(null);
-  const [csvRowCount, setCsvRowCount] = useState(0);
-  const [showResults, setShowResults] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -360,9 +355,6 @@ const ChatbotSurvey = () => {
         csvDataToSave = surveyData.csvData.slice(0, 100);
         console.log('CSV data trimmed to 100 records to avoid payload size issues');
       }
-
-      const rowCount = Array.isArray(csvDataToSave) ? csvDataToSave.length : 0;
-      setCsvRowCount(rowCount);
       
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
@@ -390,17 +382,12 @@ const ChatbotSurvey = () => {
         return;
       }
 
-      if (data && data[0]) {
-        setCurrentSurveyId(data[0].id);
-        setShowLoading(true);
-        addMessage("Suas mensagens estão sendo geradas. Por favor, aguarde...", "bot");
-      }
-      
       toast({
         title: "Configurações salvas!",
         description: "Suas preferências de mensagem foram salvas com sucesso.",
       });
       
+      console.log('Survey data saved:', data);
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -412,46 +399,6 @@ const ChatbotSurvey = () => {
       setIsSubmitting(false);
     }
   };
-  
-  const handleLoadingComplete = () => {
-    setShowResults(true);
-  };
-  
-  const handleBackToStart = () => {
-    setMessages([]);
-    setCurrentStep(0);
-    setShowOptions(null);
-    setShowSlider(false);
-    setCurrentInput("");
-    setCsvFileName(null);
-    setCsvRowCount(0);
-    setShowLoading(false);
-    setCurrentSurveyId(null);
-    setShowResults(false);
-    setSurveyData({
-      canal: "",
-      funnelStage: "",
-      csvData: [],
-      websiteUrl: "",
-      tamanho: 350,
-      tomVoz: "",
-      gatilhos: ""
-    });
-    
-    const firstStep = steps[0];
-    addMessage(firstStep.question, "bot");
-    
-    if (firstStep.options) {
-      setShowOptions({
-        options: firstStep.options,
-        step: 0
-      });
-    }
-  };
-
-  if (showResults && currentSurveyId) {
-    return <ResultsPage surveyId={currentSurveyId} onBackToStart={handleBackToStart} />;
-  }
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
@@ -488,14 +435,6 @@ const ChatbotSurvey = () => {
             type={message.type}
           />
         ))}
-        
-        {showLoading && currentSurveyId && csvRowCount > 0 && (
-          <LoadingProgress
-            surveyId={currentSurveyId}
-            totalRows={csvRowCount}
-            onComplete={handleLoadingComplete}
-          />
-        )}
         
         {isWaitingForResponse && (
           <ChatMessage content="" type="bot" isTyping={true} />
@@ -536,7 +475,7 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">
