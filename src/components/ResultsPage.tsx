@@ -11,10 +11,11 @@ interface ResultsPageProps {
   onBackToStart: () => void;
 }
 
+// Atualizada para corresponder exatamente aos nomes dos campos no banco de dados
 interface PersonalizedMessage {
   id: string;
   copy: string | null;
-  primeiro_nome: string | null;
+  "primeiro nome": string | null;  // Alterado para corresponder ao nome real do campo
   cargo: string | null;
   empresa: string | null;
   email: string | null;
@@ -64,7 +65,7 @@ const ResultsPage = ({ surveyId, onBackToStart }: ResultsPageProps) => {
         headers.join(','),
         ...messages.map(msg => {
           return [
-            msg.primeiro_nome || '',
+            msg["primeiro nome"] || '',  // Atualizado para usar a nova chave
             msg.cargo || '',
             msg.empresa || '',
             msg.email || '',
@@ -160,7 +161,7 @@ const ResultsPage = ({ surveyId, onBackToStart }: ResultsPageProps) => {
               >
                 <div className="mb-2 flex items-center gap-2">
                   <span className="font-medium text-sm text-gray-700">
-                    {message.primeiro_nome || 'Contato'} 
+                    {message["primeiro nome"] || 'Contato'}
                   </span>
                   {message.cargo && (
                     <>
