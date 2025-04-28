@@ -13,6 +13,7 @@ const Index = () => {
   const [refresh, setRefresh] = useState(0); // Add a refresh key to force re-rendering
   const [isLoading, setIsLoading] = useState(false);
   const loadingRef = useRef(false);
+  const lastRefreshedRef = useRef<number>(Date.now());
 
   const handleSelectSurvey = async (surveyId: string) => {
     try {
@@ -76,10 +77,16 @@ const Index = () => {
     // Update the selected survey ID to the new one
     setSelectedSurveyId(newSurveyId);
     
-    // Refresh the chat history sidebar to show the new entry
-    setTimeout(() => {
-      setRefresh(prev => prev + 1);
-    }, 500);
+    // Prevent too frequent refreshes
+    const now = Date.now();
+    if (now - lastRefreshedRef.current > 1000) { // Only refresh if more than 1 second since last refresh
+      lastRefreshedRef.current = now;
+      
+      // Refresh the chat history sidebar to show the new entry
+      setTimeout(() => {
+        setRefresh(prev => prev + 1);
+      }, 500);
+    }
   };
 
   return (

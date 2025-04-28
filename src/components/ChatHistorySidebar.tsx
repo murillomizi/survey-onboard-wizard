@@ -35,6 +35,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const fetchedRef = useRef<boolean>(false);
   const refreshCountRef = useRef<number>(0);
+  const isMountedRef = useRef<boolean>(true);
 
   const groupChats = (chats: ChatHistoryItem[]): GroupedChats => {
     const today = new Date();
@@ -59,64 +60,71 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     }, { today: [], lastWeek: [], older: [] });
   };
 
-  useEffect(() => {
-    // Evitar múltiplas chamadas para o mesmo refresh
-    if (refreshCountRef.current === refresh && fetchedRef.current) {
-      return;
-    }
+  // Improved fetch function to prevent redundant API calls
+  const fetchHistory = async () => {
+    if (isLoading) return;
     
-    refreshCountRef.current = refresh;
-    
-    const fetchHistory = async () => {
-      if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const history = await SurveyController.getChatHistory();
       
-      setIsLoading(true);
-      try {
-        const history = await SurveyController.getChatHistory();
-        
-        const historyWithStatus = await Promise.all(
-          history.map(async (chat) => {
-            try {
-              // Verificar status processado através da edge function checkProgress
-              const status = await supabase.functions.invoke('checkProgress', {
-                body: {
-                  surveyId: chat.id,
-                  fetchData: false
-                }
-              });
-              
-              const isComplete = status?.data?.isComplete || false;
-              
-              return {
-                ...chat,
-                isComplete
-              };
-            } catch (error) {
-              console.error(`Error checking status for survey ${chat.id}:`, error);
-              return {
-                ...chat,
-                isComplete: false
-              };
-            }
-          })
-        );
-        
+      // Prevent unnecessary status checks by limiting to recent items or batch processing
+      const historyWithStatus = await Promise.all(
+        history.slice(0, 15).map(async (chat) => {
+          try {
+            // Verify component is still mounted
+            if (!isMountedRef.current) return chat;
+            
+            // Check status through edge function
+            const status = await supabase.functions.invoke('checkProgress', {
+              body: {
+                surveyId: chat.id,
+                fetchData: false
+              }
+            });
+            
+            return {
+              ...chat,
+              isComplete: status?.data?.isComplete || false
+            };
+          } catch (error) {
+            console.error(`Error checking status for survey ${chat.id}:`, error);
+            return {
+              ...chat,
+              isComplete: false
+            };
+          }
+        })
+      );
+      
+      if (isMountedRef.current) {
         setChatHistory(historyWithStatus);
         fetchedRef.current = true;
-      } catch (error) {
-        console.error("Error fetching chat history:", error);
-      } finally {
+      }
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    } finally {
+      if (isMountedRef.current) {
         setIsLoading(false);
       }
-    };
+    }
+  };
 
-    fetchHistory();
+  useEffect(() => {
+    // Set flag for mounted state
+    isMountedRef.current = true;
     
-    // Limpar o efeito ao desmontar
+    // Only fetch if refresh has actually changed or initial load
+    if (refreshCountRef.current !== refresh || !fetchedRef.current) {
+      refreshCountRef.current = refresh;
+      fetchHistory();
+    }
+    
+    // Cleanup function to prevent state updates after unmount
     return () => {
-      fetchedRef.current = false;
+      isMountedRef.current = false;
     };
-  }, [refresh, isLoading]);
+  }, [refresh]);
 
   const renderChatGroup = (chats: ChatHistoryItem[], title: string) => {
     if (chats.length === 0) return null;
@@ -181,7 +189,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
         </Button>
         
         <div className="mt-4">
-          {isLoading ? (
+          {isLoading && chatHistory.length === 0 ? (
             <div className="text-sm text-gray-600 italic">Carregando histórico...</div>
           ) : chatHistory.length === 0 ? (
             <div className="text-sm text-gray-600 italic">Nenhuma campanha criada ainda.</div>
