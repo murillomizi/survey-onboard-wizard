@@ -31,6 +31,7 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -356,6 +357,15 @@ const ChatbotSurvey = () => {
   };
 
   const handleSubmit = async () => {
+    if (hasSubmitted) {
+      toast({
+        title: "Envio já realizado",
+        description: "Sua base já foi processada, espere o e-mail com os contatos personalizados.",
+        variant: "default"
+      });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       
@@ -401,6 +411,7 @@ const ChatbotSurvey = () => {
         return;
       }
 
+      setHasSubmitted(true);
       addMessage("Ótimo! Sua base está sendo processada e em breve você receberá um e-mail em " + surveyData.userEmail + " com seus contatos personalizados.", "bot");
       
       console.log('Survey data saved:', data);
