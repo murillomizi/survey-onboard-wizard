@@ -21,6 +21,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 }) => {
   // Ref para controlar notificações ao componente pai
   const notifiedParentRef = useRef(false);
+  const isComponentMountedRef = useRef(true);
   
   const {
     currentStep,
@@ -45,19 +46,34 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   const { addMessage } = useChatMessages();
 
+  useEffect(() => {
+    isComponentMountedRef.current = true;
+    
+    // Cleanup on unmount
+    return () => {
+      isComponentMountedRef.current = false;
+    };
+  }, []);
+
   const handleFileChange = async (file: File) => {
+    if (!isComponentMountedRef.current) return false;
+    
     const success = await surveyForm.handleFileUpload(file);
     if (success) {
       addMessage(`Arquivo processado com sucesso: ${surveyForm.totalCount} linhas carregadas`, "user");
       setIsWaitingForResponse(true);
       setTimeout(() => {
-        setIsWaitingForResponse(false);
-        moveToNextStep();
+        if (isComponentMountedRef.current) {
+          setIsWaitingForResponse(false);
+          moveToNextStep();
+        }
       }, 1000);
     }
+    return success;
   };
 
   const handleSendMessage = () => {
+    if (!isComponentMountedRef.current) return;
     if (!currentInput.trim() && !showSlider) return;
 
     setShowOptions(null);
@@ -74,12 +90,15 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     setCurrentInput("");
 
     setTimeout(() => {
-      setIsWaitingForResponse(false);
-      moveToNextStep();
+      if (isComponentMountedRef.current) {
+        setIsWaitingForResponse(false);
+        moveToNextStep();
+      }
     }, 1000);
   };
 
   const handleOptionSelect = (value: string) => {
+    if (!isComponentMountedRef.current) return;
     if (!showOptions) return;
     
     const selectedOption = showOptions.options.find(opt => opt.value === value);
@@ -94,30 +113,37 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     surveyForm.setSurveyData(prev => ({ ...prev, [fieldName]: value }));
 
     setTimeout(() => {
-      setIsWaitingForResponse(false);
-      moveToNextStep();
+      if (isComponentMountedRef.current) {
+        setIsWaitingForResponse(false);
+        moveToNextStep();
+      }
     }, 1000);
   };
 
   const handleSliderChange = (val: number[]) => {
+    if (!isComponentMountedRef.current) return;
     setSliderValue(val[0]);
   };
 
   const handleSliderComplete = () => {
+    if (!isComponentMountedRef.current) return;
+    
     addMessage(`${sliderValue} caracteres`, "user");
     surveyForm.setSurveyData(prev => ({ ...prev, tamanho: sliderValue }));
     setShowSlider(false);
     setIsWaitingForResponse(true);
 
     setTimeout(() => {
-      setIsWaitingForResponse(false);
-      moveToNextStep();
+      if (isComponentMountedRef.current) {
+        setIsWaitingForResponse(false);
+        moveToNextStep();
+      }
     }, 1000);
   };
 
   // Efeito para notificar o componente pai sobre o ID de processamento, apenas uma vez
   useEffect(() => {
-    if (surveyForm.processingId && onSubmitSuccess && !notifiedParentRef.current) {
+    if (surveyForm.processingId && onSubmitSuccess && !notifiedParentRef.current && isComponentMountedRef.current) {
       onSubmitSuccess(surveyForm.processingId);
       notifiedParentRef.current = true;
     }
@@ -125,6 +151,29 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   // Determinar se o componente está realmente carregando
   const isActuallyLoading = isLoading || isLoadingPastChat || !hasInitialized;
+
+  // Debug log para identificar estados de carregamento
+  console.log("ChatbotSurvey render states:", {
+    isLoading,
+    isLoadingPastChat,
+    hasInitialized,
+    isActuallyLoading,
+    initialSurveyId,
+    messagesCount: messages.length
+  });
+
+  if (isActuallyLoading) {
+    console.log("ChatbotSurvey is in loading state");
+    return (
+      <div className="flex flex-col h-[600px] bg-white rounded-xl items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-10 w-10 bg-blue-200 rounded-full mb-4"></div>
+          <div className="h-4 w-48 bg-blue-200 rounded mb-2"></div>
+          <div className="h-3 w-36 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
@@ -136,7 +185,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       
       <SurveyMessages
         messages={messages}
-        isWaitingForResponse={isWaitingForResponse || isActuallyLoading}
+        isWaitingForResponse={isWaitingForResponse}
         showOptions={showOptions}
         showSlider={showSlider}
         sliderValue={sliderValue}

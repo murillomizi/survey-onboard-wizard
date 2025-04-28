@@ -35,9 +35,13 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
 
   // Efeito para limpar flags quando o componente é desmontado
   useEffect(() => {
-    // Reset effect flags on mount
+    // Reiniciar flags de efeito ao montar
     effectRanRef.current = false;
     chatInitializedRef.current = false;
+    completionMessageAddedRef.current = false;
+    statusCheckedRef.current = false;
+    
+    isMountedRef.current = true;
     
     return () => {
       isMountedRef.current = false;
@@ -46,10 +50,14 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
 
   // Efeito para inicializar o chat ou carregar um chat existente apenas uma vez
   useEffect(() => {
+    console.log("useChatbotLogic effect triggered, initialSurveyId:", initialSurveyId);
+    
     const handleInitialSetup = async () => {
       // Caso 1: Carregando um chat existente
       if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
-        // Reset state for a clean loading
+        console.log("Loading existing chat:", initialSurveyId);
+        
+        // Limpar estado para um carregamento limpo
         setMessages([]);
         setShowOptions(null);
         setShowSlider(false);
@@ -57,21 +65,24 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
         completionMessageAddedRef.current = false;
         statusCheckedRef.current = false;
         
-        // Mark as loading and set current survey
+        // Marcar como carregando e definir o chat atual
         setIsLoadingPastChat(true);
         loadedSurveyIdRef.current = initialSurveyId;
         chatInitializedRef.current = true;
         
         try {
+          console.log("Fetching survey data...");
           const data = await surveyForm.loadSurvey(initialSurveyId);
+          console.log("Survey data loaded:", data);
           
           if (data && isMountedRef.current) {
             rebuildChatHistory(data);
             
-            // Check completion status
+            // Verificar status de conclusão
             if (data.processingStatus?.isComplete) {
               surveyForm.setIsComplete(true);
               surveyForm.setProcessedCount(data.processingStatus.processedCount || 0);
+              surveyForm.setTotalCount(data.processingStatus.totalCount || 0);
             }
           }
         } catch (error) {
@@ -88,9 +99,13 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       } 
       // Caso 2: Iniciando um novo chat
       else if (!initialSurveyId && !chatInitializedRef.current) {
+        console.log("Starting new chat");
         loadedSurveyIdRef.current = null;
         chatInitializedRef.current = true;
         initializeChat();
+        setHasInitialized(true);
+      } else {
+        // Caso já inicializado, apenas garantir que hasInitialized seja true
         setHasInitialized(true);
       }
     };
@@ -99,7 +114,33 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       effectRanRef.current = true;
       handleInitialSetup();
     }
-  }, [initialSurveyId, surveyForm]);
+  }, [initialSurveyId]);
+
+  const initializeChat = () => {
+    console.log("Initializing new chat");
+    if (!isMountedRef.current) return;
+    
+    // Limpar mensagens anteriores
+    setMessages([]);
+    completionMessageAddedRef.current = false;
+    statusCheckedRef.current = false;
+    
+    // Adicionar a primeira mensagem do bot
+    const firstStep = steps[0];
+    addMessage(firstStep.question, "bot");
+    
+    // Mostrar opções se o primeiro passo tiver opções
+    if (firstStep.options && isMountedRef.current) {
+      setShowOptions({
+        options: firstStep.options,
+        step: 0,
+        isComplete: false
+      });
+    }
+    
+    // Redefininir para o primeiro passo
+    setCurrentStep(0);
+  };
 
   const resetAndLoadPastSurvey = async (surveyId: string) => {
     if (!isMountedRef.current) return;
@@ -116,7 +157,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       if (data && isMountedRef.current) {
         rebuildChatHistory(data);
         
-        // Check completion status
+        // Verificar status de conclusão
         if (data.processingStatus?.isComplete) {
           surveyForm.setIsComplete(true);
           surveyForm.setProcessedCount(data.processingStatus.processedCount || 0);
@@ -128,26 +169,6 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       if (isMountedRef.current) {
         setIsLoadingPastChat(false);
       }
-    }
-  };
-
-  const initializeChat = () => {
-    if (!isMountedRef.current) return;
-    
-    // Limpar mensagens anteriores
-    setMessages([]);
-    
-    // Adicionar a primeira mensagem do bot
-    const firstStep = steps[0];
-    addMessage(firstStep.question, "bot");
-    
-    // Mostrar opções se o primeiro passo tiver opções
-    if (firstStep.options && isMountedRef.current) {
-      setShowOptions({
-        options: firstStep.options,
-        step: 0,
-        isComplete: false
-      });
     }
   };
 
@@ -298,6 +319,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   };
 
   const rebuildChatHistory = (data: any) => {
+    console.log("Rebuilding chat history with data:", data);
     if (!isMountedRef.current || !data) return;
     
     // Reconstruir histórico básico

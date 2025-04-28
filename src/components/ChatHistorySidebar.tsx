@@ -17,6 +17,11 @@ interface ChatHistoryItem {
   id: string;
   created_at: string;
   isComplete: boolean;
+  title?: string;
+  description?: string;
+  canal?: string;
+  websiteUrl?: string;
+  csvRowCount?: number;
 }
 
 interface GroupedChats {
@@ -37,6 +42,14 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   const refreshCountRef = useRef<number>(0);
   const isMountedRef = useRef<boolean>(true);
   const fetchInProgressRef = useRef<boolean>(false);
+
+  // Efeito para limpar flags no desmonte
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const groupChats = (chats: ChatHistoryItem[]): GroupedChats => {
     const today = new Date();
@@ -61,17 +74,26 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     }, { today: [], lastWeek: [], older: [] });
   };
 
-  // Improved fetch function to prevent redundant API calls
+  // Função de busca aprimorada para evitar chamadas de API redundantes
   const fetchHistory = async () => {
-    if (isLoading || fetchInProgressRef.current) return;
+    if (isLoading || fetchInProgressRef.current || !isMountedRef.current) {
+      console.log("Skipping fetch history due to loading or fetch in progress", {
+        isLoading,
+        fetchInProgress: fetchInProgressRef.current,
+        isMounted: isMountedRef.current
+      });
+      return;
+    }
     
     fetchInProgressRef.current = true;
     setIsLoading(true);
+    console.log("Fetching chat history...");
     
     try {
       const history = await SurveyController.getChatHistory();
       
       if (!isMountedRef.current) return;
+      console.log("Received history items:", history.length);
       
       // Processar no máximo 15 itens mais recentes para melhorar a performance
       const historyToProcess = history.slice(0, 15);
@@ -115,11 +137,15 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
       }
       
       if (isMountedRef.current) {
-        setChatHistory(processedHistory as ChatHistoryItem[]);
+        console.log("Setting chat history with processed items:", processedHistory.length);
+        setChatHistory(processedHistory);
         fetchedRef.current = true;
       }
     } catch (error) {
       console.error("Error fetching chat history:", error);
+      if (isMountedRef.current) {
+        setChatHistory([]);  // Set to empty array on error to avoid issues with undefined
+      }
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);
@@ -129,19 +155,16 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   };
 
   useEffect(() => {
-    // Set flag for mounted state
-    isMountedRef.current = true;
-    
-    // Only fetch if refresh has actually changed or initial load
+    // Apenas busque se a atualização realmente mudou ou carga inicial
     if (refreshCountRef.current !== refresh || !fetchedRef.current) {
+      console.log("Triggering history fetch due to refresh change or initial load", {
+        currentRefresh: refresh,
+        previousRefresh: refreshCountRef.current,
+        initialLoad: !fetchedRef.current
+      });
       refreshCountRef.current = refresh;
       fetchHistory();
     }
-    
-    // Cleanup function to prevent state updates after unmount
-    return () => {
-      isMountedRef.current = false;
-    };
   }, [refresh]);
 
   const renderChatGroup = (chats: ChatHistoryItem[], title: string) => {

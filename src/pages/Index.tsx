@@ -9,41 +9,53 @@ import { toast } from "@/components/ui/use-toast";
 const Index = () => {
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
   const [showSurveyForm, setShowSurveyForm] = useState(true);
-  const [refresh, setRefresh] = useState(0); // Add a refresh key to force re-rendering
+  const [refresh, setRefresh] = useState(0); // Chave de atualização para forçar re-renderização
   const [isLoading, setIsLoading] = useState(false);
   const loadingRef = useRef(false);
   const lastRefreshedRef = useRef<number>(Date.now());
+  const currentSurveyIdRef = useRef<string | null>(null);
+
+  // Efeito para sincronizar a ref com o estado
+  useEffect(() => {
+    currentSurveyIdRef.current = selectedSurveyId;
+  }, [selectedSurveyId]);
 
   const handleSelectSurvey = async (surveyId: string) => {
     try {
-      // Don't reload if we're already viewing this survey
-      if (surveyId === selectedSurveyId || loadingRef.current) {
+      // Não recarregue se já estivermos visualizando este chat
+      if (surveyId === currentSurveyIdRef.current || loadingRef.current) {
+        console.log("Avoiding reload of the same survey or during loading", {
+          surveyId,
+          currentId: currentSurveyIdRef.current,
+          isLoading: loadingRef.current
+        });
         return;
       }
       
+      console.log("Selecting survey:", surveyId);
       loadingRef.current = true;
       setIsLoading(true);
       
-      // First hide the survey form
+      // Primeiro esconda o formulário do chat
       setShowSurveyForm(false);
       
-      // Brief delay to ensure component unmounts
+      // Breve atraso para garantir que o componente seja desmontado
       setTimeout(() => {
-        // Set the new survey ID
+        // Defina o novo ID do chat
         setSelectedSurveyId(surveyId);
         
-        // Generate a new refresh key to force component recreation
+        // Gere uma nova chave de atualização para forçar recriação do componente
         setRefresh(prev => prev + 1);
         
-        // Show the survey form with new ID
+        // Mostre o formulário do chat com o novo ID
         setShowSurveyForm(true);
         
-        // Add a small delay before completing loading to ensure components are properly mounted
+        // Adicione um pequeno atraso antes de concluir o carregamento para garantir que os componentes sejam montados corretamente
         setTimeout(() => {
           setIsLoading(false);
           loadingRef.current = false;
         }, 300);
-      }, 100);
+      }, 150);
       
     } catch (error) {
       console.error("Error selecting survey:", error);
@@ -58,34 +70,46 @@ const Index = () => {
   };
 
   const handleNewCampaign = () => {
-    if (loadingRef.current) return;
+    if (loadingRef.current) {
+      console.log("Avoiding new campaign during loading");
+      return;
+    }
     
+    console.log("Starting new campaign");
     loadingRef.current = true;
+    setIsLoading(true);
     
-    // Hide the current form
+    // Esconda o formulário atual
     setShowSurveyForm(false);
     
-    // Reset the survey ID to null to start a fresh chat
+    // Redefina o ID do chat para null para iniciar um novo chat
     setTimeout(() => {
       setSelectedSurveyId(null);
-      // Force a refresh of the ChatbotSurvey component
+      currentSurveyIdRef.current = null;
+      // Force a atualização do componente ChatbotSurvey
       setRefresh(prev => prev + 1);
       setShowSurveyForm(true);
-      loadingRef.current = false;
-    }, 100);
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        loadingRef.current = false;
+      }, 300);
+    }, 150);
   };
 
-  // Function to handle successful form submission
+  // Função para lidar com o envio bem-sucedido do formulário
   const handleFormSubmit = async (newSurveyId: string) => {
-    // Update the selected survey ID to the new one
+    // Atualize o ID do chat selecionado para o novo
+    console.log("Form submitted successfully with ID:", newSurveyId);
     setSelectedSurveyId(newSurveyId);
+    currentSurveyIdRef.current = newSurveyId;
     
-    // Prevent too frequent refreshes
+    // Evite atualizações muito frequentes
     const now = Date.now();
-    if (now - lastRefreshedRef.current > 1000) { // Only refresh if more than 1 second since last refresh
+    if (now - lastRefreshedRef.current > 1000) { // Atualize apenas se mais de 1 segundo desde a última atualização
       lastRefreshedRef.current = now;
       
-      // Refresh the chat history sidebar to show the new entry
+      // Atualize a barra lateral do histórico de chat para mostrar a nova entrada
       setTimeout(() => {
         setRefresh(prev => prev + 1);
       }, 500);
