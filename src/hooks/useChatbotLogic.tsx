@@ -20,6 +20,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
   
   // Refs para controlar estados internos e evitar loops infinitos
   const completionMessageAddedRef = useRef(false);
@@ -34,6 +35,10 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
 
   // Efeito para limpar flags quando o componente é desmontado
   useEffect(() => {
+    // Reset effect flags on mount
+    effectRanRef.current = false;
+    chatInitializedRef.current = false;
+    
     return () => {
       isMountedRef.current = false;
     };
@@ -41,30 +46,60 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
 
   // Efeito para inicializar o chat ou carregar um chat existente apenas uma vez
   useEffect(() => {
-    // Prevenção de execução dupla em modo de desenvolvimento
-    if (effectRanRef.current || !isMountedRef.current) return;
-    
     const handleInitialSetup = async () => {
-      effectRanRef.current = true;
-      
       // Caso 1: Carregando um chat existente
       if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
-        loadedSurveyIdRef.current = initialSurveyId;
+        // Reset state for a clean loading
+        setMessages([]);
+        setShowOptions(null);
+        setShowSlider(false);
+        setCurrentInput("");
         completionMessageAddedRef.current = false;
         statusCheckedRef.current = false;
+        
+        // Mark as loading and set current survey
+        setIsLoadingPastChat(true);
+        loadedSurveyIdRef.current = initialSurveyId;
         chatInitializedRef.current = true;
-        await resetAndLoadPastSurvey(initialSurveyId);
+        
+        try {
+          const data = await surveyForm.loadSurvey(initialSurveyId);
+          
+          if (data && isMountedRef.current) {
+            rebuildChatHistory(data);
+            
+            // Check completion status
+            if (data.processingStatus?.isComplete) {
+              surveyForm.setIsComplete(true);
+              surveyForm.setProcessedCount(data.processingStatus.processedCount || 0);
+            }
+          }
+        } catch (error) {
+          console.error("Error loading survey:", error);
+          if (isMountedRef.current) {
+            addMessage("Erro ao carregar o chat. Por favor, tente novamente.", "bot");
+          }
+        } finally {
+          if (isMountedRef.current) {
+            setIsLoadingPastChat(false);
+            setHasInitialized(true);
+          }
+        }
       } 
       // Caso 2: Iniciando um novo chat
       else if (!initialSurveyId && !chatInitializedRef.current) {
         loadedSurveyIdRef.current = null;
         chatInitializedRef.current = true;
         initializeChat();
+        setHasInitialized(true);
       }
     };
     
-    handleInitialSetup();
-  }, [initialSurveyId]);
+    if (!effectRanRef.current && isMountedRef.current) {
+      effectRanRef.current = true;
+      handleInitialSetup();
+    }
+  }, [initialSurveyId, surveyForm]);
 
   const resetAndLoadPastSurvey = async (surveyId: string) => {
     if (!isMountedRef.current) return;
@@ -91,11 +126,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       console.error("Error in resetAndLoadPastSurvey:", error);
     } finally {
       if (isMountedRef.current) {
-        setTimeout(() => {
-          if (isMountedRef.current) {
-            setIsLoadingPastChat(false);
-          }
-        }, 500);
+        setIsLoadingPastChat(false);
       }
     }
   };
@@ -214,12 +245,14 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     
     // Prevent duplicate status checks
     if (statusCheckedRef.current) {
-      // Only allow another check after 5 seconds
-      statusCheckedRef.current = false;
-      setTimeout(() => {
-        statusCheckedRef.current = true;
-      }, 5000);
+      return;
     }
+    
+    statusCheckedRef.current = true;
+    // Reset flag after 3 seconds to allow another check
+    setTimeout(() => {
+      statusCheckedRef.current = false;
+    }, 3000);
     
     try {
       const { data, error } = await supabase.functions.invoke('checkProgress', {
@@ -314,6 +347,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     addCompletionMessage,
     handleCheckStatus,
     completionMessageAddedRef,
-    statusCheckedRef
+    statusCheckedRef,
+    hasInitialized
   };
 };

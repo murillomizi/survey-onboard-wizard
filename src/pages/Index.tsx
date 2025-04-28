@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
 import ChatHistorySidebar from "@/components/ChatHistorySidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
@@ -38,8 +37,12 @@ const Index = () => {
         
         // Show the survey form with new ID
         setShowSurveyForm(true);
-        setIsLoading(false);
-        loadingRef.current = false;
+        
+        // Add a small delay before completing loading to ensure components are properly mounted
+        setTimeout(() => {
+          setIsLoading(false);
+          loadingRef.current = false;
+        }, 300);
       }, 100);
       
     } catch (error) {

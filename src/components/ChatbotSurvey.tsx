@@ -39,7 +39,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     surveyForm,
     handleBack,
     moveToNextStep,
-    handleCheckStatus
+    handleCheckStatus,
+    hasInitialized
   } = useChatbotLogic(initialSurveyId);
 
   const { addMessage } = useChatMessages();
@@ -122,6 +123,9 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     }
   }, [surveyForm.processingId, onSubmitSuccess]);
 
+  // Determinar se o componente está realmente carregando
+  const isActuallyLoading = isLoading || isLoadingPastChat || !hasInitialized;
+
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
       <SurveyHeader
@@ -132,7 +136,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       
       <SurveyMessages
         messages={messages}
-        isWaitingForResponse={isWaitingForResponse || isLoadingPastChat || isLoading}
+        isWaitingForResponse={isWaitingForResponse || isActuallyLoading}
         showOptions={showOptions}
         showSlider={showSlider}
         sliderValue={sliderValue}

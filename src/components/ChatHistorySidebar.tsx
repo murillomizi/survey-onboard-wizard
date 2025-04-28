@@ -36,6 +36,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   const fetchedRef = useRef<boolean>(false);
   const refreshCountRef = useRef<number>(0);
   const isMountedRef = useRef<boolean>(true);
+  const fetchInProgressRef = useRef<boolean>(false);
 
   const groupChats = (chats: ChatHistoryItem[]): GroupedChats => {
     const today = new Date();
@@ -62,44 +63,59 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
 
   // Improved fetch function to prevent redundant API calls
   const fetchHistory = async () => {
-    if (isLoading) return;
+    if (isLoading || fetchInProgressRef.current) return;
     
+    fetchInProgressRef.current = true;
     setIsLoading(true);
+    
     try {
       const history = await SurveyController.getChatHistory();
       
-      // Corrigido: garantir que TODOS os itens tenham a propriedade isComplete
-      const historyWithStatus = await Promise.all(
-        history.slice(0, 15).map(async (chat) => {
-          try {
-            // Verify component is still mounted
-            if (!isMountedRef.current) return { ...chat, isComplete: false };
-            
-            // Check status through edge function
-            const status = await supabase.functions.invoke('checkProgress', {
-              body: {
-                surveyId: chat.id,
-                fetchData: false
-              }
-            });
-            
-            return {
-              ...chat,
-              isComplete: status?.data?.isComplete || false
-            };
-          } catch (error) {
-            console.error(`Error checking status for survey ${chat.id}:`, error);
-            return {
-              ...chat,
-              isComplete: false
-            };
-          }
-        })
-      );
+      if (!isMountedRef.current) return;
+      
+      // Processar no máximo 15 itens mais recentes para melhorar a performance
+      const historyToProcess = history.slice(0, 15);
+      
+      // Tentativa em lote para verificar os status
+      const batchSize = 5;
+      const processedHistory: ChatHistoryItem[] = [];
+      
+      // Processar em lotes pequenos para evitar muitas chamadas simultâneas
+      for (let i = 0; i < historyToProcess.length; i += batchSize) {
+        if (!isMountedRef.current) break;
+        
+        const batch = historyToProcess.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+          batch.map(async (chat) => {
+            try {
+              if (!isMountedRef.current) return { ...chat, isComplete: false };
+              
+              const status = await supabase.functions.invoke('checkProgress', {
+                body: {
+                  surveyId: chat.id,
+                  fetchData: false
+                }
+              });
+              
+              return {
+                ...chat,
+                isComplete: status?.data?.isComplete || false
+              };
+            } catch (error) {
+              console.error(`Error checking status for survey ${chat.id}:`, error);
+              return {
+                ...chat,
+                isComplete: false
+              };
+            }
+          })
+        );
+        
+        processedHistory.push(...batchResults);
+      }
       
       if (isMountedRef.current) {
-        // Garantir que o tipo está correto antes de atribuir ao state
-        setChatHistory(historyWithStatus as ChatHistoryItem[]);
+        setChatHistory(processedHistory as ChatHistoryItem[]);
         fetchedRef.current = true;
       }
     } catch (error) {
@@ -107,6 +123,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);
+        fetchInProgressRef.current = false;
       }
     }
   };
@@ -179,7 +196,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Criando...
+              Carregando...
             </>
           ) : (
             <>
