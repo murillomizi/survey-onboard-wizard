@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { useSurveyForm } from "@/hooks/useSurveyForm";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import CompletionMessage from "@/components/survey/CompletionMessage";
 
 export interface StepOption {
   value: string;

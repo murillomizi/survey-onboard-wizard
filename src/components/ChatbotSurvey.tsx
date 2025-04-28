@@ -1,14 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Download, Loader } from "lucide-react";
-import { useChatMessages } from "@/hooks/useChatMessages";
-import { useChatbotSurvey, steps } from "@/hooks/useChatbotSurvey";
+
+import React, { useEffect } from "react";
+import { useChatbotLogic } from "@/hooks/useChatbotLogic";
 import SurveyHeader from "./survey/SurveyHeader";
 import SurveyMessages from "./survey/SurveyMessages";
 import SurveyFooter from "./survey/SurveyFooter";
 import FileHandler from "./survey/FileHandler";
-import { ChatSummary } from "./survey/ChatSummary";
-import { supabase } from "@/integrations/supabase/client";
+import { steps } from "@/hooks/useChatbotSurvey";
 
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
@@ -21,209 +18,31 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   onSubmitSuccess,
   isLoading = false
 }) => {
-  const { messages, setMessages, addMessage } = useChatMessages();
   const {
     currentStep,
-    setCurrentStep,
     currentInput,
     setCurrentInput,
     isWaitingForResponse,
-    setIsWaitingForResponse,
     showOptions,
-    setShowOptions,
     showSlider,
-    setShowSlider,
     sliderValue,
-    setSliderValue,
     isLoadingPastChat,
-    loadPastSurvey,
-    surveyForm
-  } = useChatbotSurvey(initialSurveyId);
+    messages,
+    surveyForm,
+    handleBack,
+    moveToNextStep,
+    handleCheckStatus
+  } = useChatbotLogic(initialSurveyId);
 
-  const loadedSurveyIdRef = useRef<string | null>(null);
-  const completionMessageAddedRef = useRef(false);
-  const statusCheckedRef = useRef(false);
-
+  // Auto-check status effect from previous implementation
   useEffect(() => {
-    console.log("ChatbotSurvey received initialSurveyId:", initialSurveyId);
-
-    if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
-      console.log("Loading survey with new ID:", initialSurveyId);
-      resetAndLoadPastSurvey(initialSurveyId);
-      loadedSurveyIdRef.current = initialSurveyId;
-      completionMessageAddedRef.current = false;
-      statusCheckedRef.current = false;
-    } else if (!initialSurveyId && !isLoadingPastChat) {
-      console.log("Initializing new chat");
-      loadedSurveyIdRef.current = null;
-      completionMessageAddedRef.current = false;
-      statusCheckedRef.current = false;
-      initializeChat();
-    }
-  }, [initialSurveyId]);
-
-  useEffect(() => {
-    const checkProcessingStatus = async () => {
-      if (initialSurveyId && !statusCheckedRef.current) {
-        try {
-          statusCheckedRef.current = true;
-          console.log("Auto-checking processing status for survey:", initialSurveyId);
-          
-          const { data, error } = await supabase.functions.invoke('checkProgress', {
-            body: {
-              surveyId: initialSurveyId,
-              fetchData: false
-            }
-          });
-          
-          if (error) {
-            console.error("Error auto-checking status:", error);
-            return;
-          }
-          
-          console.log("Auto-check status response:", data);
-          
-          if (data.isComplete) {
-            surveyForm.setIsComplete(true);
-            surveyForm.setProcessingId(initialSurveyId);
-            surveyForm.setProcessedCount(data.count);
-            surveyForm.setTotalCount(data.total);
-            
-            if (!completionMessageAddedRef.current) {
-              setTimeout(() => {
-                addCompletionMessage();
-                completionMessageAddedRef.current = true;
-              }, 1500);
-            }
-          }
-        } catch (err) {
-          console.error("Error in auto-check processing status:", err);
-        }
-      }
-    };
-    
     if (initialSurveyId && !isLoadingPastChat) {
+      const checkProcessingStatus = async () => {
+        await handleCheckStatus();
+      };
       checkProcessingStatus();
     }
   }, [initialSurveyId, isLoadingPastChat]);
-
-  const resetAndLoadPastSurvey = async (surveyId: string) => {
-    console.log("Resetting chat and loading survey:", surveyId);
-    try {
-      setMessages([]);
-      setShowOptions(null);
-      setShowSlider(false);
-      setCurrentInput("");
-      
-      const data = await loadPastSurvey(surveyId);
-      
-      if (data) {
-        rebuildChatHistory();
-      }
-    } catch (error) {
-      console.error("Error in resetAndLoadPastSurvey:", error);
-    }
-  };
-
-  const rebuildChatHistory = () => {
-    console.log("Rebuilding chat history with data:", surveyForm.surveyData);
-    
-    addMessage(steps[0].question, "bot");
-    
-    const channelLabel = getOptionLabel("canal", surveyForm.surveyData.canal);
-    addMessage(channelLabel, "user");
-    
-    addMessage(steps[1].question, "bot");
-    const funnelLabel = getOptionLabel("funnelStage", surveyForm.surveyData.funnelStage);
-    addMessage(funnelLabel, "user");
-    
-    addMessage(steps[2].question, "bot");
-    addMessage(surveyForm.surveyData.websiteUrl || "", "user");
-    
-    addMessage(steps[3].question, "bot");
-    addMessage(`${surveyForm.surveyData.tamanho} caracteres`, "user");
-    
-    addMessage(steps[4].question, "bot");
-    const toneLabel = getOptionLabel("tomVoz", surveyForm.surveyData.tomVoz);
-    addMessage(toneLabel, "user");
-    
-    addMessage(steps[5].question, "bot");
-    const triggerLabel = getOptionLabel("gatilhos", surveyForm.surveyData.gatilhos);
-    addMessage(triggerLabel, "user");
-    
-    addMessage(steps[6].question, "bot");
-    
-    if (surveyForm.csvFileName) {
-      addMessage(`Arquivo processado com sucesso: ${surveyForm.totalCount} linhas carregadas`, "user");
-    }
-    
-    addMessage(steps[7].question, "bot");
-    const summaryContent = (
-      <ChatSummary 
-        surveyData={surveyForm.surveyData} 
-        csvFileName={surveyForm.csvFileName} 
-        totalCount={surveyForm.totalCount} 
-      />
-    );
-    addMessage(summaryContent, "bot");
-    
-    addMessage("Tudo pronto para continuar?", "bot");
-    
-    setCurrentStep(7);
-  };
-
-  const addCompletionMessage = () => {
-    console.log("Adding completion message");
-    console.log(`Completion data: processedCount=${surveyForm.processedCount}, totalCount=${surveyForm.totalCount}`);
-    
-    const totalRows = surveyForm.totalCount || 0;
-    const processedCount = surveyForm.processedCount || 0;
-    
-    if (!completionMessageAddedRef.current) {
-      addMessage(
-        <div className="space-y-2">
-          <p className="font-medium">🎉 Processamento concluído!</p>
-          <p className="text-gray-600">
-            Todos os {processedCount} contatos foram processados com sucesso.
-          </p>
-          <Button
-            onClick={() => surveyForm.handleDownload()}
-            disabled={surveyForm.isDownloading}
-            className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
-          >
-            {surveyForm.isDownloading ? (
-              <>
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
-                Gerando arquivo...
-              </>
-            ) : (
-              <>
-                <Download className="mr-2 h-4 w-4" />
-                Baixar Campanha Personalizada
-              </>
-            )}
-          </Button>
-        </div>,
-        "bot"
-      );
-      completionMessageAddedRef.current = true;
-    }
-  };
-
-  const initializeChat = () => {
-    if (messages.length === 0) {
-      const firstStep = steps[0];
-      addMessage(firstStep.question, "bot");
-      
-      if (firstStep.options) {
-        setShowOptions({
-          options: firstStep.options,
-          step: 0,
-          isComplete: false
-        });
-      }
-    }
-  };
 
   const handleFileChange = async (file: File) => {
     const success = await surveyForm.handleFileUpload(file);
@@ -257,30 +76,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
-  };
-
-  const handleBack = () => {
-    if (currentStep <= 0) return;
-    
-    setMessages(prev => prev.slice(0, -2));
-    
-    const previousStep = currentStep - 1;
-    setCurrentStep(previousStep);
-    
-    setShowOptions(null);
-    setShowSlider(false);
-    setCurrentInput("");
-    
-    const prevStepData = steps[previousStep];
-    if (prevStepData.options) {
-      setShowOptions({
-        options: prevStepData.options,
-        step: previousStep,
-        isComplete: surveyForm.isComplete
-      });
-    } else if (prevStepData.inputType === "slider") {
-      setShowSlider(true);
-    }
   };
 
   const handleOptionSelect = (value: string) => {
@@ -317,111 +112,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
-  };
-
-  const moveToNextStep = () => {
-    const nextStep = currentStep + 1;
-    
-    if (nextStep < steps.length) {
-      setCurrentStep(nextStep);
-      addMessage(steps[nextStep].question, "bot");
-      
-      if (steps[nextStep].options) {
-        setShowOptions({
-          options: steps[nextStep].options,
-          step: nextStep,
-          isComplete: surveyForm.isComplete
-        });
-      }
-      
-      if (steps[nextStep].inputType === "slider") {
-        setShowSlider(true);
-      }
-      
-      if (steps[nextStep].inputType === "summary") {
-        const summaryContent = (
-          <ChatSummary 
-            surveyData={surveyForm.surveyData} 
-            csvFileName={surveyForm.csvFileName} 
-            totalCount={surveyForm.totalCount} 
-          />
-        );
-        
-        addMessage(summaryContent, "bot");
-        
-        setTimeout(() => {
-          addMessage("Tudo pronto para continuar?", "bot");
-        }, 1000);
-      }
-    } else {
-      addMessage("Clique em 'Consultar Status' para verificar o andamento do processamento.", "bot");
-    }
-  };
-
-  const getOptionLabel = (field: string, value: string): string => {
-    const step = steps.find(s => s.field === field);
-    if (!step || !step.options) return value;
-    
-    const option = step.options.find(opt => opt.value === value);
-    return option ? option.label : value;
-  };
-
-  const handleCheckStatus = async () => {
-    if (!surveyForm.processingId) {
-      addMessage(
-        "Nenhum processamento em andamento. Por favor, inicie um novo processamento.",
-        "bot"
-      );
-      return;
-    }
-    
-    try {
-      console.log("Checking status for survey ID:", surveyForm.processingId);
-      
-      const { data, error } = await supabase.functions.invoke('checkProgress', {
-        body: {
-          surveyId: surveyForm.processingId,
-          fetchData: false
-        }
-      });
-      
-      if (error) {
-        console.error("Error calling checkProgress:", error);
-        throw error;
-      }
-      
-      console.log("CheckProgress response:", data);
-      
-      if (data.isComplete) {
-        surveyForm.setIsComplete(true);
-        surveyForm.setProcessedCount(data.count);
-        surveyForm.setTotalCount(data.total);
-        
-        if (!completionMessageAddedRef.current) {
-          addCompletionMessage();
-          completionMessageAddedRef.current = true;
-        } else {
-          addMessage(
-            "Processamento já concluído. Você pode baixar sua campanha personalizada.",
-            "bot"
-          );
-        }
-      } else {
-        const totalRows = data.total || surveyForm.totalCount || 0;
-        const processedCount = data.count || 0;
-        
-        addMessage(
-          `Status do processamento: ${processedCount}/${totalRows} contatos processados (ID: ${surveyForm.processingId}). Por favor, tente novamente em alguns instantes.`,
-          "bot"
-        );
-      }
-    } catch (error) {
-      console.error("Error in handleCheckStatus:", error);
-      addMessage(
-        "Erro ao verificar o status do processamento. Tente novamente.",
-        "bot"
-      );
-    }
   };
 
   return (
