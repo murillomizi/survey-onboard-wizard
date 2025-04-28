@@ -21,15 +21,9 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   const [chatHistory, setChatHistory] = useState<{
     id: string;
     created_at: string;
-    title: string;
-    description: string;
-    canal: string;
-    websiteUrl: string;
-    csvRowCount: number;
   }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Usando o controller em vez de chamar diretamente o Supabase
   useEffect(() => {
     const fetchHistory = async () => {
       setIsLoading(true);
@@ -84,23 +78,15 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                 }`}
                 onClick={() => onSelectSurvey(chat.id)}
               >
-                <div className="flex items-start justify-between w-full">
-                  <div className="flex flex-col">
-                    <div className="flex items-center text-gray-600">
-                      <Clock className="mr-2 h-4 w-4" />
-                      {new Date(chat.created_at).toLocaleString('pt-BR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </div>
-                    <div className="mt-1 text-gray-800">{chat.canal}</div>
-                    <div className="text-xs text-gray-500">
-                      {chat.csvRowCount} leads para processar
-                    </div>
-                  </div>
+                <div className="flex items-center text-gray-600 w-full">
+                  <Clock className="mr-2 h-4 w-4" />
+                  {new Date(chat.created_at).toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
                 </div>
               </Button>
             ))
@@ -112,3 +98,4 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
 };
 
 export default ChatHistorySidebar;
+
