@@ -12,7 +12,6 @@ interface ChatHistorySidebarProps {
   refresh?: number;
 }
 
-// O componente não precisa ser modificado, apenas adaptado para usar o Controller
 const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   onSelectSurvey,
   onNewCampaign,
@@ -85,14 +84,22 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                 }`}
                 onClick={() => onSelectSurvey(chat.id)}
               >
-                <div className="flex items-center justify-between w-full">
-                  <div>
-                    <div className="flex items-center">
-                      <Clock className="mr-2 h-4 w-4 text-gray-400" />
-                      {new Date(chat.created_at).toLocaleDateString()}
+                <div className="flex items-start justify-between w-full">
+                  <div className="flex flex-col">
+                    <div className="flex items-center text-gray-600">
+                      <Clock className="mr-2 h-4 w-4" />
+                      {new Date(chat.created_at).toLocaleString('pt-BR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </div>
-                    <div className="truncate">{chat.title}</div>
-                    <div className="text-xs text-gray-500 truncate">{chat.description}</div>
+                    <div className="mt-1 text-gray-800">{chat.canal}</div>
+                    <div className="text-xs text-gray-500">
+                      {chat.csvRowCount} leads para processar
+                    </div>
                   </div>
                 </div>
               </Button>
