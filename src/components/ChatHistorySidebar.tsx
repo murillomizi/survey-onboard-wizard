@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from "react";
-import { SidebarSection } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Clock, Loader2 } from "lucide-react";
 import { SurveyController } from "@/controllers/SurveyController";
@@ -47,56 +48,59 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   }, [refresh]);
 
   return (
-    <SidebarSection title="Campanhas">
-      <Button
-        variant="secondary"
-        className="w-full justify-start font-normal"
-        onClick={onNewCampaign}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Criando...
-          </>
-        ) : (
-          <>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Nova Campanha
-          </>
-        )}
-      </Button>
-      
-      <div className="mt-4 space-y-2">
-        {isLoading ? (
-          <div className="text-sm text-gray-500 italic">Carregando histórico...</div>
-        ) : chatHistory.length === 0 ? (
-          <div className="text-sm text-gray-500 italic">Nenhuma campanha criada ainda.</div>
-        ) : (
-          chatHistory.map((chat) => (
-            <Button
-              key={chat.id}
-              variant="ghost"
-              className={`w-full justify-start font-normal text-sm ${
-                currentSurveyId === chat.id ? "bg-gray-100 hover:bg-gray-100" : ""
-              }`}
-              onClick={() => onSelectSurvey(chat.id)}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div>
-                  <div className="flex items-center">
-                    <Clock className="mr-2 h-4 w-4 text-gray-400" />
-                    {new Date(chat.created_at).toLocaleDateString()}
+    <Sidebar>
+      <SidebarContent className="p-4">
+        <h2 className="text-lg font-semibold mb-4">Campanhas</h2>
+        <Button
+          variant="secondary"
+          className="w-full justify-start font-normal"
+          onClick={onNewCampaign}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Criando...
+            </>
+          ) : (
+            <>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Nova Campanha
+            </>
+          )}
+        </Button>
+        
+        <div className="mt-4 space-y-2">
+          {isLoading ? (
+            <div className="text-sm text-gray-500 italic">Carregando histórico...</div>
+          ) : chatHistory.length === 0 ? (
+            <div className="text-sm text-gray-500 italic">Nenhuma campanha criada ainda.</div>
+          ) : (
+            chatHistory.map((chat) => (
+              <Button
+                key={chat.id}
+                variant="ghost"
+                className={`w-full justify-start font-normal text-sm ${
+                  currentSurveyId === chat.id ? "bg-gray-100 hover:bg-gray-100" : ""
+                }`}
+                onClick={() => onSelectSurvey(chat.id)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div>
+                    <div className="flex items-center">
+                      <Clock className="mr-2 h-4 w-4 text-gray-400" />
+                      {new Date(chat.created_at).toLocaleDateString()}
+                    </div>
+                    <div className="truncate">{chat.title}</div>
+                    <div className="text-xs text-gray-500 truncate">{chat.description}</div>
                   </div>
-                  <div className="truncate">{chat.title}</div>
-                  <div className="text-xs text-gray-500 truncate">{chat.description}</div>
                 </div>
-              </div>
-            </Button>
-          ))
-        )}
-      </div>
-    </SidebarSection>
+              </Button>
+            ))
+          )}
+        </div>
+      </SidebarContent>
+    </Sidebar>
   );
 };
 

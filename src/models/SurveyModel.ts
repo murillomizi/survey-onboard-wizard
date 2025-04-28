@@ -15,6 +15,7 @@ export interface SurveyData {
   template?: string;
   csv_data?: any[];
   csv_file_name?: string;
+  gatilhos?: string; // Adicionando a propriedade gatilhos que faltava
 }
 
 export interface ProcessingStatus {

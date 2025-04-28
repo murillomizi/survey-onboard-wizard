@@ -8,5 +8,10 @@ import { useSurveyManager } from "./useSurveyManager";
 export const useSurveyForm = () => {
   const surveyManager = useSurveyManager();
   
-  return surveyManager;
+  // Adicionando uma propriedade csvFileName explicitamente para resolver a referência
+  return {
+    ...surveyManager,
+    csvFileName: surveyManager.surveyData?.csvFileName || "",
+    loadSurvey: surveyManager.loadSurvey
+  };
 };

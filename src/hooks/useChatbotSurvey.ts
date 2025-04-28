@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { useSurveyManager } from "@/hooks/useSurveyManager";
+import { useSurveyForm } from "@/hooks/useSurveyForm";
 import { useToast } from "@/components/ui/use-toast";
 
 export interface StepOption {
@@ -98,7 +99,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
   const { toast } = useToast();
   
-  const surveyForm = useSurveyManager(initialSurveyId);
+  const surveyForm = useSurveyForm();
 
   useEffect(() => {
     if (initialSurveyId) {
@@ -117,7 +118,8 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     
     try {
       setIsLoadingPastChat(true);
-      return await surveyForm.loadSurvey?.(surveyId);
+      // Usar loadSurvey do useSurveyForm (que inclui o loadSurvey do useSurveyManager)
+      return await surveyForm.loadSurvey(surveyId);
     } finally {
       setTimeout(() => {
         setIsLoadingPastChat(false);

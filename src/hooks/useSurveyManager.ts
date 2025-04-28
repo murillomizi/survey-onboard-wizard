@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SurveyController } from "@/controllers/SurveyController";
 import { toast } from "@/components/ui/use-toast";
@@ -249,7 +248,9 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
     checkProgress,
     startPolling,
     stopPolling,
+    loadSurvey,
     isLoading,
     isSubmitting: state.isProcessing,
+    csvFileName: state.surveyData.csvFileName
   };
 };

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader } from "lucide-react";
@@ -343,7 +342,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         "bot"
       );
       
-      if (data && data.isComplete && data.count >= totalRows && totalRows > 0) {
+      if (data && data.isComplete && data.processedCount >= totalRows && totalRows > 0) {
         surveyForm.setIsComplete(true);
         addCompletionMessage();
       }
