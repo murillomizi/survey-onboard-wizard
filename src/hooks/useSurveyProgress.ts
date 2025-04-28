@@ -18,7 +18,7 @@ export const useSurveyProgress = (onProgressUpdate: (count: number) => void) => 
       
       if (error) {
         console.error("Error calling checkProgress Edge Function:", error);
-        return;
+        return null;
       }
 
       if (data) {
@@ -29,6 +29,7 @@ export const useSurveyProgress = (onProgressUpdate: (count: number) => void) => 
       return data;
     } catch (error) {
       console.error("Error in checkProgress:", error);
+      return null;
     }
   };
 

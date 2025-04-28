@@ -137,7 +137,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
         surveyForm.setSurveyData({
           ...surveyForm.surveyData,
           canal: data.canal || "",
-          touchpoints: data.touchpoints || "3",
+          touchpoints: data.funnel_stage || "3",
           funnelStage: data.funnel_stage || "",
           websiteUrl: data.website_url || "",
           tamanho: data.message_length || 350,
@@ -154,14 +154,12 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
           surveyForm.setTotalCount(csvDataArray.length);
         }
         
+        // Check completion status
         if (data.id) {
           try {
-            await surveyForm.checkProgress(data.id);
-            // Fix: Use the processingId method correctly instead of setProcessingId
-            if (data.id !== surveyForm.processingId) {
-              // We need to check if the setProcessingId exists, if not, we can't set it directly
-              // So we're not using setProcessingId, we'll handle processingId in useSurveyForm
-              await surveyForm.checkProgress(data.id);
+            const progressData = await surveyForm.checkProgress(data.id);
+            if (progressData && progressData.isComplete) {
+              surveyForm.setIsComplete(true);
             }
           } catch (err) {
             console.error("Error checking progress:", err);

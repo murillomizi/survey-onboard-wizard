@@ -15,20 +15,25 @@ const Index = () => {
 
   const handleSelectSurvey = async (surveyId: string) => {
     try {
+      // Don't reload if we're already viewing this survey
+      if (surveyId === selectedSurveyId) {
+        return;
+      }
+      
       setIsLoading(true);
       console.log("Loading survey ID:", surveyId);
       
-      // Importante: primeiro definir o ID selecionado
-      setSelectedSurveyId(null); // Definimos como null primeiro para forçar uma recarga completa
+      // First set selected ID to null to ensure clean reload
+      setSelectedSurveyId(null);
+      setShowSurveyForm(false);
       
-      // Atraso breve para garantir que o estado foi limpo
+      // Brief delay to ensure state is cleared
       setTimeout(() => {
         setSelectedSurveyId(surveyId);
         setShowSurveyForm(true);
-        
-        // Forçamos um refresh do componente ChatbotSurvey
         setRefresh(prev => prev + 1);
-      }, 50);
+        setIsLoading(false);
+      }, 100);
       
     } catch (error) {
       console.error("Error selecting survey:", error);
@@ -37,7 +42,6 @@ const Index = () => {
         description: "Não foi possível carregar os dados do chat selecionado.",
         variant: "destructive"
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -55,14 +59,9 @@ const Index = () => {
     // Update the selected survey ID to the new one
     setSelectedSurveyId(newSurveyId);
     
-    // Wait briefly to ensure data is available
-    setTimeout(async () => {
-      try {
-        // Refresh the chat history sidebar to show the new entry
-        setRefresh(prev => prev + 1);
-      } catch (error) {
-        console.error("Error refreshing after submission:", error);
-      }
+    // Refresh the chat history sidebar to show the new entry
+    setTimeout(() => {
+      setRefresh(prev => prev + 1);
     }, 500);
   };
 
@@ -101,7 +100,7 @@ const Index = () => {
             <div className="transform transition-all duration-500 hover:scale-[1.01]">
               {showSurveyForm && (
                 <ChatbotSurvey 
-                  key={refresh}
+                  key={`survey-${selectedSurveyId}-${refresh}`}
                   initialSurveyId={selectedSurveyId} 
                   onSubmitSuccess={handleFormSubmit}
                   isLoading={isLoading}

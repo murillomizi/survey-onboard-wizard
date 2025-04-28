@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, History } from "lucide-react";
+import { Plus, History, Check, RefreshCcw } from "lucide-react";
 import { 
   Sidebar, 
   SidebarContent,
@@ -34,6 +34,7 @@ interface ChatHistoryItem {
 const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, refresh = 0 }: ChatHistoryProps) => {
   const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchChatHistory();
@@ -87,6 +88,12 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
       setLoading(false);
     }
   };
+  
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchChatHistory();
+    setRefreshing(false);
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -137,7 +144,18 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
     <Sidebar side="left" className="bg-white border-r border-gray-200" data-state="expanded">
       <SidebarHeader className="pb-0">
         <div className="flex justify-between items-center p-2">
-          <h2 className="text-lg font-semibold text-gray-800">Histórico</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-800">Histórico</h2>
+            <Button 
+              onClick={handleRefresh}
+              variant="ghost" 
+              size="sm"
+              disabled={refreshing}
+              className="p-1 h-auto"
+            >
+              <RefreshCcw size={16} className={`text-gray-500 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
           <Button 
             onClick={handleNewCampaignClick}
             className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center gap-1 hover:opacity-90"
@@ -174,7 +192,9 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
                       <span className="text-xs text-gray-500">{formatDate(item.created_at)}</span>
                     </div>
                     {item.isProcessed && (
-                      <span className="ml-1 h-2 w-2 rounded-full bg-green-500" title="Processamento concluído"></span>
+                      <div className="ml-1 h-5 w-5 rounded-full bg-green-100 flex items-center justify-center" title="Processamento concluído">
+                        <Check size={12} className="text-green-600" />
+                      </div>
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>

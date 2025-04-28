@@ -52,7 +52,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   const resetAndLoadPastSurvey = async (surveyId: string) => {
     console.log("Resetting chat and loading survey:", surveyId);
     try {
-      // Reset messages to start fresh - IMPORTANT: clear messages first
+      // Clear all old messages
       setMessages([]);
       
       // Reset UI states
@@ -61,11 +61,12 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       setCurrentInput("");
       
       // Load the selected survey data
-      await loadPastSurvey(surveyId);
+      const data = await loadPastSurvey(surveyId);
       
-      // Rebuild the chat history based on the loaded data
-      // Only call this after the data is loaded
-      rebuildChatHistory();
+      if (data) {
+        // Only rebuild chat after data is loaded
+        rebuildChatHistory();
+      }
     } catch (error) {
       console.error("Error in resetAndLoadPastSurvey:", error);
     }
@@ -122,10 +123,48 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       />
     );
     addMessage(summaryContent, "bot");
+    
     addMessage("Tudo pronto para continuar?", "bot");
     
     // Set current step to the end
     setCurrentStep(7);
+    
+    // Check if processing is complete and add completion message if needed
+    if (surveyForm.isComplete) {
+      addCompletionMessage();
+    }
+  };
+  
+  const addCompletionMessage = () => {
+    const totalRows = surveyForm.totalCount || 0;
+    const count = surveyForm.processedCount || 0;
+    
+    addMessage(
+      <div className="space-y-2">
+        <p className="font-medium">🎉 Processamento concluído!</p>
+        <p className="text-gray-600">
+          Todos os {count} contatos foram processados com sucesso.
+        </p>
+        <Button
+          onClick={() => surveyForm.handleDownload()}
+          disabled={surveyForm.isDownloading}
+          className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+        >
+          {surveyForm.isDownloading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Gerando arquivo...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Baixar Campanha Personalizada
+            </>
+          )}
+        </Button>
+      </div>,
+      "bot"
+    );
   };
 
   const initializeChat = () => {
@@ -304,33 +343,9 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         "bot"
       );
       
-      if (count >= totalRows && totalRows > 0) {
-        addMessage(
-          <div className="space-y-2">
-            <p className="font-medium">🎉 Processamento concluído!</p>
-            <p className="text-gray-600">
-              Todos os {count} contatos foram processados com sucesso.
-            </p>
-            <Button
-              onClick={() => surveyForm.handleDownload()}
-              disabled={surveyForm.isDownloading}
-              className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
-            >
-              {surveyForm.isDownloading ? (
-                <>
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  Gerando arquivo...
-                </>
-              ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  Baixar Campanha Personalizada
-                </>
-              )}
-            </Button>
-          </div>,
-          "bot"
-        );
+      if (data && data.isComplete && data.count >= totalRows && totalRows > 0) {
+        surveyForm.setIsComplete(true);
+        addCompletionMessage();
       }
     } catch (error) {
       console.error("Error in handleCheckStatus:", error);
