@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader } from "lucide-react";
@@ -356,18 +355,28 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     }
     
     try {
-      const { data: processedData } = await supabase
-        .from('mizi_ai_personalized_return')
-        .select('id')
-        .eq('mizi_ai_id', surveyForm.processingId);
-        
-      const hasProcessedData = processedData && processedData.length > 0;
+      console.log("Checking status for survey ID:", surveyForm.processingId);
       
-      if (hasProcessedData) {
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: {
+          surveyId: surveyForm.processingId,
+          fetchData: false
+        }
+      });
+      
+      if (error) {
+        console.error("Error calling checkProgress:", error);
+        throw error;
+      }
+      
+      console.log("CheckProgress response:", data);
+      
+      if (data.isComplete) {
         surveyForm.setIsComplete(true);
         
         if (!completionMessageAddedRef.current) {
           addCompletionMessage();
+          completionMessageAddedRef.current = true;
         } else {
           addMessage(
             "Processamento já concluído. Você pode baixar sua campanha personalizada.",
@@ -375,10 +384,11 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
           );
         }
       } else {
-        const totalRows = surveyForm.totalCount || 0;
+        const totalRows = data.total || surveyForm.totalCount || 0;
+        const processedCount = data.count || 0;
         
         addMessage(
-          `Status do processamento: 0/${totalRows} contatos processados (ID: ${surveyForm.processingId}). Por favor, tente novamente em alguns instantes.`,
+          `Status do processamento: ${processedCount}/${totalRows} contatos processados (ID: ${surveyForm.processingId}). Por favor, tente novamente em alguns instantes.`,
           "bot"
         );
       }
