@@ -538,10 +538,18 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
     
     try {
       console.log("Fetching processed data for download for ID:", processingId);
-      const { data, error } = await supabase
-        .from("mizi_ai_personalized_return")
-        .select("*")
-        .eq("mizi_ai_id", processingId);
+      
+      toast({
+        title: "Preparando download",
+        description: "Aguarde enquanto preparamos seus dados para download...",
+      });
+      
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: { 
+          surveyId: processingId,
+          fetchData: true
+        }
+      });
       
       if (error) {
         console.error("Error fetching processed data:", error);
@@ -553,7 +561,7 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         return;
       }
       
-      if (!data || data.length === 0) {
+      if (!data || !data.processedData || data.processedData.length === 0) {
         console.error("No data found for download");
         toast({
           title: "Sem dados",
@@ -563,8 +571,8 @@ const ChatbotSurvey = ({ initialSurveyId = null }: ChatbotSurveyProps) => {
         return;
       }
       
-      console.log("Generating CSV with", data.length, "rows");
-      const csv = Papa.unparse(data);
+      console.log("Generating CSV with", data.processedData.length, "rows");
+      const csv = Papa.unparse(data.processedData);
       
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);

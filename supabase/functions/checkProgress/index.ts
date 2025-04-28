@@ -11,6 +11,7 @@ interface ResponseData {
   count: number;
   isComplete?: boolean;
   message?: string;
+  processedData?: any[];
 }
 
 serve(async (req) => {
@@ -23,7 +24,7 @@ serve(async (req) => {
   }
 
   try {
-    const { surveyId } = await req.json();
+    const { surveyId, fetchData } = await req.json();
 
     if (!surveyId) {
       return new Response(
@@ -89,12 +90,37 @@ serve(async (req) => {
     // Determine if processing is complete
     const isComplete = totalRows > 0 && count >= totalRows;
     
-    const responseData: ResponseData = { 
+    let responseData: ResponseData = { 
       count: count || 0,
       isComplete
     };
 
-    // Return response with processed count and completion status
+    // If fetchData is true, return all processed data for download
+    if (fetchData && isComplete) {
+      const { data: processedData, error: dataError } = await supabase
+        .from("mizi_ai_personalized_return")
+        .select("*")
+        .eq("mizi_ai_id", surveyId);
+      
+      if (dataError) {
+        console.error("Data fetch error:", dataError);
+        return new Response(
+          JSON.stringify({ error: "Error fetching processed data" }),
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+          }
+        );
+      }
+
+      if (!processedData || processedData.length === 0) {
+        console.warn("No processed data found for survey:", surveyId);
+      }
+
+      responseData.processedData = processedData || [];
+    }
+
+    // Return response with processed count, completion status, and optionally the data
     return new Response(
       JSON.stringify(responseData),
       { 
