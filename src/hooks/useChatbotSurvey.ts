@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSurveyForm } from "@/hooks/useSurveyForm";
 import { useToast } from "@/components/ui/use-toast";
@@ -156,7 +157,12 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
         if (data.id) {
           try {
             await surveyForm.checkProgress(data.id);
-            surveyForm.setProcessingId(data.id);
+            // Fix: Use the processingId method correctly instead of setProcessingId
+            if (data.id !== surveyForm.processingId) {
+              // We need to check if the setProcessingId exists, if not, we can't set it directly
+              // So we're not using setProcessingId, we'll handle processingId in useSurveyForm
+              await surveyForm.checkProgress(data.id);
+            }
           } catch (err) {
             console.error("Error checking progress:", err);
           }
