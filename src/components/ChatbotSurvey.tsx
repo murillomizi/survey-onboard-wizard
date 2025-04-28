@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+
+import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader } from "lucide-react";
 import { useChatMessages } from "@/hooks/useChatMessages";
@@ -39,11 +40,20 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     surveyForm
   } = useChatbotSurvey(initialSurveyId);
 
+  // Add a ref to track if we've already loaded this survey
+  const loadedSurveyIdRef = useRef<string | null>(null);
+
   useEffect(() => {
     console.log("ChatbotSurvey received initialSurveyId:", initialSurveyId);
-    if (initialSurveyId) {
+
+    // Only load if the survey ID has changed and is not already loaded
+    if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
+      console.log("Loading survey with new ID:", initialSurveyId);
       resetAndLoadPastSurvey(initialSurveyId);
-    } else if (!isLoadingPastChat) {
+      loadedSurveyIdRef.current = initialSurveyId;
+    } else if (!initialSurveyId && !isLoadingPastChat) {
+      console.log("Initializing new chat");
+      loadedSurveyIdRef.current = null;
       initializeChat();
     }
   }, [initialSurveyId]);
@@ -63,7 +73,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       const data = await loadPastSurvey(surveyId);
       
       if (data) {
-        // Only rebuild chat after data is loaded
+        // Only rebuild chat history after data is loaded
         rebuildChatHistory();
       }
     } catch (error) {

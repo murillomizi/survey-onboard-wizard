@@ -23,15 +23,19 @@ const Index = () => {
       setIsLoading(true);
       console.log("Loading survey ID:", surveyId);
       
-      // First set selected ID to null to ensure clean reload
-      setSelectedSurveyId(null);
+      // First hide the survey form
       setShowSurveyForm(false);
       
-      // Brief delay to ensure state is cleared
+      // Brief delay to ensure component unmounts
       setTimeout(() => {
+        // Set the new survey ID
         setSelectedSurveyId(surveyId);
-        setShowSurveyForm(true);
+        
+        // Generate a new refresh key to force component recreation
         setRefresh(prev => prev + 1);
+        
+        // Show the survey form with new ID
+        setShowSurveyForm(true);
         setIsLoading(false);
       }, 100);
       
@@ -47,11 +51,16 @@ const Index = () => {
   };
 
   const handleNewCampaign = () => {
+    // Hide the current form
+    setShowSurveyForm(false);
+    
     // Reset the survey ID to null to start a fresh chat
-    setSelectedSurveyId(null);
-    setShowSurveyForm(true);
-    // Force a refresh of the ChatbotSurvey component
-    setRefresh(prev => prev + 1);
+    setTimeout(() => {
+      setSelectedSurveyId(null);
+      // Force a refresh of the ChatbotSurvey component
+      setRefresh(prev => prev + 1);
+      setShowSurveyForm(true);
+    }, 100);
   };
 
   // Function to handle successful form submission
