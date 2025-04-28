@@ -3,13 +3,14 @@ import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, CircleDot, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, ArrowLeft } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import LoadingProgress from "./LoadingProgress";
+import ResultsPage from "./ResultsPage";
 
 interface Message {
   id: number;
@@ -35,6 +36,7 @@ const ChatbotSurvey = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [currentSurveyId, setCurrentSurveyId] = useState<string | null>(null);
   const [csvRowCount, setCsvRowCount] = useState(0);
+  const [showResults, setShowResults] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -410,6 +412,46 @@ const ChatbotSurvey = () => {
       setIsSubmitting(false);
     }
   };
+  
+  const handleLoadingComplete = () => {
+    setShowResults(true);
+  };
+  
+  const handleBackToStart = () => {
+    setMessages([]);
+    setCurrentStep(0);
+    setShowOptions(null);
+    setShowSlider(false);
+    setCurrentInput("");
+    setCsvFileName(null);
+    setCsvRowCount(0);
+    setShowLoading(false);
+    setCurrentSurveyId(null);
+    setShowResults(false);
+    setSurveyData({
+      canal: "",
+      funnelStage: "",
+      csvData: [],
+      websiteUrl: "",
+      tamanho: 350,
+      tomVoz: "",
+      gatilhos: ""
+    });
+    
+    const firstStep = steps[0];
+    addMessage(firstStep.question, "bot");
+    
+    if (firstStep.options) {
+      setShowOptions({
+        options: firstStep.options,
+        step: 0
+      });
+    }
+  };
+
+  if (showResults && currentSurveyId) {
+    return <ResultsPage surveyId={currentSurveyId} onBackToStart={handleBackToStart} />;
+  }
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
@@ -451,6 +493,7 @@ const ChatbotSurvey = () => {
           <LoadingProgress
             surveyId={currentSurveyId}
             totalRows={csvRowCount}
+            onComplete={handleLoadingComplete}
           />
         )}
         
@@ -493,7 +536,7 @@ const ChatbotSurvey = () => {
           </div>
         )}
         
-        {currentStep === 7 && (
+        {currentStep === 6 && (
           <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
             <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
             <p className="text-sm mb-2">

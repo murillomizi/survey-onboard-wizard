@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   return (
@@ -46,6 +47,8 @@ const Index = () => {
           <ChatbotSurvey />
         </div>
       </motion.div>
+      
+      <Toaster />
     </div>
   );
 };
