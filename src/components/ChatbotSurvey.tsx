@@ -533,6 +533,17 @@ const ChatbotSurvey = () => {
             </div>
           )}
           
+          {currentStep === 7 && (
+            <Button
+              type="button"
+              onClick={triggerFileUpload}
+              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow transition-all duration-200"
+            >
+              <Paperclip size={18} />
+              Upload CSV
+            </Button>
+          )}
+          
           {currentStep < 6 && showOptions === null && !showSlider && (
             <>
               <div className="relative flex-1">
