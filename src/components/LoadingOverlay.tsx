@@ -18,14 +18,12 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   surveyId
 }) => {
   useEffect(() => {
-    // Display the survey ID in the console for debugging
     if (surveyId) {
       console.log(`LoadingOverlay monitoring survey ID: ${surveyId}`);
     }
   }, [surveyId]);
 
   useEffect(() => {
-    // Log when the component detects completion
     if (isComplete) {
       console.log("LoadingOverlay: Processing complete, showing download button");
     }
