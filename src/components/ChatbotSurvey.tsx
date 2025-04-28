@@ -23,9 +23,13 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     currentInput,
     setCurrentInput,
     isWaitingForResponse,
+    setIsWaitingForResponse,
     showOptions,
+    setShowOptions,
     showSlider,
+    setShowSlider,
     sliderValue,
+    setSliderValue,
     isLoadingPastChat,
     messages,
     surveyForm,
@@ -42,7 +46,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       };
       checkProcessingStatus();
     }
-  }, [initialSurveyId, isLoadingPastChat]);
+  }, [initialSurveyId, isLoadingPastChat, handleCheckStatus]);
 
   const handleFileChange = async (file: File) => {
     const success = await surveyForm.handleFileUpload(file);
@@ -112,6 +116,12 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
+  };
+
+  // Adicionando função addMessage que estava faltando
+  const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
+    const { addMessage } = require("@/hooks/useChatMessages")();
+    addMessage(content, type);
   };
 
   return (

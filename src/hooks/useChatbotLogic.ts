@@ -5,6 +5,8 @@ import { useChatMessages } from '@/hooks/useChatMessages';
 import { Step, steps } from '@/hooks/useChatbotSurvey';
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ChatSummary from "@/components/survey/ChatSummary";
+import CompletionMessage from "@/components/survey/CompletionMessage";
 
 export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -118,11 +120,14 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       }
       
       if (steps[nextStep].inputType === "summary") {
-        addMessage(<ChatSummary 
-          surveyData={surveyForm.surveyData} 
-          csvFileName={surveyForm.csvFileName} 
-          totalCount={surveyForm.totalCount} 
-        />, "bot");
+        addMessage(
+          <ChatSummary 
+            surveyData={surveyForm.surveyData} 
+            csvFileName={surveyForm.csvFileName} 
+            totalCount={surveyForm.totalCount} 
+          />, 
+          "bot"
+        );
         
         setTimeout(() => {
           addMessage("Tudo pronto para continuar?", "bot");
@@ -202,6 +207,11 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
         "bot"
       );
     }
+  };
+
+  const rebuildChatHistory = () => {
+    // Function to rebuild chat history would go here
+    // This is a placeholder for the actual implementation
   };
 
   return {
