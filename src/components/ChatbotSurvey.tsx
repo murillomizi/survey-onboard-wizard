@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,8 @@ const ChatbotSurvey = () => {
     websiteUrl: "",
     tamanho: 350,
     tomVoz: "",
-    gatilhos: ""
+    gatilhos: "",
+    userEmail: ""
   });
 
   useEffect(() => {
@@ -104,6 +104,11 @@ const ChatbotSurvey = () => {
       field: "gatilhos"
     },
     {
+      question: "Qual é o e-mail onde você gostaria de receber sua base de contatos personalizada?",
+      field: "userEmail",
+      inputType: "text"
+    },
+    {
       question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
       description: "Dica: Inclua o máximo de informações possível, como nome, cargo, empresa, e-mail, histórico de interações, etc. Dados completos permitem que a IA crie estratégias de comunicação extremamente personalizadas e relevantes.",
       field: "csvFile",
@@ -151,6 +156,19 @@ const ChatbotSurvey = () => {
     if (currentStepData.field === "websiteUrl") {
       addMessage(currentInput, "user");
       setSurveyData({ ...surveyData, websiteUrl: currentInput });
+    } else if (currentStepData.field === "userEmail") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(currentInput)) {
+        toast({
+          title: "E-mail inválido",
+          description: "Por favor, insira um e-mail válido.",
+          variant: "destructive"
+        });
+        setIsWaitingForResponse(false);
+        return;
+      }
+      addMessage(currentInput, "user");
+      setSurveyData({ ...surveyData, userEmail: currentInput });
     }
 
     setCurrentInput("");
@@ -340,7 +358,7 @@ const ChatbotSurvey = () => {
     try {
       setIsSubmitting(true);
       
-      if (!surveyData.canal || !surveyData.funnelStage) {
+      if (!surveyData.canal || !surveyData.funnelStage || !surveyData.userEmail) {
         toast({
           title: "Campos obrigatórios",
           description: "Por favor, preencha todos os campos obrigatórios.",
@@ -382,10 +400,7 @@ const ChatbotSurvey = () => {
         return;
       }
 
-      toast({
-        title: "Configurações salvas!",
-        description: "Suas preferências de mensagem foram salvas com sucesso.",
-      });
+      addMessage("Ótimo! Sua base está sendo processada e em breve você receberá um e-mail em " + surveyData.userEmail + " com seus contatos personalizados.", "bot");
       
       console.log('Survey data saved:', data);
       setIsSubmitting(false);
