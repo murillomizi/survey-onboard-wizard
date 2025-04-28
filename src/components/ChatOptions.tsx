@@ -10,6 +10,7 @@ interface ChatOptionProps {
 }
 
 const ChatOptions = ({ options, onSelect, isComplete = false }: ChatOptionProps) => {
+  // Don't render anything if isComplete is true
   if (isComplete) {
     return null;
   }

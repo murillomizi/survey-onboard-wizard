@@ -59,7 +59,7 @@ const SurveyContent: React.FC<SurveyContentProps> = ({
         </div>
       )}
       
-      {showSlider && (
+      {showSlider && !isComplete && (
         <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
           <div className="mb-2">
             <span className="text-gray-800">{sliderValue} caracteres</span>
