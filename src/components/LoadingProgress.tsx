@@ -15,10 +15,15 @@ export const LoadingProgress = ({ surveyId, totalContacts }: LoadingProgressProp
 
   useEffect(() => {
     const checkProgress = async () => {
-      const { count } = await supabase
+      const { count, error } = await supabase
         .from('mizi_ai_personalized_return')
         .select('*', { count: 'exact' })
         .eq('mizi_ai_id', surveyId);
+      
+      if (error) {
+        console.error('Error fetching processed count:', error);
+        return;
+      }
       
       setProcessedCount(count || 0);
       
@@ -31,7 +36,7 @@ export const LoadingProgress = ({ surveyId, totalContacts }: LoadingProgressProp
     checkProgress();
 
     // Set up real-time subscription
-    const subscription = supabase
+    const channel = supabase
       .channel('mizi_ai_personalized_return_changes')
       .on('postgres_changes', 
         {
@@ -40,18 +45,26 @@ export const LoadingProgress = ({ surveyId, totalContacts }: LoadingProgressProp
           table: 'mizi_ai_personalized_return',
           filter: `mizi_ai_id=eq.${surveyId}`
         },
-        () => {
-          checkProgress();
+        (payload) => {
+          // Increment the counter directly instead of doing a full re-fetch
+          setProcessedCount(prev => {
+            const newCount = prev + 1;
+            if (newCount >= totalContacts) {
+              setIsComplete(true);
+            }
+            return newCount;
+          });
         }
       )
       .subscribe();
 
+    // Clean up subscription when component unmounts
     return () => {
-      subscription.unsubscribe();
+      channel.unsubscribe();
     };
   }, [surveyId, totalContacts]);
 
-  const progressPercentage = (processedCount / totalContacts) * 100;
+  const progressPercentage = totalContacts > 0 ? Math.min((processedCount / totalContacts) * 100, 100) : 0;
 
   return (
     <div className="w-full max-w-md mx-auto space-y-4 p-6 bg-white rounded-xl shadow-sm">
