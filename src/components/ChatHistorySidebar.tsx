@@ -4,6 +4,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/comp
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Clock, Loader2, CheckCircle } from "lucide-react";
 import { SurveyController } from "@/controllers/SurveyController";
+import { supabase } from "@/integrations/supabase/client"; // Added missing import
 
 interface ChatHistorySidebarProps {
   onSelectSurvey: (id: string) => void;
