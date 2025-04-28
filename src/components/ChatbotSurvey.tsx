@@ -174,6 +174,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   const addCompletionMessage = () => {
     console.log("Adding completion message");
+    console.log(`Completion data: processedCount=${surveyForm.processedCount}, totalCount=${surveyForm.totalCount}`);
     
     const totalRows = surveyForm.totalCount || 0;
     const processedCount = surveyForm.processedCount || 0;
