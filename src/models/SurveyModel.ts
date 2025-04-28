@@ -60,48 +60,20 @@ export class SurveyModel {
    */
   static async isProcessingComplete(surveyId: string): Promise<boolean> {
     try {
-      console.log(`Checking if processing is complete for survey: ${surveyId}`);
+      // Usamos a edge function para verificação consistente
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: {
+          surveyId: surveyId,
+          fetchData: false
+        }
+      });
       
-      // Obter total de linhas no CSV original
-      const { data: surveyData, error: surveyError } = await supabase
-        .from('mizi_ai_surveys')
-        .select('csv_data')
-        .eq('id', surveyId)
-        .single();
-      
-      if (surveyError) {
-        console.error("Error fetching survey data:", surveyError);
-        throw surveyError;
+      if (error) {
+        console.error('Error checking processing completion:', error);
+        return false;
       }
       
-      // Calcular número total de linhas no CSV
-      const totalRows = Array.isArray(surveyData?.csv_data) ? surveyData.csv_data.length : 0;
-      console.log(`Total rows in CSV: ${totalRows}`);
-      
-      if (totalRows === 0) {
-        console.log("No rows to process, marking as complete");
-        return true; // Se não há linhas, está completo por definição
-      }
-      
-      // Contar linhas processadas
-      const { data: processedData, error: countError } = await supabase
-        .from('mizi_ai_personalized_return')
-        .select('*')
-        .eq('mizi_ai_id', surveyId);
-      
-      if (countError) {
-        console.error("Error counting processed rows:", countError);
-        throw countError;
-      }
-      
-      const processedCount = processedData?.length || 0;
-      console.log(`Processed rows: ${processedCount} out of ${totalRows}`);
-      
-      // Verificar se todas as linhas foram processadas - consideramos processado se tiver pelo menos 1 registro
-      const isComplete = processedCount > 0 && (processedCount >= totalRows || totalRows <= 0);
-      console.log(`Is processing complete: ${isComplete}`);
-      
-      return isComplete;
+      return data.isComplete || false;
     } catch (error) {
       console.error("Error checking processing completion:", error);
       return false;
@@ -116,46 +88,22 @@ export class SurveyModel {
    */
   static async getProcessingStatus(surveyId: string, fetchData: boolean = false): Promise<ProcessingStatus> {
     try {
-      console.log(`Getting processing status for survey: ${surveyId}`);
+      // Esta função foi substituída pela chamada direta à edge function
+      // Mantida para compatibilidade com código existente
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: {
+          surveyId: surveyId,
+          fetchData: fetchData
+        }
+      });
       
-      // Obter total de linhas do CSV
-      const { data: surveyData, error: surveyError } = await supabase
-        .from('mizi_ai_surveys')
-        .select('csv_data')
-        .eq('id', surveyId)
-        .single();
-      
-      if (surveyError) {
-        console.error("Error fetching survey data:", surveyError);
-        throw surveyError;
-      }
-      
-      const totalCount = Array.isArray(surveyData?.csv_data) ? surveyData.csv_data.length : 0;
-      console.log(`Total count: ${totalCount}`);
-      
-      // Obter dados processados (não apenas a contagem)
-      const { data: processedData, error: dataError } = await supabase
-        .from('mizi_ai_personalized_return')
-        .select('*')
-        .eq('mizi_ai_id', surveyId);
-      
-      if (dataError) {
-        console.error("Error fetching processed data:", dataError);
-        throw dataError;
-      }
-      
-      const processedCount = processedData?.length || 0;
-      console.log(`Processed count: ${processedCount}`);
-      
-      // Verificar se está completo - consideramos processado se tiver pelo menos 1 registro
-      const isComplete = processedCount > 0 && (processedCount >= totalCount || totalCount <= 0);
-      console.log(`Is complete: ${isComplete}`);
+      if (error) throw error;
       
       return {
-        totalCount,
-        processedCount,
-        isComplete,
-        data: fetchData ? processedData : undefined
+        totalCount: data.total || 0,
+        processedCount: data.count || 0,
+        isComplete: data.isComplete || false,
+        data: data.processedData
       };
     } catch (error) {
       console.error("Error getting processing status:", error);

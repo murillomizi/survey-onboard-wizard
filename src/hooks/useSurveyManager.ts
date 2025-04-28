@@ -1,6 +1,8 @@
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SurveyController } from "@/controllers/SurveyController";
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface SurveyState {
   surveyData: {

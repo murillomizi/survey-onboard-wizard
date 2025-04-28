@@ -1,6 +1,7 @@
 import { toast } from "@/components/ui/use-toast";
 import { SurveyModel, SurveyData, ProcessingStatus } from "@/models/SurveyModel";
 import Papa from "papaparse";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface SurveyFormState {
   canal: string;
@@ -50,7 +51,25 @@ export class SurveyController {
    */
   static async checkProgress(surveyId: string, fetchData: boolean = false): Promise<ProcessingStatus> {
     try {
-      return await SurveyModel.getProcessingStatus(surveyId, fetchData);
+      // Chama a edge function para verificar o progresso
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: {
+          surveyId: surveyId,
+          fetchData: fetchData
+        }
+      });
+      
+      if (error) {
+        console.error("Error calling checkProgress:", error);
+        throw error;
+      }
+      
+      return {
+        totalCount: data.total || 0,
+        processedCount: data.count || 0,
+        isComplete: data.isComplete || false,
+        data: data.processedData
+      };
     } catch (error) {
       console.error("Error in checkProgress:", error);
       return {
@@ -85,7 +104,7 @@ export class SurveyController {
     };
     
     // Obter status de processamento
-    const status = await SurveyModel.getProcessingStatus(surveyId);
+    const status = await this.checkProgress(surveyId);
     
     return {
       surveyData: formattedSurvey,
@@ -147,9 +166,10 @@ export class SurveyController {
    */
   static async downloadProcessedData(surveyId: string): Promise<boolean> {
     try {
-      // Verificar se o processamento está completo
-      const isComplete = await SurveyModel.isProcessingComplete(surveyId);
-      if (!isComplete) {
+      // Verificar se o processamento está completo usando a edge function
+      const status = await this.checkProgress(surveyId, true);
+      
+      if (!status.isComplete) {
         toast({
           title: "Processamento incompleto",
           description: "Aguarde o processamento ser concluído antes de baixar os dados.",
@@ -158,8 +178,8 @@ export class SurveyController {
         return false;
       }
       
-      // Obter os dados processados
-      const processedData = await SurveyModel.getProcessedDataForDownload(surveyId);
+      // Obter os dados processados da resposta da edge function
+      const processedData = status.data || await SurveyModel.getProcessedDataForDownload(surveyId);
       
       if (!processedData || processedData.length === 0) {
         toast({

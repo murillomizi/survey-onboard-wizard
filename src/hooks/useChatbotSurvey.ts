@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSurveyForm } from "@/hooks/useSurveyForm";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface StepOption {
   value: string;
@@ -131,6 +132,31 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     return surveyForm.handleFileUpload(file);
   };
 
+  // Verificar status de processamento
+  const checkProcessingStatus = async (surveyId: string) => {
+    if (!surveyId) return null;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: {
+          surveyId: surveyId,
+          fetchData: false
+        }
+      });
+      
+      if (error) throw error;
+      
+      return {
+        isComplete: data.isComplete,
+        processedCount: data.count,
+        totalCount: data.total
+      };
+    } catch (error) {
+      console.error("Error checking processing status:", error);
+      return null;
+    }
+  };
+
   return {
     currentStep,
     setCurrentStep,
@@ -148,6 +174,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     loadPastSurvey,
     surveyForm,
     handleFileUpload,
-    isSubmitting: surveyForm.isSubmitting
+    isSubmitting: surveyForm.isSubmitting,
+    checkProcessingStatus
   };
 };

@@ -49,37 +49,21 @@ serve(async (req) => {
     console.log(`Survey has ${totalEntries} entries`);
     
     // Contar registros processados
-    const { count, error: countError } = await supabase
+    const { data: processedData, error: dataError } = await supabase
       .from('mizi_ai_personalized_return')
-      .select('id', { count: 'exact', head: true })
+      .select('*')
       .eq('mizi_ai_id', surveyId);
       
-    if (countError) {
-      console.error('Error counting processed records:', countError);
-      throw countError;
+    if (dataError) {
+      console.error('Error fetching processed data:', dataError);
+      throw dataError;
     }
     
-    const processedCount = count || 0;
+    const processedCount = processedData?.length || 0;
     console.log(`${processedCount} processed`);
     
-    // Verificar se está completo
-    const isComplete = totalEntries > 0 && processedCount >= totalEntries;
-    
-    // Se precisar retornar dados processados
-    let processedData;
-    if (fetchData && isComplete) {
-      const { data, error } = await supabase
-        .from('mizi_ai_personalized_return')
-        .select('*')
-        .eq('mizi_ai_id', surveyId);
-        
-      if (error) {
-        console.error('Error fetching processed data:', error);
-        throw error;
-      }
-      
-      processedData = data;
-    }
+    // Verificar se está completo - consideramos processado se tiver pelo menos 1 registro
+    const isComplete = processedCount > 0 && (processedCount >= totalEntries);
     
     // Retornar resposta
     return new Response(
@@ -87,7 +71,7 @@ serve(async (req) => {
         count: processedCount, 
         total: totalEntries,
         isComplete,
-        processedData
+        processedData: fetchData ? processedData : undefined
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
