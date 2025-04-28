@@ -98,7 +98,7 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     
     return (
       <SidebarGroup>
-        <SidebarGroupLabel>{title}</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-gray-900 font-semibold">{title}</SidebarGroupLabel>
         <div className="space-y-2">
           {chats.map((chat) => (
             <Button
@@ -109,11 +109,11 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
               }`}
               onClick={() => onSelectSurvey(chat.id)}
             >
-              <div className="flex items-center text-gray-600 w-full">
+              <div className="flex items-center text-gray-800 w-full">
                 {chat.isComplete ? (
                   <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                 ) : (
-                  <Clock className="mr-2 h-4 w-4" />
+                  <Clock className="mr-2 h-4 w-4 text-gray-600" />
                 )}
                 {new Date(chat.created_at).toLocaleString('pt-BR', {
                   day: '2-digit',
@@ -135,10 +135,10 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   return (
     <Sidebar>
       <SidebarContent className="p-4">
-        <h2 className="text-lg font-semibold mb-4">Campanhas</h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-900">Campanhas</h2>
         <Button
           variant="secondary"
-          className="w-full justify-start font-normal"
+          className="w-full justify-start font-normal text-gray-800"
           onClick={onNewCampaign}
           disabled={isLoading}
         >
@@ -157,9 +157,9 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
         
         <div className="mt-4">
           {isLoading ? (
-            <div className="text-sm text-gray-500 italic">Carregando histórico...</div>
+            <div className="text-sm text-gray-600 italic">Carregando histórico...</div>
           ) : chatHistory.length === 0 ? (
-            <div className="text-sm text-gray-500 italic">Nenhuma campanha criada ainda.</div>
+            <div className="text-sm text-gray-600 italic">Nenhuma campanha criada ainda.</div>
           ) : (
             <>
               {renderChatGroup(groupedChats.today, "Hoje")}
