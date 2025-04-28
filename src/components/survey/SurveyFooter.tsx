@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Paperclip, Loader } from "lucide-react";
+import { Send, Paperclip, Loader, Download } from "lucide-react";
 
 interface SurveyFooterProps {
   currentStep: number;
@@ -13,10 +13,13 @@ interface SurveyFooterProps {
   onFileUpload: () => void;
   onSubmit: () => void;
   onCheckStatus: () => void;
+  onDownload?: () => void;
   isSubmitting: boolean;
   isDownloading: boolean;
   showInput: boolean;
   processingId: string | null;
+  isComplete?: boolean;
+  processedCount?: number;
 }
 
 const SurveyFooter: React.FC<SurveyFooterProps> = ({
@@ -28,13 +31,19 @@ const SurveyFooter: React.FC<SurveyFooterProps> = ({
   onFileUpload,
   onSubmit,
   onCheckStatus,
+  onDownload,
   isSubmitting,
   isDownloading,
   showInput,
-  processingId
+  processingId,
+  isComplete,
+  processedCount
 }) => {
   // Determine se o último passo está ativo
   const isLastStep = currentStep === totalSteps - 1;
+  
+  // Determinar se deve mostrar o botão de download direto na barra de ações
+  const showDownloadButton = isComplete && processingId && processedCount && processedCount > 0 && onDownload;
   
   return (
     <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
@@ -50,7 +59,7 @@ const SurveyFooter: React.FC<SurveyFooterProps> = ({
           </Button>
         )}
         
-        {showInput && (
+        {showInput && !isComplete && (
           <div className="relative flex-1">
             <Input
               value={currentInput}
@@ -68,7 +77,25 @@ const SurveyFooter: React.FC<SurveyFooterProps> = ({
           </div>
         )}
         
-        {isLastStep && (
+        {isComplete && showDownloadButton ? (
+          <Button
+            onClick={onDownload}
+            disabled={isDownloading}
+            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
+          >
+            {isDownloading ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Baixando...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Baixar Campanha Personalizada
+              </>
+            )}
+          </Button>
+        ) : isLastStep && (
           <Button
             onClick={processingId ? onCheckStatus : onSubmit}
             disabled={isSubmitting || isDownloading}
@@ -87,6 +114,14 @@ const SurveyFooter: React.FC<SurveyFooterProps> = ({
           </Button>
         )}
       </div>
+      
+      {isComplete && !showInput && (
+        <div className="text-center mt-4">
+          <p className="text-sm text-indigo-600 italic">
+            Suas mensagens personalizadas estão prontas para impulsionar seu engajamento!
+          </p>
+        </div>
+      )}
     </div>
   );
 };

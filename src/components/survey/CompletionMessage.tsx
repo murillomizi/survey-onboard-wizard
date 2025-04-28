@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Download, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 
 interface CompletionMessageProps {
   processedCount: number;
+  totalCount?: number;
   onDownload: () => void;
   isDownloading: boolean;
   surveyId?: string | null;
@@ -12,15 +14,17 @@ interface CompletionMessageProps {
 
 const CompletionMessage: React.FC<CompletionMessageProps> = ({
   processedCount,
+  totalCount,
   onDownload,
   isDownloading,
   surveyId
 }) => {
   const safeProcessedCount = isNaN(processedCount) ? 0 : processedCount;
+  const safeTotalCount = totalCount && !isNaN(totalCount) ? totalCount : safeProcessedCount;
 
   useEffect(() => {
-    console.log(`CompletionMessage rendered with count: ${processedCount}, valid: ${safeProcessedCount}, ID: ${surveyId || 'none'}`);
-  }, [processedCount, safeProcessedCount, surveyId]);
+    console.log(`CompletionMessage rendered with count: ${processedCount}/${safeTotalCount}, ID: ${surveyId || 'none'}`);
+  }, [processedCount, safeTotalCount, surveyId]);
 
   const handleSafeDownload = () => {
     try {
@@ -44,17 +48,22 @@ const CompletionMessage: React.FC<CompletionMessageProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <p className="font-medium">🎉 Processamento concluído!</p>
       <p className="text-gray-600">
         {safeProcessedCount > 0 
-          ? `Todos os ${safeProcessedCount} contatos foram processados com sucesso.`
+          ? `${safeProcessedCount}/${safeTotalCount} contatos foram processados com sucesso.`
           : "O processamento foi concluído, mas nenhum contato foi encontrado."}
       </p>
+      <div className="mt-3">
+        <p className="text-sm text-indigo-600 mb-2">
+          Seus contatos agora têm mensagens personalizadas prontas para engajar seu público!
+        </p>
+      </div>
       <Button
         onClick={handleSafeDownload}
         disabled={isDownloading || safeProcessedCount <= 0}
-        className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+        className="w-full mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
       >
         {isDownloading ? (
           <>

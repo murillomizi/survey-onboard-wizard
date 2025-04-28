@@ -1,6 +1,6 @@
 
 import React, { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Download } from "lucide-react";
 
 interface LoadingOverlayProps {
   processedCount: number;
@@ -8,6 +8,7 @@ interface LoadingOverlayProps {
   isComplete: boolean;
   onDownload: () => void;
   surveyId: string | null;
+  isDownloading?: boolean;
 }
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
@@ -15,7 +16,8 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   totalCount,
   isComplete,
   onDownload,
-  surveyId
+  surveyId,
+  isDownloading = false
 }) => {
   useEffect(() => {
     if (surveyId) {
@@ -25,9 +27,9 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 
   useEffect(() => {
     if (isComplete) {
-      console.log("LoadingOverlay: Processing complete, showing download button");
+      console.log(`LoadingOverlay: Processing complete, showing download button. Count: ${processedCount}/${totalCount}`);
     }
-  }, [isComplete]);
+  }, [isComplete, processedCount, totalCount]);
   
   return (
     <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-[9999]">
@@ -62,13 +64,31 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
               Processamento concluído!
             </h3>
             <p className="text-gray-600 text-center">
-              Todos os {totalCount} contatos foram processados com sucesso.
+              {processedCount > 0 
+                ? `${processedCount}/${totalCount} contatos foram processados com sucesso.`
+                : "O processamento foi concluído, mas nenhum contato foi encontrado."}
             </p>
+            <div className="mt-2">
+              <p className="text-sm text-indigo-600 mb-3">
+                Seus contatos agora têm mensagens personalizadas prontas para uso!
+              </p>
+            </div>
             <button 
               onClick={onDownload}
-              className="w-full py-2.5 px-5 bg-survey-purple text-white rounded-lg hover:bg-survey-purple/90 transition-colors"
+              disabled={isDownloading || processedCount <= 0}
+              className={`w-full py-2.5 px-5 ${processedCount > 0 ? 'bg-survey-purple hover:bg-survey-purple/90' : 'bg-gray-400'} text-white rounded-lg transition-colors flex items-center justify-center gap-2`}
             >
-              Baixar minha campanha personalizada
+              {isDownloading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Gerando arquivo...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  Baixar campanha personalizada
+                </>
+              )}
             </button>
           </div>
         )}

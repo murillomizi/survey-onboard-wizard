@@ -175,6 +175,10 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     );
   }
 
+  // Determinar se deve mostrar o input de texto
+  // Alteramos a condição para não mostrar o input de texto quando o processamento estiver completo
+  const shouldShowInput = currentStep < 6 && !showOptions && !showSlider && !surveyForm.isComplete;
+
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
       <SurveyHeader
@@ -211,10 +215,13 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         }}
         onSubmit={surveyForm.handleSubmit}
         onCheckStatus={handleCheckStatus}
+        onDownload={surveyForm.handleDownload}
         isSubmitting={surveyForm.isSubmitting}
         isDownloading={surveyForm.isDownloading}
-        showInput={currentStep < 6 && !showOptions && !showSlider}
+        showInput={shouldShowInput}
         processingId={surveyForm.processingId}
+        isComplete={surveyForm.isComplete}
+        processedCount={surveyForm.processedCount}
       />
     </div>
   );
