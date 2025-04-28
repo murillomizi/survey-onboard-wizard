@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Clock, Loader2, CheckCircle } from "lucide-react";
 import { SurveyController } from "@/controllers/SurveyController";
@@ -12,18 +11,49 @@ interface ChatHistorySidebarProps {
   refresh?: number;
 }
 
+interface ChatHistoryItem {
+  id: string;
+  created_at: string;
+  isComplete: boolean;
+}
+
+interface GroupedChats {
+  today: ChatHistoryItem[];
+  lastWeek: ChatHistoryItem[];
+  older: ChatHistoryItem[];
+}
+
 const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   onSelectSurvey,
   onNewCampaign,
   currentSurveyId,
   refresh = 0,
 }) => {
-  const [chatHistory, setChatHistory] = useState<{
-    id: string;
-    created_at: string;
-    isComplete: boolean;
-  }[]>([]);
+  const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const groupChats = (chats: ChatHistoryItem[]): GroupedChats => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    
+    return chats.reduce((groups: GroupedChats, chat) => {
+      const chatDate = new Date(chat.created_at);
+      chatDate.setHours(0, 0, 0, 0);
+      
+      if (chatDate.getTime() === today.getTime()) {
+        groups.today.push(chat);
+      } else if (chatDate >= lastWeek) {
+        groups.lastWeek.push(chat);
+      } else {
+        groups.older.push(chat);
+      }
+      
+      return groups;
+    }, { today: [], lastWeek: [], older: [] });
+  };
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -50,6 +80,45 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     fetchHistory();
   }, [refresh]);
 
+  const renderChatGroup = (chats: ChatHistoryItem[], title: string) => {
+    if (chats.length === 0) return null;
+    
+    return (
+      <SidebarGroup>
+        <SidebarGroupLabel>{title}</SidebarGroupLabel>
+        <div className="space-y-2">
+          {chats.map((chat) => (
+            <Button
+              key={chat.id}
+              variant="ghost"
+              className={`w-full justify-start font-normal text-sm ${
+                currentSurveyId === chat.id ? "bg-gray-100 hover:bg-gray-100" : ""
+              }`}
+              onClick={() => onSelectSurvey(chat.id)}
+            >
+              <div className="flex items-center text-gray-600 w-full">
+                {chat.isComplete ? (
+                  <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                ) : (
+                  <Clock className="mr-2 h-4 w-4" />
+                )}
+                {new Date(chat.created_at).toLocaleString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            </Button>
+          ))}
+        </div>
+      </SidebarGroup>
+    );
+  };
+
+  const groupedChats = groupChats(chatHistory);
+
   return (
     <Sidebar>
       <SidebarContent className="p-4">
@@ -73,37 +142,17 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
           )}
         </Button>
         
-        <div className="mt-4 space-y-2">
+        <div className="mt-4">
           {isLoading ? (
             <div className="text-sm text-gray-500 italic">Carregando histórico...</div>
           ) : chatHistory.length === 0 ? (
             <div className="text-sm text-gray-500 italic">Nenhuma campanha criada ainda.</div>
           ) : (
-            chatHistory.map((chat) => (
-              <Button
-                key={chat.id}
-                variant="ghost"
-                className={`w-full justify-start font-normal text-sm ${
-                  currentSurveyId === chat.id ? "bg-gray-100 hover:bg-gray-100" : ""
-                }`}
-                onClick={() => onSelectSurvey(chat.id)}
-              >
-                <div className="flex items-center text-gray-600 w-full">
-                  {chat.isComplete ? (
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                  ) : (
-                    <Clock className="mr-2 h-4 w-4" />
-                  )}
-                  {new Date(chat.created_at).toLocaleString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              </Button>
-            ))
+            <>
+              {renderChatGroup(groupedChats.today, "Hoje")}
+              {renderChatGroup(groupedChats.lastWeek, "Últimos 7 dias")}
+              {renderChatGroup(groupedChats.older, "Mais antigos")}
+            </>
           )}
         </div>
       </SidebarContent>
