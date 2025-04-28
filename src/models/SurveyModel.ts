@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 
@@ -85,9 +84,9 @@ export class SurveyModel {
       }
       
       // Contar linhas processadas
-      const { count, error: countError } = await supabase
+      const { data: processedData, error: countError } = await supabase
         .from('mizi_ai_personalized_return')
-        .select('id', { count: 'exact', head: true })
+        .select('*')
         .eq('mizi_ai_id', surveyId);
       
       if (countError) {
@@ -95,10 +94,11 @@ export class SurveyModel {
         throw countError;
       }
       
-      console.log(`Processed rows: ${count} out of ${totalRows}`);
+      const processedCount = processedData?.length || 0;
+      console.log(`Processed rows: ${processedCount} out of ${totalRows}`);
       
-      // Verificar se todas as linhas foram processadas
-      const isComplete = count !== null && count === totalRows;
+      // Verificar se todas as linhas foram processadas - consideramos processado se tiver pelo menos 1 registro
+      const isComplete = processedCount > 0 && (processedCount >= totalRows || totalRows <= 0);
       console.log(`Is processing complete: ${isComplete}`);
       
       return isComplete;
@@ -133,44 +133,29 @@ export class SurveyModel {
       const totalCount = Array.isArray(surveyData?.csv_data) ? surveyData.csv_data.length : 0;
       console.log(`Total count: ${totalCount}`);
       
-      // Obter contagem de itens processados
-      const { count: processedCount, error: countError } = await supabase
+      // Obter dados processados (não apenas a contagem)
+      const { data: processedData, error: dataError } = await supabase
         .from('mizi_ai_personalized_return')
-        .select('id', { count: 'exact', head: true })
+        .select('*')
         .eq('mizi_ai_id', surveyId);
       
-      if (countError) {
-        console.error("Error counting processed items:", countError);
-        throw countError;
+      if (dataError) {
+        console.error("Error fetching processed data:", dataError);
+        throw dataError;
       }
       
+      const processedCount = processedData?.length || 0;
       console.log(`Processed count: ${processedCount}`);
       
-      // Verificar se está completo
-      const isComplete = totalCount > 0 && processedCount !== null && processedCount >= totalCount;
+      // Verificar se está completo - consideramos processado se tiver pelo menos 1 registro
+      const isComplete = processedCount > 0 && (processedCount >= totalCount || totalCount <= 0);
       console.log(`Is complete: ${isComplete}`);
-      
-      // Se precisa retornar os dados processados
-      let data = undefined;
-      if (fetchData && isComplete) {
-        const { data: processedData, error: dataError } = await supabase
-          .from('mizi_ai_personalized_return')
-          .select('*')
-          .eq('mizi_ai_id', surveyId);
-        
-        if (dataError) {
-          console.error("Error fetching processed data:", dataError);
-          throw dataError;
-        }
-        
-        data = processedData;
-      }
       
       return {
         totalCount,
-        processedCount: processedCount || 0,
+        processedCount,
         isComplete,
-        data
+        data: fetchData ? processedData : undefined
       };
     } catch (error) {
       console.error("Error getting processing status:", error);

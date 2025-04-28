@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -65,11 +66,18 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
         const historyWithStatus = await Promise.all(
           history.map(async (chat) => {
             try {
-              const status = await SurveyController.checkProgress(chat.id);
-              console.log(`Survey ${chat.id} status:`, status);
+              // Verificar diretamente os registros processados para esse chat
+              const { data: processedData, error } = await supabase
+                .from('mizi_ai_personalized_return')
+                .select('id')
+                .eq('mizi_ai_id', chat.id);
+              
+              const isComplete = processedData && processedData.length > 0;
+              console.log(`Survey ${chat.id} has ${processedData?.length || 0} processed records, isComplete: ${isComplete}`);
+              
               return {
                 ...chat,
-                isComplete: status.isComplete
+                isComplete
               };
             } catch (error) {
               console.error(`Error checking status for survey ${chat.id}:`, error);

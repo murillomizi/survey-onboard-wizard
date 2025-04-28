@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader } from "lucide-react";
@@ -9,6 +8,7 @@ import SurveyMessages from "./survey/SurveyMessages";
 import SurveyFooter from "./survey/SurveyFooter";
 import FileHandler from "./survey/FileHandler";
 import { ChatSummary } from "./survey/ChatSummary";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
@@ -40,40 +40,64 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     surveyForm
   } = useChatbotSurvey(initialSurveyId);
 
-  // Add a ref to track if we've already loaded this survey
   const loadedSurveyIdRef = useRef<string | null>(null);
+  const completionMessageAddedRef = useRef(false);
 
   useEffect(() => {
     console.log("ChatbotSurvey received initialSurveyId:", initialSurveyId);
 
-    // Only load if the survey ID has changed and is not already loaded
     if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
       console.log("Loading survey with new ID:", initialSurveyId);
       resetAndLoadPastSurvey(initialSurveyId);
       loadedSurveyIdRef.current = initialSurveyId;
+      completionMessageAddedRef.current = false;
     } else if (!initialSurveyId && !isLoadingPastChat) {
       console.log("Initializing new chat");
       loadedSurveyIdRef.current = null;
+      completionMessageAddedRef.current = false;
       initializeChat();
     }
   }, [initialSurveyId]);
 
+  useEffect(() => {
+    const checkForProcessedData = async () => {
+      if (initialSurveyId && !completionMessageAddedRef.current) {
+        try {
+          const { data: processedData, error } = await supabase
+            .from('mizi_ai_personalized_return')
+            .select('id')
+            .eq('mizi_ai_id', initialSurveyId);
+            
+          if (processedData && processedData.length > 0) {
+            console.log(`Found ${processedData.length} processed records for survey ${initialSurveyId}`);
+            surveyForm.setIsComplete(true);
+            if (!completionMessageAddedRef.current) {
+              setTimeout(() => {
+                addCompletionMessage();
+                completionMessageAddedRef.current = true;
+              }, 1500);
+            }
+          }
+        } catch (err) {
+          console.error("Error checking for processed data:", err);
+        }
+      }
+    };
+    
+    checkForProcessedData();
+  }, [initialSurveyId, surveyForm]);
+
   const resetAndLoadPastSurvey = async (surveyId: string) => {
     console.log("Resetting chat and loading survey:", surveyId);
     try {
-      // Clear all old messages
       setMessages([]);
-      
-      // Reset UI states
       setShowOptions(null);
       setShowSlider(false);
       setCurrentInput("");
       
-      // Load the selected survey data
       const data = await loadPastSurvey(surveyId);
       
       if (data) {
-        // Only rebuild chat history after data is loaded
         rebuildChatHistory();
       }
     } catch (error) {
@@ -84,45 +108,35 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   const rebuildChatHistory = () => {
     console.log("Rebuilding chat history with data:", surveyForm.surveyData);
     
-    // Add welcome message
     addMessage(steps[0].question, "bot");
     
-    // Add user selection for channel
     const channelLabel = getOptionLabel("canal", surveyForm.surveyData.canal);
     addMessage(channelLabel, "user");
     
-    // Add funnel stage question and user's answer
     addMessage(steps[1].question, "bot");
     const funnelLabel = getOptionLabel("funnelStage", surveyForm.surveyData.funnelStage);
     addMessage(funnelLabel, "user");
     
-    // Add website URL question and user's answer
     addMessage(steps[2].question, "bot");
     addMessage(surveyForm.surveyData.websiteUrl || "", "user");
     
-    // Add message size question and user's answer
     addMessage(steps[3].question, "bot");
-    addMessage(`${surveyForm.surveyData.tamanho} caracteres`, "user");
+    addMessage(`${surveyForm.surveyData.tamanho} caracteres", "user");
     
-    // Add tone of voice question and user's answer
     addMessage(steps[4].question, "bot");
     const toneLabel = getOptionLabel("tomVoz", surveyForm.surveyData.tomVoz);
     addMessage(toneLabel, "user");
     
-    // Add triggers question and user's answer
     addMessage(steps[5].question, "bot");
     const triggerLabel = getOptionLabel("gatilhos", surveyForm.surveyData.gatilhos);
     addMessage(triggerLabel, "user");
     
-    // Add CSV upload question
     addMessage(steps[6].question, "bot");
     
-    // Add CSV file upload confirmation if available
     if (surveyForm.csvFileName) {
       addMessage(`Arquivo processado com sucesso: ${surveyForm.totalCount} linhas carregadas`, "user");
     }
     
-    // Add summary question and content
     addMessage(steps[7].question, "bot");
     const summaryContent = (
       <ChatSummary 
@@ -135,45 +149,44 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     
     addMessage("Tudo pronto para continuar?", "bot");
     
-    // Set current step to the end
     setCurrentStep(7);
-    
-    // Check if processing is complete and add completion message if needed
-    if (surveyForm.isComplete) {
-      addCompletionMessage();
-    }
   };
-  
+
   const addCompletionMessage = () => {
+    console.log("Adding completion message");
+    
     const totalRows = surveyForm.totalCount || 0;
     const count = surveyForm.processedCount || 0;
     
-    addMessage(
-      <div className="space-y-2">
-        <p className="font-medium">🎉 Processamento concluído!</p>
-        <p className="text-gray-600">
-          Todos os {count} contatos foram processados com sucesso.
-        </p>
-        <Button
-          onClick={() => surveyForm.handleDownload()}
-          disabled={surveyForm.isDownloading}
-          className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
-        >
-          {surveyForm.isDownloading ? (
-            <>
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-              Gerando arquivo...
-            </>
-          ) : (
-            <>
-              <Download className="mr-2 h-4 w-4" />
-              Baixar Campanha Personalizada
-            </>
-          )}
-        </Button>
-      </div>,
-      "bot"
-    );
+    if (!completionMessageAddedRef.current) {
+      addMessage(
+        <div className="space-y-2">
+          <p className="font-medium">🎉 Processamento concluído!</p>
+          <p className="text-gray-600">
+            Todos os {count > 0 ? count : totalRows} contatos foram processados com sucesso.
+          </p>
+          <Button
+            onClick={() => surveyForm.handleDownload()}
+            disabled={surveyForm.isDownloading}
+            className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+          >
+            {surveyForm.isDownloading ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Gerando arquivo...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Baixar Campanha Personalizada
+              </>
+            )}
+          </Button>
+        </div>,
+        "bot"
+      );
+      completionMessageAddedRef.current = true;
+    }
   };
 
   const initializeChat = () => {
@@ -342,19 +355,31 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     }
     
     try {
-      const data = await surveyForm.checkProgress(surveyForm.processingId);
+      const { data: processedData } = await supabase
+        .from('mizi_ai_personalized_return')
+        .select('id')
+        .eq('mizi_ai_id', surveyForm.processingId);
+        
+      const hasProcessedData = processedData && processedData.length > 0;
       
-      const totalRows = surveyForm.totalCount || 0;
-      const count = surveyForm.processedCount || 0;
-      
-      addMessage(
-        `Status do processamento: ${count}/${totalRows} contatos processados.`,
-        "bot"
-      );
-      
-      if (data && data.isComplete && data.processedCount >= totalRows && totalRows > 0) {
+      if (hasProcessedData) {
         surveyForm.setIsComplete(true);
-        addCompletionMessage();
+        
+        if (!completionMessageAddedRef.current) {
+          addCompletionMessage();
+        } else {
+          addMessage(
+            "Processamento já concluído. Você pode baixar sua campanha personalizada.",
+            "bot"
+          );
+        }
+      } else {
+        const totalRows = surveyForm.totalCount || 0;
+        
+        addMessage(
+          `Status do processamento: 0/${totalRows} contatos processados. Por favor, tente novamente em alguns instantes.`,
+          "bot"
+        );
       }
     } catch (error) {
       console.error("Error in handleCheckStatus:", error);
