@@ -1,63 +1,140 @@
-import React, { useState, useRef, useEffect } from "react";
-import Papa from 'papaparse';
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, ArrowLeft, Download, Loader } from "lucide-react";
-import ChatMessage from "./ChatMessage";
-import ChatOptions from "./ChatOptions";
-import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
+import { Download, Loader } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import Papa from 'papaparse';
 
-interface Message {
-  id: number;
-  content: React.ReactNode;
-  type: "user" | "bot";
-}
+import { useChatMessages } from "@/hooks/useChatMessages";
+import { useSurveyProgress } from "@/hooks/useSurveyProgress";
+import { useSurveyData } from "@/hooks/useSurveyData";
+
+import SurveyHeader from "./survey/SurveyHeader";
+import SurveyContent from "./survey/SurveyContent";
+import SurveyFooter from "./survey/SurveyFooter";
+import FileHandler from "./survey/FileHandler";
 
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
   onSubmitSuccess?: (surveyId: string) => void;
 }
 
-const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurveyProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [currentInput, setCurrentInput] = useState("");
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
-  const [showOptions, setShowOptions] = useState<{
+const steps = [
+  {
+    question: "Olá! Vamos configurar sua sequência de mensagens. Escolha o canal para sua comunicação:",
+    options: [
+      { value: "linkedin", label: "LinkedIn" },
+      { value: "cold-email", label: "Cold E-mail" }
+    ],
+    field: "canal"
+  },
+  {
+    question: "Em que estágio do funil de vendas está sua base de contatos?",
+    options: [
+      { value: "topo", label: "Topo de Funil" },
+      { value: "meio", label: "Meio de Funil" },
+      { value: "fim", label: "Fim de Funil" },
+      { value: "cliente", label: "Cliente Existente" },
+      { value: "inbound", label: "Leads de Ação de Inbound" }
+    ],
+    field: "funnelStage"
+  },
+  {
+    question: "Qual é o site da sua empresa?",
+    field: "websiteUrl",
+    inputType: "text"
+  },
+  {
+    question: "Vamos definir o tamanho da sua mensagem. Mova o controle deslizante para escolher o número de caracteres (recomendado: 350-500 caracteres para maior impacto):",
+    field: "tamanho",
+    inputType: "slider"
+  },
+  {
+    question: "Qual tom de voz você prefere para suas mensagens?",
+    options: [
+      { value: "formal", label: "Formal" },
+      { value: "informal", label: "Informal" },
+      { value: "neutro", label: "Neutro" },
+      { value: "consultivo", label: "Consultivo" },
+      { value: "curioso", label: "Curioso" },
+      { value: "inovador", label: "Inovador" }
+    ],
+    field: "tomVoz"
+  },
+  {
+    question: "Por último, gostaria de aplicar algum gatilho de persuasão?",
+    options: [
+      { value: "sem-gatilho", label: "Sem gatilho" },
+      { value: "reciprocidade", label: "Reciprocidade" },
+      { value: "compromisso", label: "Compromisso e Consistência" },
+      { value: "prova-social", label: "Prova Social" },
+      { value: "simpatia", label: "Simpatia" },
+      { value: "autoridade", label: "Autoridade" },
+      { value: "escassez", label: "Escassez" },
+      { value: "consenso", label: "Consenso" }
+    ],
+    field: "gatilhos"
+  },
+  {
+    question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
+    description: "Dica: Inclua o máximo de informações possível, como nome, cargo, empresa, e-mail, histórico de interações, etc. Dados completos permitem que a IA crie estratégias de comunicação extremamente personalizadas e relevantes.",
+    field: "csvFile",
+    inputType: "file"
+  },
+  {
+    question: "Perfeito! Aqui está o resumo das suas escolhas:",
+    field: "summary",
+    inputType: "summary"
+  }
+];
+
+const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({ 
+  initialSurveyId = null, 
+  onSubmitSuccess 
+}) => {
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [currentInput, setCurrentInput] = React.useState("");
+  const [isWaitingForResponse, setIsWaitingForResponse] = React.useState(false);
+  const [showOptions, setShowOptions] = React.useState<{
     options: { value: string; label: string }[];
     step: number;
   } | null>(null);
-  const [showSlider, setShowSlider] = useState(false);
-  const [sliderValue, setSliderValue] = useState(350);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [csvRowCount, setCsvRowCount] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processedCount, setProcessedCount] = useState(0);
-  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
-  const [processingId, setProcessingId] = useState<string | null>(initialSurveyId);
-  const pollingRef = useRef<number | null>(null);
-  const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [showSlider, setShowSlider] = React.useState(false);
+  const [sliderValue, setSliderValue] = React.useState(350);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isLoadingPastChat, setIsLoadingPastChat] = React.useState(false);
+  const pollingRef = React.useRef<number | null>(null);
 
-  const [surveyData, setSurveyData] = useState({
-    canal: "",
-    funnelStage: "",
-    csvData: [] as any[],
-    websiteUrl: "",
-    tamanho: 350,
-    tomVoz: "",
-    gatilhos: ""
+  const { messages, setMessages, addMessage } = useChatMessages();
+  const { surveyData, setSurveyData, csvFileName, csvRowCount, handleFileUpload } = useSurveyData();
+  const { progress, setProgress, checkProgress } = useSurveyProgress(() => {
+    addMessage(
+      <div className="space-y-2">
+        <p className="font-medium">🎉 Processamento concluído!</p>
+        <p className="text-gray-600">
+          Todos os {progress.processedCount} contatos foram processados com sucesso.
+        </p>
+        <Button
+          onClick={handleDownload}
+          disabled={progress.isDownloading}
+          className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
+        >
+          {progress.isDownloading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Gerando arquivo...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Baixar Campanha Personalizada
+            </>
+          )}
+        </Button>
+      </div>,
+      "bot"
+    );
   });
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   useEffect(() => {
     return () => {
@@ -219,84 +296,6 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
     }
   };
 
-  const steps = [
-    {
-      question: "Olá! Vamos configurar sua sequência de mensagens. Escolha o canal para sua comunicação:",
-      options: [
-        { value: "linkedin", label: "LinkedIn" },
-        { value: "cold-email", label: "Cold E-mail" }
-      ],
-      field: "canal"
-    },
-    {
-      question: "Em que estágio do funil de vendas está sua base de contatos?",
-      options: [
-        { value: "topo", label: "Topo de Funil" },
-        { value: "meio", label: "Meio de Funil" },
-        { value: "fim", label: "Fim de Funil" },
-        { value: "cliente", label: "Cliente Existente" },
-        { value: "inbound", label: "Leads de Ação de Inbound" }
-      ],
-      field: "funnelStage"
-    },
-    {
-      question: "Qual é o site da sua empresa?",
-      field: "websiteUrl",
-      inputType: "text"
-    },
-    {
-      question: "Vamos definir o tamanho da sua mensagem. Mova o controle deslizante para escolher o número de caracteres (recomendado: 350-500 caracteres para maior impacto):",
-      field: "tamanho",
-      inputType: "slider"
-    },
-    {
-      question: "Qual tom de voz você prefere para suas mensagens?",
-      options: [
-        { value: "formal", label: "Formal" },
-        { value: "informal", label: "Informal" },
-        { value: "neutro", label: "Neutro" },
-        { value: "consultivo", label: "Consultivo" },
-        { value: "curioso", label: "Curioso" },
-        { value: "inovador", label: "Inovador" }
-      ],
-      field: "tomVoz"
-    },
-    {
-      question: "Por último, gostaria de aplicar algum gatilho de persuasão?",
-      options: [
-        { value: "sem-gatilho", label: "Sem gatilho" },
-        { value: "reciprocidade", label: "Reciprocidade" },
-        { value: "compromisso", label: "Compromisso e Consistência" },
-        { value: "prova-social", label: "Prova Social" },
-        { value: "simpatia", label: "Simpatia" },
-        { value: "autoridade", label: "Autoridade" },
-        { value: "escassez", label: "Escassez" },
-        { value: "consenso", label: "Consenso" }
-      ],
-      field: "gatilhos"
-    },
-    {
-      question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
-      description: "Dica: Inclua o máximo de informações possível, como nome, cargo, empresa, e-mail, histórico de interações, etc. Dados completos permitem que a IA crie estratégias de comunicação extremamente personalizadas e relevantes.",
-      field: "csvFile",
-      inputType: "file"
-    },
-    {
-      question: "Perfeito! Aqui está o resumo das suas escolhas:",
-      field: "summary",
-      inputType: "summary"
-    }
-  ];
-
-  const progressPercentage = Math.min(((currentStep + 1) / steps.length) * 100, 100);
-
-  const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
-    setMessages((prev) => [
-      ...prev,
-      { id: Date.now() + Math.random(), content, type }
-    ]);
-  };
-
   const handleSendMessage = () => {
     if (!currentInput.trim() && !showSlider) return;
 
@@ -355,207 +354,20 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
     }, 1000);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file && file.type !== "text/csv") {
-      toast({
-        title: "Formato inválido",
-        description: "Por favor, selecione um arquivo CSV.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (file) {
-      setCsvFileName(file.name);
-
-      Papa.parse(file, {
-        complete: (results) => {
-          if (results.data && Array.isArray(results.data)) {
-            const filteredData = results.data.filter(row => 
-              row && typeof row === 'object' && Object.keys(row).length > 0
-            );
-            
-            if (filteredData.length > 0) {
-              setCsvRowCount(filteredData.length);
-              addMessage(`Arquivo processado com sucesso: ${filteredData.length} linhas carregadas`, "user");
-              setSurveyData(prev => ({
-                ...prev,
-                csvData: filteredData
-              }));
-              
-              console.log('CSV data processed:', filteredData.length, 'rows');
-              
-              setIsWaitingForResponse(true);
-              setTimeout(() => {
-                setIsWaitingForResponse(false);
-                moveToNextStep();
-              }, 1000);
-            } else {
-              toast({
-                title: "Arquivo vazio",
-                description: "O arquivo CSV não contém dados válidos.",
-                variant: "destructive"
-              });
-            }
-          }
-        },
-        header: true,
-        skipEmptyLines: true,
-        error: (error) => {
-          console.error('Error parsing CSV:', error);
-          toast({
-            title: "Erro ao processar arquivo",
-            description: "Não foi possível ler o arquivo CSV. Verifique se o formato está correto.",
-            variant: "destructive"
-          });
-        }
-      });
-    }
-  };
-
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const moveToNextStep = () => {
-    const nextStep = currentStep + 1;
-    
-    if (nextStep < steps.length) {
-      setCurrentStep(nextStep);
-      addMessage(steps[nextStep].question, "bot");
-      
-      if (steps[nextStep].options) {
-        setShowOptions({
-          options: steps[nextStep].options,
-          step: nextStep
-        });
-      }
-      
-      if (steps[nextStep].inputType === "slider") {
-        setShowSlider(true);
-      }
-      
-      if (steps[nextStep].inputType === "summary") {
-        const csvInfo = csvFileName && csvRowCount > 0
-          ? `${csvFileName} (${csvRowCount} registros)`
-          : "Nenhum arquivo carregado";
-
-        const summaryContent = (
-          <div>
-            <p><strong>Canal:</strong> {getOptionLabel("canal", surveyData.canal)}</p>
-            <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", surveyData.funnelStage)}</p>
-            <p><strong>Site:</strong> {surveyData.websiteUrl}</p>
-            <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
-            <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
-            <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
-            <p>
-              <strong>Arquivo CSV:</strong> {csvInfo}
-            </p>
-          </div>
-        );
-        addMessage(summaryContent, "bot");
-        
-        setTimeout(() => {
-          addMessage("Tudo pronto para continuar?", "bot");
-        }, 1000);
-      }
-    } else {
-      addMessage("Clique em 'Consultar Status' para verificar o andamento do processamento.", "bot");
-    }
-  };
-
-  const getOptionLabel = (field: string, value: string): string => {
-    const step = steps.find(s => s.field === field);
-    if (!step || !step.options) return value;
-    
-    const option = step.options.find(opt => opt.value === value);
-    return option ? option.label : value;
-  };
-
-  const handleBack = () => {
-    if (currentStep <= 0) return;
-    
-    setMessages(prev => prev.slice(0, -2));
-    
-    const previousStep = currentStep - 1;
-    setCurrentStep(previousStep);
-    
-    setShowOptions(null);
-    setShowSlider(false);
-    setCurrentInput("");
-    
-    const prevStepData = steps[previousStep];
-    if (prevStepData.options) {
-      setShowOptions({
-        options: prevStepData.options,
-        step: previousStep
-      });
-    } else if (prevStepData.inputType === "slider") {
-      setShowSlider(true);
-    }
-  };
-  
-  const checkProgress = async (surveyId: string) => {
-    try {
-      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}`);
-      
-      const { data, error } = await supabase.functions.invoke('checkProgress', {
-        body: { surveyId }
-      });
-      
-      if (error) {
-        console.error("Error calling checkProgress Edge Function:", error);
-        return;
-      }
-
-      if (data) {
-        const count = data.count || 0;
-        setProcessedCount(count);
-        
-        const csvDataLength = Array.isArray(surveyData.csvData) ? surveyData.csvData.length : 0;
-        
-        if (count >= csvDataLength && csvDataLength > 0) {
-          if (pollingRef.current) {
-            window.clearInterval(pollingRef.current);
-            pollingRef.current = null;
-          }
-          
-          addMessage(
-            <div className="space-y-2">
-              <p className="font-medium">🎉 Processamento concluído!</p>
-              <p className="text-gray-600">
-                Todos os {count} contatos foram processados com sucesso.
-              </p>
-              <Button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
-              >
-                {isDownloading ? (
-                  <>
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    Gerando arquivo...
-                  </>
-                ) : (
-                  <>
-                    <Download className="mr-2 h-4 w-4" />
-                    Baixar Campanha Personalizada
-                  </>
-                )}
-              </Button>
-            </div>,
-            "bot"
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error in checkProgress:", error);
+  const handleFileChange = async (file: File) => {
+    const success = await handleFileUpload(file);
+    if (success) {
+      addMessage(`Arquivo processado com sucesso: ${csvRowCount} linhas carregadas`, "user");
+      setIsWaitingForResponse(true);
+      setTimeout(() => {
+        setIsWaitingForResponse(false);
+        moveToNextStep();
+      }, 1000);
     }
   };
 
   const handleDownload = async () => {
-    if (!processingId) {
+    if (!progress.processingId) {
       console.error("Cannot download: No processing ID available");
       toast({
         title: "Erro no download",
@@ -566,8 +378,8 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
     }
     
     try {
-      setIsDownloading(true);
-      console.log("Iniciando download para ID:", processingId);
+      setProgress(prev => ({ ...prev, isDownloading: true }));
+      console.log("Iniciando download para ID:", progress.processingId);
       
       toast({
         title: "Preparando download",
@@ -576,31 +388,13 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
       
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: { 
-          surveyId: processingId,
+          surveyId: progress.processingId,
           fetchData: true
         }
       });
       
-      if (error) {
-        console.error("Error fetching processed data:", error);
-        toast({
-          title: "Erro ao baixar",
-          description: "Não foi possível baixar os resultados processados.",
-          variant: "destructive"
-        });
-        setIsDownloading(false);
-        return;
-      }
-      
-      if (!data || !data.processedData || data.processedData.length === 0) {
-        console.error("No data found for download");
-        toast({
-          title: "Sem dados",
-          description: "Não há dados processados disponíveis para download.",
-          variant: "destructive"
-        });
-        setIsDownloading(false);
-        return;
+      if (error || !data?.processedData || data.processedData.length === 0) {
+        throw new Error(error?.message || "No data found for download");
       }
       
       console.log("Generating CSV with", data.processedData.length, "rows");
@@ -628,7 +422,7 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
         variant: "destructive"
       });
     } finally {
-      setIsDownloading(false);
+      setProgress(prev => ({ ...prev, isDownloading: false }));
     }
   };
 
@@ -733,7 +527,7 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
   };
 
   const handleCheckStatus = async () => {
-    if (!processingId) {
+    if (!progress.processingId) {
       addMessage(
         "Nenhum processamento em andamento. Por favor, inicie um novo processamento.",
         "bot"
@@ -743,7 +537,7 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
     
     try {
       const { data, error } = await supabase.functions.invoke('checkProgress', {
-        body: { surveyId: processingId }
+        body: { surveyId: progress.processingId }
       });
       
       if (error) {
@@ -798,153 +592,119 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
     }
   };
 
+  const handleBack = () => {
+    if (currentStep <= 0) return;
+    
+    setMessages(prev => prev.slice(0, -2));
+    
+    const previousStep = currentStep - 1;
+    setCurrentStep(previousStep);
+    
+    setShowOptions(null);
+    setShowSlider(false);
+    setCurrentInput("");
+    
+    const prevStepData = steps[previousStep];
+    if (prevStepData.options) {
+      setShowOptions({
+        options: prevStepData.options,
+        step: previousStep
+      });
+    } else if (prevStepData.inputType === "slider") {
+      setShowSlider(true);
+    }
+  };
+
+  const moveToNextStep = () => {
+    const nextStep = currentStep + 1;
+    
+    if (nextStep < steps.length) {
+      setCurrentStep(nextStep);
+      addMessage(steps[nextStep].question, "bot");
+      
+      if (steps[nextStep].options) {
+        setShowOptions({
+          options: steps[nextStep].options,
+          step: nextStep
+        });
+      }
+      
+      if (steps[nextStep].inputType === "slider") {
+        setShowSlider(true);
+      }
+      
+      if (steps[nextStep].inputType === "summary") {
+        const csvInfo = csvFileName && csvRowCount > 0
+          ? `${csvFileName} (${csvRowCount} registros)`
+          : "Nenhum arquivo carregado";
+
+        const summaryContent = (
+          <div>
+            <p><strong>Canal:</strong> {getOptionLabel("canal", surveyData.canal)}</p>
+            <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", surveyData.funnelStage)}</p>
+            <p><strong>Site:</strong> {surveyData.websiteUrl}</p>
+            <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
+            <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
+            <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
+            <p>
+              <strong>Arquivo CSV:</strong> {csvInfo}
+            </p>
+          </div>
+        );
+        addMessage(summaryContent, "bot");
+        
+        setTimeout(() => {
+          addMessage("Tudo pronto para continuar?", "bot");
+        }, 1000);
+      }
+    } else {
+      addMessage("Clique em 'Consultar Status' para verificar o andamento do processamento.", "bot");
+    }
+  };
+
+  const getOptionLabel = (field: string, value: string): string => {
+    const step = steps.find(s => s.field === field);
+    if (!step || !step.options) return value;
+    
+    const option = step.options.find(opt => opt.value === value);
+    return option ? option.label : value;
+  };
+
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
-      <div className="p-3 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            {currentStep > 0 && (
-              <Button
-                onClick={handleBack}
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-gray-100"
-                title="Voltar para a pergunta anterior"
-              >
-                <ArrowLeft size={16} className="text-gray-500" />
-              </Button>
-            )}
-            <div className="text-sm font-medium text-gray-600">
-              Passo {currentStep + 1} de {steps.length}
-            </div>
-          </div>
-          <div className="text-xs text-gray-400">
-            {Math.round(progressPercentage)}% concluído
-          </div>
-        </div>
-        <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
-      </div>
+      <SurveyHeader
+        currentStep={currentStep}
+        totalSteps={steps.length}
+        onBack={handleBack}
+      />
       
-      <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
-        {isLoadingPastChat ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          </div>
-        ) : (
-          <>
-            {messages.map((message) => (
-              <ChatMessage
-                key={message.id}
-                content={message.content}
-                type={message.type}
-              />
-            ))}
-            
-            {isWaitingForResponse && (
-              <ChatMessage content="" type="bot" isTyping={true} />
-            )}
-            
-            {showOptions && (
-              <div className="mb-4">
-                <ChatOptions
-                  options={showOptions.options}
-                  onSelect={handleOptionSelect}
-                />
-              </div>
-            )}
-            
-            {showSlider && (
-              <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
-                <div className="mb-2">
-                  <span className="text-gray-800">{sliderValue} caracteres</span>
-                </div>
-                <Slider
-                  defaultValue={[350]}
-                  max={1000}
-                  min={100}
-                  step={10}
-                  value={[sliderValue]}
-                  onValueChange={handleSliderChange}
-                  className="mb-2"
-                />
-                <p className="text-gray-500 text-sm mt-1 italic">
-                  Recomendado: 350-500 caracteres para maior impacto
-                </p>
-                <Button 
-                  onClick={handleSliderComplete}
-                  className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
-                >
-                  Confirmar
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-        
-        <input
-          type="file"
-          accept=".csv"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-        />
-        
-        <div ref={chatEndRef} />
-      </div>
+      <SurveyContent
+        messages={messages}
+        isWaitingForResponse={isWaitingForResponse}
+        showOptions={showOptions}
+        showSlider={showSlider}
+        sliderValue={sliderValue}
+        onOptionSelect={handleOptionSelect}
+        onSliderChange={handleSliderChange}
+        onSliderComplete={handleSliderComplete}
+      />
       
-      <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
-        <div className="flex items-center gap-2 max-w-[600px] mx-auto">
-          {currentStep === 6 && (
-            <Button
-              type="button"
-              onClick={triggerFileUpload}
-              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow transition-all duration-200"
-            >
-              <Paperclip size={18} />
-              Upload CSV
-            </Button>
-          )}
-          
-          {currentStep < 6 && showOptions === null && !showSlider && (
-            <>
-              <div className="relative flex-1">
-                <Input
-                  value={currentInput}
-                  onChange={(e) => setCurrentInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  placeholder="Digite sua resposta..."
-                  className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
-                >
-                  <Send size={14} />
-                </Button>
-              </div>
-            </>
-          )}
-          
-          {currentStep === steps.length - 1 && (
-            <Button
-              onClick={processingId ? handleCheckStatus : handleSubmit}
-              disabled={isSubmitting || isDownloading}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : processingId ? (
-                'Consultar Status'
-              ) : (
-                'Continuar'
-              )}
-            </Button>
-          )}
-        </div>
-      </div>
+      <FileHandler onFileChange={handleFileChange} />
+      
+      <SurveyFooter
+        currentStep={currentStep}
+        totalSteps={steps.length}
+        currentInput={currentInput}
+        onInputChange={setCurrentInput}
+        onSendMessage={handleSendMessage}
+        onFileUpload={() => document.querySelector('input[type="file"]')?.click()}
+        onSubmit={handleSubmit}
+        onCheckStatus={handleCheckStatus}
+        isSubmitting={isSubmitting}
+        isDownloading={progress.isDownloading}
+        showInput={currentStep < 6 && !showOptions && !showSlider}
+        processingId={progress.processingId}
+      />
     </div>
   );
 };
