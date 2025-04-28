@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,9 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [showLoading, setShowLoading] = useState(false);
+  const [currentSurveyId, setCurrentSurveyId] = useState<string | null>(null);
+  const [csvRowCount, setCsvRowCount] = useState(0);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -355,6 +357,9 @@ const ChatbotSurvey = () => {
         csvDataToSave = surveyData.csvData.slice(0, 100);
         console.log('CSV data trimmed to 100 records to avoid payload size issues');
       }
+
+      const rowCount = Array.isArray(csvDataToSave) ? csvDataToSave.length : 0;
+      setCsvRowCount(rowCount);
       
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
@@ -382,12 +387,17 @@ const ChatbotSurvey = () => {
         return;
       }
 
+      if (data && data[0]) {
+        setCurrentSurveyId(data[0].id);
+        setShowLoading(true);
+        addMessage("Suas mensagens estão sendo geradas. Por favor, aguarde...", "bot");
+      }
+      
       toast({
         title: "Configurações salvas!",
         description: "Suas preferências de mensagem foram salvas com sucesso.",
       });
       
-      console.log('Survey data saved:', data);
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -435,6 +445,13 @@ const ChatbotSurvey = () => {
             type={message.type}
           />
         ))}
+        
+        {showLoading && currentSurveyId && csvRowCount > 0 && (
+          <LoadingProgress
+            surveyId={currentSurveyId}
+            totalRows={csvRowCount}
+          />
+        )}
         
         {isWaitingForResponse && (
           <ChatMessage content="" type="bot" isTyping={true} />
