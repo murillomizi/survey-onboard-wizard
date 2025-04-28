@@ -6,6 +6,7 @@ import SurveyMessages from "./survey/SurveyMessages";
 import SurveyFooter from "./survey/SurveyFooter";
 import FileHandler from "./survey/FileHandler";
 import { steps } from "@/hooks/useChatbotSurvey";
+import { useChatMessages } from "@/hooks/useChatMessages";
 
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
@@ -37,6 +38,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     moveToNextStep,
     handleCheckStatus
   } = useChatbotLogic(initialSurveyId);
+
+  const { addMessage } = useChatMessages();
 
   // Auto-check status effect from previous implementation
   useEffect(() => {
@@ -116,12 +119,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       setIsWaitingForResponse(false);
       moveToNextStep();
     }, 1000);
-  };
-
-  // Adicionando função addMessage que estava faltando
-  const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
-    const { addMessage } = require("@/hooks/useChatMessages")();
-    addMessage(content, type);
   };
 
   return (
