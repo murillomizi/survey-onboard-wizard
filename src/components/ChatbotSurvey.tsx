@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,8 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import { useProcessingProgress } from '@/hooks/useProcessingProgress';
+import ProcessingProgress from './ProcessingProgress';
 
 interface Message {
   id: number;
@@ -32,6 +33,8 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const [isProcessingStarted, setIsProcessingStarted] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -42,6 +45,11 @@ const ChatbotSurvey = () => {
     tomVoz: "",
     gatilhos: ""
   });
+
+  const { processedCount, totalRows, isComplete, startMonitoring } = useProcessingProgress(
+    surveyId,
+    surveyData.csvData?.length || 0
+  );
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -353,33 +361,27 @@ const ChatbotSurvey = () => {
       let csvDataToSave = surveyData.csvData;
       if (surveyData.csvData && surveyData.csvData.length > 100) {
         csvDataToSave = surveyData.csvData.slice(0, 100);
-        console.log('CSV data trimmed to 100 records to avoid payload size issues');
       }
       
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
-        .insert([
-          {
-            canal: surveyData.canal,
-            funnel_stage: surveyData.funnelStage,
-            website_url: surveyData.websiteUrl,
-            message_length: surveyData.tamanho,
-            tone_of_voice: surveyData.tomVoz,
-            persuasion_trigger: surveyData.gatilhos,
-            csv_data: csvDataToSave
-          }
-        ])
+        .insert([{
+          canal: surveyData.canal,
+          funnel_stage: surveyData.funnelStage,
+          website_url: surveyData.websiteUrl,
+          message_length: surveyData.tamanho,
+          tone_of_voice: surveyData.tomVoz,
+          persuasion_trigger: surveyData.gatilhos,
+          csv_data: csvDataToSave
+        }])
         .select();
 
-      if (error) {
-        console.error('Error saving survey:', error);
-        toast({
-          title: "Erro ao salvar",
-          description: "Não foi possível salvar suas respostas. Tente novamente.",
-          variant: "destructive"
-        });
-        setIsSubmitting(false);
-        return;
+      if (error) throw error;
+
+      if (data?.[0]?.id) {
+        setSurveyId(data[0].id);
+        setIsProcessingStarted(true);
+        startMonitoring();
       }
 
       toast({
@@ -387,7 +389,6 @@ const ChatbotSurvey = () => {
         description: "Suas preferências de mensagem foram salvas com sucesso.",
       });
       
-      console.log('Survey data saved:', data);
       setIsSubmitting(false);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -435,6 +436,14 @@ const ChatbotSurvey = () => {
             type={message.type}
           />
         ))}
+        
+        {isProcessingStarted && (
+          <ProcessingProgress
+            processedCount={processedCount}
+            totalRows={surveyData.csvData?.length || 0}
+            isComplete={isComplete}
+          />
+        )}
         
         {isWaitingForResponse && (
           <ChatMessage content="" type="bot" isTyping={true} />
