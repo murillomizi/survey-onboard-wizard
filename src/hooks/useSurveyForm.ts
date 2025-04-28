@@ -11,5 +11,6 @@ export const useSurveyForm = () => {
   return {
     ...surveyManager,
     csvFileName: surveyManager.surveyData?.csvFileName || "",
+    loadSurvey: surveyManager.loadSurvey
   };
 };

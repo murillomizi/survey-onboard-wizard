@@ -20,6 +20,8 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
+  
+  // Refs para controlar estados internos
   const completionMessageAddedRef = useRef(false);
   const statusCheckedRef = useRef(false);
   const loadedSurveyIdRef = useRef<string | null>(null);
@@ -28,16 +30,20 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const { messages, setMessages, addMessage } = useChatMessages();
   const surveyForm = useSurveyForm();
 
-  // Efeito para inicializar o chat ou carregar um chat existente
+  // Efeito para inicializar o chat ou carregar um chat existente apenas uma vez
   useEffect(() => {
+    console.log("ChatbotLogic effect running. initialSurveyId:", initialSurveyId, "loadedSurveyId:", loadedSurveyIdRef.current);
+    
     if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
+      console.log("Loading past survey:", initialSurveyId);
       resetAndLoadPastSurvey(initialSurveyId);
       loadedSurveyIdRef.current = initialSurveyId;
       completionMessageAddedRef.current = false;
       statusCheckedRef.current = false;
       chatInitializedRef.current = true;
     } else if (!initialSurveyId && !chatInitializedRef.current) {
-      // Inicializa um novo chat apenas se ainda não foi inicializado
+      console.log("Initializing new chat");
+      loadedSurveyIdRef.current = null;
       chatInitializedRef.current = true;
       initializeChat();
     }
@@ -51,9 +57,11 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       setShowSlider(false);
       setCurrentInput("");
       
+      console.log("Loading survey with ID:", surveyId);
       const data = await surveyForm.loadSurvey(surveyId);
       
       if (data) {
+        console.log("Survey data loaded:", data);
         rebuildChatHistory();
       }
     } catch (error) {
@@ -66,7 +74,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   };
 
   const initializeChat = () => {
-    console.log("Initializing new chat");
+    console.log("Initializing new chat - resetting messages");
     // Limpar mensagens anteriores
     setMessages([]);
     

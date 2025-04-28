@@ -41,8 +41,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   const { addMessage } = useChatMessages();
 
-  // Removida a verificação automática de status
-
   const handleFileChange = async (file: File) => {
     const success = await surveyForm.handleFileUpload(file);
     if (success) {
@@ -116,6 +114,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   // Efeito para atualizar o botão onSubmitSuccess quando o ID de processamento é definido
   useEffect(() => {
     if (surveyForm.processingId && onSubmitSuccess) {
+      console.log("Notifying parent about processing ID:", surveyForm.processingId);
       onSubmitSuccess(surveyForm.processingId);
     }
   }, [surveyForm.processingId, onSubmitSuccess]);
