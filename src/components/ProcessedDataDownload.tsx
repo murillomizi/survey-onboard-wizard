@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { download } from "lucide-react";
+import { Download } from "lucide-react";
 
 interface ProcessedDataDownloadProps {
   surveyId: string;
@@ -15,7 +15,6 @@ const ProcessedDataDownload: React.FC<ProcessedDataDownloadProps> = ({
 }) => {
   const handleDownload = async () => {
     try {
-      // Buscar dados processados
       const { data: messages } = await supabase
         .from('mizi_ai_personalized_return')
         .select('*')
@@ -26,10 +25,8 @@ const ProcessedDataDownload: React.FC<ProcessedDataDownloadProps> = ({
         return;
       }
 
-      // Preparar cabeçalhos do CSV
       const headers = ['Primeiro Nome', 'Cargo', 'Empresa', 'Email', 'Copy Personalizada'];
       
-      // Converter dados para formato CSV
       const csvRows = [
         headers.join(','),
         ...messages.map(msg => {
@@ -43,7 +40,6 @@ const ProcessedDataDownload: React.FC<ProcessedDataDownloadProps> = ({
         })
       ];
 
-      // Criar blob e iniciar download
       const csvContent = csvRows.join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -66,7 +62,7 @@ const ProcessedDataDownload: React.FC<ProcessedDataDownloadProps> = ({
       onClick={handleDownload}
       className="bg-green-500 hover:bg-green-600 text-white"
     >
-      <download className="mr-2" />
+      <Download className="mr-2" size={18} />
       Download CSV Processado
     </Button>
   );
