@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,8 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import { useProcessingProgress } from "@/hooks/useProcessingProgress";
+import ProcessedDataDownload from "./ProcessedDataDownload";
 
 interface Message {
   id: number;
@@ -32,6 +33,9 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { totalRows, processedRows, isComplete } = useProcessingProgress(surveyId);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -382,6 +386,11 @@ const ChatbotSurvey = () => {
         return;
       }
 
+      setSurveyId(data[0].id);
+      setIsProcessing(true);
+      
+      addMessage("Sua base está sendo processada...", "bot");
+      
       toast({
         title: "Configurações salvas!",
         description: "Suas preferências de mensagem foram salvas com sucesso.",
@@ -399,6 +408,17 @@ const ChatbotSurvey = () => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (isProcessing && totalRows > 0) {
+      addMessage(`Processando... (${processedRows}/${totalRows})`, "bot");
+      
+      if (isComplete) {
+        addMessage("Processamento concluído! Você já pode baixar seu arquivo processado.", "bot");
+        setIsProcessing(false);
+      }
+    }
+  }, [processedRows, totalRows, isComplete, isProcessing]);
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
@@ -446,6 +466,12 @@ const ChatbotSurvey = () => {
               options={showOptions.options}
               onSelect={handleOptionSelect}
             />
+          </div>
+        )}
+        
+        {isComplete && (
+          <div className="flex justify-center mt-4">
+            <ProcessedDataDownload surveyId={surveyId!} />
           </div>
         )}
         
