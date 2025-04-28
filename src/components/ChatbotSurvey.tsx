@@ -42,6 +42,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
   const loadedSurveyIdRef = useRef<string | null>(null);
   const completionMessageAddedRef = useRef(false);
+  const statusCheckedRef = useRef(false);
 
   useEffect(() => {
     console.log("ChatbotSurvey received initialSurveyId:", initialSurveyId);
@@ -51,26 +52,43 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       resetAndLoadPastSurvey(initialSurveyId);
       loadedSurveyIdRef.current = initialSurveyId;
       completionMessageAddedRef.current = false;
+      statusCheckedRef.current = false;
     } else if (!initialSurveyId && !isLoadingPastChat) {
       console.log("Initializing new chat");
       loadedSurveyIdRef.current = null;
       completionMessageAddedRef.current = false;
+      statusCheckedRef.current = false;
       initializeChat();
     }
   }, [initialSurveyId]);
 
   useEffect(() => {
-    const checkForProcessedData = async () => {
-      if (initialSurveyId && !completionMessageAddedRef.current) {
+    const checkProcessingStatus = async () => {
+      if (initialSurveyId && !statusCheckedRef.current) {
         try {
-          const { data: processedData, error } = await supabase
-            .from('mizi_ai_personalized_return')
-            .select('id')
-            .eq('mizi_ai_id', initialSurveyId);
-            
-          if (processedData && processedData.length > 0) {
-            console.log(`Found ${processedData.length} processed records for survey ${initialSurveyId}`);
+          statusCheckedRef.current = true;
+          console.log("Auto-checking processing status for survey:", initialSurveyId);
+          
+          const { data, error } = await supabase.functions.invoke('checkProgress', {
+            body: {
+              surveyId: initialSurveyId,
+              fetchData: false
+            }
+          });
+          
+          if (error) {
+            console.error("Error auto-checking status:", error);
+            return;
+          }
+          
+          console.log("Auto-check status response:", data);
+          
+          if (data.isComplete) {
             surveyForm.setIsComplete(true);
+            surveyForm.setProcessingId(initialSurveyId);
+            surveyForm.setProcessedCount(data.count);
+            surveyForm.setTotalCount(data.total);
+            
             if (!completionMessageAddedRef.current) {
               setTimeout(() => {
                 addCompletionMessage();
@@ -79,13 +97,15 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
             }
           }
         } catch (err) {
-          console.error("Error checking for processed data:", err);
+          console.error("Error in auto-check processing status:", err);
         }
       }
     };
     
-    checkForProcessedData();
-  }, [initialSurveyId, surveyForm]);
+    if (initialSurveyId && !isLoadingPastChat) {
+      checkProcessingStatus();
+    }
+  }, [initialSurveyId, isLoadingPastChat]);
 
   const resetAndLoadPastSurvey = async (surveyId: string) => {
     console.log("Resetting chat and loading survey:", surveyId);
@@ -121,7 +141,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     addMessage(surveyForm.surveyData.websiteUrl || "", "user");
     
     addMessage(steps[3].question, "bot");
-    addMessage(`${surveyForm.surveyData.tamanho} caracteres`, "user");
+    addMessage(`${surveyForm.surveyData.tamanho} caracteres", "user");
     
     addMessage(steps[4].question, "bot");
     const toneLabel = getOptionLabel("tomVoz", surveyForm.surveyData.tomVoz);
@@ -373,6 +393,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       
       if (data.isComplete) {
         surveyForm.setIsComplete(true);
+        surveyForm.setProcessedCount(data.count);
+        surveyForm.setTotalCount(data.total);
         
         if (!completionMessageAddedRef.current) {
           addCompletionMessage();

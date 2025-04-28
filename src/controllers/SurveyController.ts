@@ -64,6 +64,8 @@ export class SurveyController {
         throw error;
       }
       
+      console.log("checkProgress response:", data);
+      
       return {
         totalCount: data.total || 0,
         processedCount: data.count || 0,
@@ -86,33 +88,46 @@ export class SurveyController {
    * @returns Dados da enquete formatados para o frontend
    */
   static async getSurveyDetails(surveyId: string) {
-    const survey = await SurveyModel.getSurveyById(surveyId);
-    if (!survey) return null;
-    
-    // Convertendo para o formato usado no frontend
-    const formattedSurvey: SurveyFormState = {
-      canal: survey.canal || 'linkedin',
-      csvFile: null,
-      csvFileName: survey.csv_file_name || '',
-      websiteUrl: survey.website_url || '',
-      tamanho: survey.message_length || 350,
-      touchpoints: survey.funnel_stage || '3',
-      tomVoz: survey.tone_of_voice || 'neutro',
-      template: survey.template || 'proposta',
-      gatilhos: survey.persuasion_trigger || 'sem-gatilho',
-      funnelStage: survey.funnel_stage || 'topo'
-    };
-    
-    // Obter status de processamento
-    const status = await this.checkProgress(surveyId);
-    
-    return {
-      surveyData: formattedSurvey,
-      processingStatus: status,
-      originalData: survey,
-      id: surveyId,
-      parsedCsvData: Array.isArray(survey.csv_data) ? survey.csv_data : []
-    };
+    try {
+      const survey = await SurveyModel.getSurveyById(surveyId);
+      if (!survey) return null;
+      
+      console.log("Got survey details:", survey);
+      
+      // Convertendo para o formato usado no frontend
+      const formattedSurvey: SurveyFormState = {
+        canal: survey.canal || 'linkedin',
+        csvFile: null,
+        csvFileName: survey.csv_file_name || '',
+        websiteUrl: survey.website_url || '',
+        tamanho: survey.message_length || 350,
+        touchpoints: survey.funnel_stage || '3',
+        tomVoz: survey.tone_of_voice || 'neutro',
+        template: survey.template || 'proposta',
+        gatilhos: survey.persuasion_trigger || 'sem-gatilho',
+        funnelStage: survey.funnel_stage || 'topo'
+      };
+      
+      // Obter status de processamento via edge function
+      const status = await this.checkProgress(surveyId);
+      console.log("Survey processing status:", status);
+      
+      return {
+        surveyData: formattedSurvey,
+        processingStatus: status,
+        originalData: survey,
+        id: surveyId,
+        parsedCsvData: Array.isArray(survey.csv_data) ? survey.csv_data : []
+      };
+    } catch (error) {
+      console.error("Error in getSurveyDetails:", error);
+      toast({
+        title: "Erro ao carregar",
+        description: "Não foi possível carregar os dados da enquete.",
+        variant: "destructive"
+      });
+      return null;
+    }
   }
 
   /**
@@ -178,7 +193,7 @@ export class SurveyController {
         return false;
       }
       
-      // Obter os dados processados da resposta da edge function
+      // Obter os dados processados
       const processedData = status.data || await SurveyModel.getProcessedDataForDownload(surveyId);
       
       if (!processedData || processedData.length === 0) {

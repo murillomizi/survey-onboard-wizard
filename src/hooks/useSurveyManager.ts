@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SurveyController } from "@/controllers/SurveyController";
 import { toast } from "@/components/ui/use-toast";
@@ -75,15 +74,29 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
   // Método para verificar o progresso do processamento
   const checkProgress = useCallback(async (surveyId: string) => {
     try {
-      const status = await SurveyController.checkProgress(surveyId);
-      
-      updateState({
-        processedCount: status.processedCount,
-        totalCount: status.totalCount,
-        isComplete: status.isComplete
+      // Usar a edge function para verificar o progresso
+      const { data, error } = await supabase.functions.invoke('checkProgress', {
+        body: {
+          surveyId: surveyId,
+          fetchData: false
+        }
       });
       
-      return status;
+      if (error) {
+        throw error;
+      }
+      
+      updateState({
+        processedCount: data.count,
+        totalCount: data.total,
+        isComplete: data.isComplete
+      });
+      
+      return {
+        processedCount: data.count,
+        totalCount: data.total,
+        isComplete: data.isComplete
+      };
     } catch (error) {
       console.error("Error checking progress:", error);
       return null;
