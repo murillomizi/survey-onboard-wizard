@@ -1,7 +1,5 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { SurveyController } from "@/controllers/SurveyController";
-import { useSurveyPolling } from "./useSurveyPolling";
 import { useSurveyLoader } from "./useSurveyLoader";
 import { useSurveyFileHandler } from "./useSurveyFileHandler";
 import { SurveyState } from "@/types/survey";
@@ -36,7 +34,6 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
     }));
   }, []);
 
-  const { startPolling, stopPolling } = useSurveyPolling();
   const { loadSurvey, isLoading } = useSurveyLoader(updateState);
   const { handleFileUpload } = useSurveyFileHandler(updateState, state);
 
@@ -50,20 +47,13 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
       
       if (surveyId) {
         updateState({ processingId: surveyId });
-        startPolling(surveyId, (progress) => {
-          updateState({
-            processedCount: progress.processedCount,
-            totalCount: progress.totalCount,
-            isComplete: progress.isComplete
-          });
-        });
       }
     } catch (error) {
       console.error('Error in handleSubmit:', error);
     } finally {
       updateState({ isProcessing: false });
     }
-  }, [state.surveyData, state.parsedCsvData, startPolling, updateState]);
+  }, [state.surveyData, state.parsedCsvData, updateState]);
 
   const handleDownload = useCallback(async () => {
     if (!state.processingId) return;
@@ -80,8 +70,7 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
     if (initialSurveyId) {
       loadSurvey(initialSurveyId);
     }
-    return () => stopPolling();
-  }, [initialSurveyId, loadSurvey, stopPolling]);
+  }, [initialSurveyId, loadSurvey]);
 
   return {
     ...state,
@@ -101,7 +90,6 @@ export const useSurveyManager = (initialSurveyId?: string | null) => {
     isLoading,
     isSubmitting: state.isProcessing,
     csvFileName: state.surveyData.csvFileName,
-    // Explicitly adding loadSurvey to the returned object
     loadSurvey
   };
 };
