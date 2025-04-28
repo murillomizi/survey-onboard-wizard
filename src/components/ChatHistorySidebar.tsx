@@ -60,15 +60,28 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
       setIsLoading(true);
       try {
         const history = await SurveyController.getChatHistory();
+        console.log("History fetched:", history);
+        
         const historyWithStatus = await Promise.all(
           history.map(async (chat) => {
-            const status = await SurveyController.checkProgress(chat.id);
-            return {
-              ...chat,
-              isComplete: status.isComplete
-            };
+            try {
+              const status = await SurveyController.checkProgress(chat.id);
+              console.log(`Survey ${chat.id} status:`, status);
+              return {
+                ...chat,
+                isComplete: status.isComplete
+              };
+            } catch (error) {
+              console.error(`Error checking status for survey ${chat.id}:`, error);
+              return {
+                ...chat,
+                isComplete: false
+              };
+            }
           })
         );
+        
+        console.log("History with status:", historyWithStatus);
         setChatHistory(historyWithStatus);
       } catch (error) {
         console.error("Error fetching chat history:", error);

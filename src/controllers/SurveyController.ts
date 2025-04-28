@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 import { SurveyModel, SurveyData, ProcessingStatus } from "@/models/SurveyModel";
 import Papa from "papaparse";
@@ -25,17 +24,22 @@ export class SurveyController {
    * @returns Lista de enquetes formatada
    */
   static async getChatHistory() {
-    const surveys = await SurveyModel.getChatHistory();
-    
-    return surveys.map(survey => ({
-      id: survey.id,
-      created_at: survey.created_at,
-      title: `${survey.canal || 'Chat'} - ${new Date(survey.created_at).toLocaleDateString()}`,
-      description: survey.csv_file_name || 'Sem arquivo',
-      canal: survey.canal,
-      websiteUrl: survey.website_url,
-      csvRowCount: Array.isArray(survey.csv_data) ? survey.csv_data.length : 0
-    }));
+    try {
+      const surveys = await SurveyModel.getChatHistory();
+      
+      return surveys.map(survey => ({
+        id: survey.id,
+        created_at: survey.created_at,
+        title: `${survey.canal || 'Chat'} - ${new Date(survey.created_at).toLocaleDateString()}`,
+        description: survey.csv_file_name || 'Sem arquivo',
+        canal: survey.canal,
+        websiteUrl: survey.website_url,
+        csvRowCount: Array.isArray(survey.csv_data) ? survey.csv_data.length : 0
+      }));
+    } catch (error) {
+      console.error("Error in getChatHistory:", error);
+      return [];
+    }
   }
 
   /**
@@ -45,7 +49,16 @@ export class SurveyController {
    * @returns Status do processamento
    */
   static async checkProgress(surveyId: string, fetchData: boolean = false): Promise<ProcessingStatus> {
-    return await SurveyModel.getProcessingStatus(surveyId, fetchData);
+    try {
+      return await SurveyModel.getProcessingStatus(surveyId, fetchData);
+    } catch (error) {
+      console.error("Error in checkProgress:", error);
+      return {
+        totalCount: 0,
+        processedCount: 0,
+        isComplete: false
+      };
+    }
   }
 
   /**

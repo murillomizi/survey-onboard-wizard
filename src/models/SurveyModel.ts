@@ -15,7 +15,7 @@ export interface SurveyData {
   template?: string;
   csv_data?: any[];
   csv_file_name?: string;
-  gatilhos?: string; // Adicionando a propriedade gatilhos que faltava
+  gatilhos?: string;
 }
 
 export interface ProcessingStatus {
@@ -61,6 +61,8 @@ export class SurveyModel {
    */
   static async isProcessingComplete(surveyId: string): Promise<boolean> {
     try {
+      console.log(`Checking if processing is complete for survey: ${surveyId}`);
+      
       // Obter total de linhas no CSV original
       const { data: surveyData, error: surveyError } = await supabase
         .from('mizi_ai_surveys')
@@ -68,12 +70,19 @@ export class SurveyModel {
         .eq('id', surveyId)
         .single();
       
-      if (surveyError) throw surveyError;
+      if (surveyError) {
+        console.error("Error fetching survey data:", surveyError);
+        throw surveyError;
+      }
       
       // Calcular número total de linhas no CSV
       const totalRows = Array.isArray(surveyData?.csv_data) ? surveyData.csv_data.length : 0;
+      console.log(`Total rows in CSV: ${totalRows}`);
       
-      if (totalRows === 0) return true; // Se não há linhas, está completo por definição
+      if (totalRows === 0) {
+        console.log("No rows to process, marking as complete");
+        return true; // Se não há linhas, está completo por definição
+      }
       
       // Contar linhas processadas
       const { count, error: countError } = await supabase
@@ -81,10 +90,18 @@ export class SurveyModel {
         .select('id', { count: 'exact', head: true })
         .eq('mizi_ai_id', surveyId);
       
-      if (countError) throw countError;
+      if (countError) {
+        console.error("Error counting processed rows:", countError);
+        throw countError;
+      }
+      
+      console.log(`Processed rows: ${count} out of ${totalRows}`);
       
       // Verificar se todas as linhas foram processadas
-      return count === totalRows;
+      const isComplete = count !== null && count === totalRows;
+      console.log(`Is processing complete: ${isComplete}`);
+      
+      return isComplete;
     } catch (error) {
       console.error("Error checking processing completion:", error);
       return false;
@@ -99,6 +116,8 @@ export class SurveyModel {
    */
   static async getProcessingStatus(surveyId: string, fetchData: boolean = false): Promise<ProcessingStatus> {
     try {
+      console.log(`Getting processing status for survey: ${surveyId}`);
+      
       // Obter total de linhas do CSV
       const { data: surveyData, error: surveyError } = await supabase
         .from('mizi_ai_surveys')
@@ -106,9 +125,13 @@ export class SurveyModel {
         .eq('id', surveyId)
         .single();
       
-      if (surveyError) throw surveyError;
+      if (surveyError) {
+        console.error("Error fetching survey data:", surveyError);
+        throw surveyError;
+      }
       
       const totalCount = Array.isArray(surveyData?.csv_data) ? surveyData.csv_data.length : 0;
+      console.log(`Total count: ${totalCount}`);
       
       // Obter contagem de itens processados
       const { count: processedCount, error: countError } = await supabase
@@ -116,10 +139,16 @@ export class SurveyModel {
         .select('id', { count: 'exact', head: true })
         .eq('mizi_ai_id', surveyId);
       
-      if (countError) throw countError;
+      if (countError) {
+        console.error("Error counting processed items:", countError);
+        throw countError;
+      }
+      
+      console.log(`Processed count: ${processedCount}`);
       
       // Verificar se está completo
-      const isComplete = totalCount > 0 && processedCount >= totalCount;
+      const isComplete = totalCount > 0 && processedCount !== null && processedCount >= totalCount;
+      console.log(`Is complete: ${isComplete}`);
       
       // Se precisa retornar os dados processados
       let data = undefined;
@@ -129,7 +158,11 @@ export class SurveyModel {
           .select('*')
           .eq('mizi_ai_id', surveyId);
         
-        if (dataError) throw dataError;
+        if (dataError) {
+          console.error("Error fetching processed data:", dataError);
+          throw dataError;
+        }
+        
         data = processedData;
       }
       
