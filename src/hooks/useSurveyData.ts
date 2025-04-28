@@ -85,6 +85,7 @@ export const useSurveyData = (initialData?: Partial<SurveyData>) => {
     setSurveyData,
     csvFileName,
     csvRowCount,
+    setCsvRowCount,
     handleFileUpload
   };
 };

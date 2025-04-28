@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -108,7 +107,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   const pollingRef = React.useRef<number | null>(null);
 
   const { messages, setMessages, addMessage } = useChatMessages();
-  const { surveyData, setSurveyData, csvFileName, csvRowCount, handleFileUpload } = useSurveyData();
+  const { surveyData, setSurveyData, csvFileName, csvRowCount, handleFileUpload, setCsvRowCount } = useSurveyData();
   const { progress, setProgress, checkProgress } = useSurveyProgress(() => {
     addMessage(
       <div className="space-y-2">
@@ -199,6 +198,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
             ...prev,
             csvData: csvDataArray
           }));
+          
+          setCsvRowCount(csvDataArray.length);
         }
         
         const { data: progressData } = await supabase.functions.invoke('checkProgress', {
@@ -563,13 +564,15 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         return;
       }
       
+      const totalRows = csvRowCount || 0;
       const count = data?.count || 0;
+      
       addMessage(
-        `Status do processamento: ${count}/${csvRowCount} contatos processados.`,
+        `Status do processamento: ${count}/${totalRows} contatos processados.`,
         "bot"
       );
       
-      if (count >= csvRowCount && csvRowCount > 0) {
+      if (count >= totalRows && totalRows > 0) {
         addMessage(
           <div className="space-y-2">
             <p className="font-medium">🎉 Processamento concluído!</p>
