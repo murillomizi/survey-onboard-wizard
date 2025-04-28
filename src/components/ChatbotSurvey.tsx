@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -9,8 +10,6 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
-import { useProcessingProgress } from "@/hooks/useProcessingProgress";
-import ProcessedDataDownload from "./ProcessedDataDownload";
 
 interface Message {
   id: number;
@@ -33,10 +32,6 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [surveyId, setSurveyId] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { totalRows, processedRows, isComplete } = useProcessingProgress(surveyId);
-  const [userEmail, setUserEmail] = useState("");
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -113,11 +108,6 @@ const ChatbotSurvey = () => {
       description: "Dica: Inclua o máximo de informações possível, como nome, cargo, empresa, e-mail, histórico de interações, etc. Dados completos permitem que a IA crie estratégias de comunicação extremamente personalizadas e relevantes.",
       field: "csvFile",
       inputType: "file"
-    },
-    {
-      question: "Para qual e-mail você gostaria de receber os contatos personalizados?",
-      field: "userEmail",
-      inputType: "email"
     },
     {
       question: "Perfeito! Aqui está o resumo das suas escolhas:",
@@ -296,7 +286,6 @@ const ChatbotSurvey = () => {
             <p><strong>Tamanho:</strong> {surveyData.tamanho} caracteres</p>
             <p><strong>Tom de voz:</strong> {getOptionLabel("tomVoz", surveyData.tomVoz)}</p>
             <p><strong>Gatilhos:</strong> {getOptionLabel("gatilhos", surveyData.gatilhos)}</p>
-            <p><strong>E-mail para recebimento:</strong> {userEmail}</p>
             <p>
               <strong>Arquivo CSV:</strong> {csvFileName ? 
                 `${csvFileName} - ${surveyData.csvData.length} registros carregados` : 
@@ -393,11 +382,6 @@ const ChatbotSurvey = () => {
         return;
       }
 
-      setSurveyId(data[0].id);
-      setIsProcessing(true);
-      
-      addMessage("Sua base está sendo processada...", "bot");
-      
       toast({
         title: "Configurações salvas!",
         description: "Suas preferências de mensagem foram salvas com sucesso.",
@@ -415,17 +399,6 @@ const ChatbotSurvey = () => {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    if (isProcessing && totalRows > 0) {
-      addMessage(`Processando... (${processedRows}/${totalRows})`, "bot");
-      
-      if (isComplete) {
-        addMessage("Processamento concluído! Você já pode baixar seu arquivo processado.", "bot");
-        setIsProcessing(false);
-      }
-    }
-  }, [processedRows, totalRows, isComplete, isProcessing]);
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
@@ -473,12 +446,6 @@ const ChatbotSurvey = () => {
               options={showOptions.options}
               onSelect={handleOptionSelect}
             />
-          </div>
-        )}
-        
-        {isComplete && (
-          <div className="flex justify-center mt-4">
-            <ProcessedDataDownload surveyId={surveyId!} />
           </div>
         )}
         
@@ -544,26 +511,24 @@ const ChatbotSurvey = () => {
             </Button>
           )}
           
-          {currentStep === 7 && (
-            <div className="relative flex-1">
-              <Input
-                type="email"
-                value={userEmail}
-                onChange={(e) => {
-                  setUserEmail(e.target.value);
-                  setCurrentInput(e.target.value);
-                }}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Digite seu e-mail..."
-                className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
-              />
-              <Button
-                onClick={handleSendMessage}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
-              >
-                <Send size={14} />
-              </Button>
-            </div>
+          {currentStep < 6 && showOptions === null && !showSlider && (
+            <>
+              <div className="relative flex-1">
+                <Input
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  placeholder="Digite sua resposta..."
+                  className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
+                >
+                  <Send size={14} />
+                </Button>
+              </div>
+            </>
           )}
           
           {currentStep === steps.length - 1 && (
