@@ -298,6 +298,7 @@ const ChatbotSurvey = () => {
       if (steps[nextStep].inputType === "summary") {
         const summaryContent = (
           <div>
+            <p className="mb-2 text-gray-500">E-mail para recebimento: {surveyData.userEmail}</p>
             <p><strong>Canal:</strong> {getOptionLabel("canal", surveyData.canal)}</p>
             <p><strong>Estágio do Funil:</strong> {getOptionLabel("funnelStage", surveyData.funnelStage)}</p>
             <p><strong>Site:</strong> {surveyData.websiteUrl}</p>
