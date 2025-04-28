@@ -1,32 +1,20 @@
 
-import { useState } from "react";
-import { toast } from "@/components/ui/use-toast";
+import { useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
-interface SurveyProgress {
-  processedCount: number;
-  isProcessing: boolean;
-  isProcessingComplete: boolean;
-  isDownloading: boolean;
-  processingId: string | null;
-}
-
-export const useSurveyProgress = (onSuccess?: () => void) => {
-  const [progress, setProgress] = useState<SurveyProgress>({
-    processedCount: 0,
-    isProcessing: false,
-    isProcessingComplete: false,
-    isDownloading: false,
-    processingId: null
-  });
+export const useSurveyProgress = (onProgressUpdate: (count: number) => void) => {
+  const pollingRef = useRef<number | null>(null);
 
   const checkProgress = async (surveyId: string) => {
     try {
-      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}`);
+      console.log(`Checking progress via Edge Function for survey ID: ${surveyId}, Timestamp: ${new Date().toISOString()}`);
       
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: { surveyId }
       });
+      
+      console.log('Edge Function response:', data);
       
       if (error) {
         console.error("Error calling checkProgress Edge Function:", error);
@@ -35,24 +23,31 @@ export const useSurveyProgress = (onSuccess?: () => void) => {
 
       if (data) {
         const count = data.count || 0;
-        setProgress(prev => ({
-          ...prev,
-          processedCount: count,
-          isProcessingComplete: data.isComplete || false
-        }));
-        
-        if (data.isComplete && onSuccess) {
-          onSuccess();
-        }
+        onProgressUpdate(count);
       }
     } catch (error) {
       console.error("Error in checkProgress:", error);
     }
   };
 
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      window.clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  const startPolling = (surveyId: string) => {
+    stopPolling();
+    pollingRef.current = window.setInterval(() => {
+      checkProgress(surveyId);
+    }, 2000);
+  };
+
   return {
-    progress,
-    setProgress,
-    checkProgress
+    checkProgress,
+    startPolling,
+    stopPolling,
+    pollingRef
   };
 };
