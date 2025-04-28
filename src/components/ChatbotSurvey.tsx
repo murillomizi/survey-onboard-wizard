@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -99,6 +98,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   const [showOptions, setShowOptions] = React.useState<{
     options: { value: string; label: string }[];
     step: number;
+    isComplete: boolean;
   } | null>(null);
   const [showSlider, setShowSlider] = React.useState(false);
   const [sliderValue, setSliderValue] = React.useState(350);
@@ -194,7 +194,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         }));
         
         if (csvDataArray.length > 0) {
-          // Update csvRowCount through the surveyData state
           setSurveyData(prev => ({
             ...prev,
             csvData: csvDataArray
@@ -415,7 +414,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       link.setAttribute('download', `campanha_personalizada_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       
-      // Add type assertion to resolve the click() TypeScript error
       (link as HTMLAnchorElement).click();
       
       document.body.removeChild(link);
@@ -639,7 +637,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       if (steps[nextStep].options) {
         setShowOptions({
           options: steps[nextStep].options,
-          step: nextStep
+          step: nextStep,
+          isComplete: progress.isProcessingComplete
         });
       }
       
@@ -701,6 +700,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         onOptionSelect={handleOptionSelect}
         onSliderChange={handleSliderChange}
         onSliderComplete={handleSliderComplete}
+        isComplete={progress.isProcessingComplete}
       />
       
       <FileHandler onFileChange={handleFileChange} />
@@ -712,7 +712,6 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         onInputChange={setCurrentInput}
         onSendMessage={handleSendMessage}
         onFileUpload={() => {
-          // Use type assertion to fix Element.click error
           const fileInput = document.querySelector('input[type="file"]');
           if (fileInput) {
             (fileInput as HTMLElement).click();
