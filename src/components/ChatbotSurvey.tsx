@@ -12,6 +12,7 @@ import FileHandler from "./survey/FileHandler";
 interface ChatbotSurveyProps {
   initialSurveyId?: string | null;
   onSubmitSuccess?: (surveyId: string) => void;
+  isLoading?: boolean;  // Add this line to include the isLoading prop
 }
 
 const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({ 
