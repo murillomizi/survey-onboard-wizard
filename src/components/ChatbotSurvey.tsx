@@ -378,7 +378,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
         const totalRows = surveyForm.totalCount || 0;
         
         addMessage(
-          `Status do processamento: 0/${totalRows} contatos processados. Por favor, tente novamente em alguns instantes.`,
+          `Status do processamento: 0/${totalRows} contatos processados (ID: ${surveyForm.processingId}). Por favor, tente novamente em alguns instantes.`,
           "bot"
         );
       }
