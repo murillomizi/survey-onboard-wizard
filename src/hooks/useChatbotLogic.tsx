@@ -23,20 +23,22 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const completionMessageAddedRef = useRef(false);
   const statusCheckedRef = useRef(false);
   const loadedSurveyIdRef = useRef<string | null>(null);
+  const chatInitializedRef = useRef(false);
   
   const { messages, setMessages, addMessage } = useChatMessages();
   const surveyForm = useSurveyForm();
 
+  // Efeito para inicializar o chat ou carregar um chat existente
   useEffect(() => {
     if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
       resetAndLoadPastSurvey(initialSurveyId);
       loadedSurveyIdRef.current = initialSurveyId;
       completionMessageAddedRef.current = false;
       statusCheckedRef.current = false;
-    } else if (!initialSurveyId && !isLoadingPastChat) {
-      loadedSurveyIdRef.current = null;
-      completionMessageAddedRef.current = false;
-      statusCheckedRef.current = false;
+      chatInitializedRef.current = true;
+    } else if (!initialSurveyId && !chatInitializedRef.current) {
+      // Inicializa um novo chat apenas se ainda não foi inicializado
+      chatInitializedRef.current = true;
       initializeChat();
     }
   }, [initialSurveyId]);
@@ -64,17 +66,21 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   };
 
   const initializeChat = () => {
-    if (messages.length === 0) {
-      const firstStep = steps[0];
-      addMessage(firstStep.question, "bot");
-      
-      if (firstStep.options) {
-        setShowOptions({
-          options: firstStep.options,
-          step: 0,
-          isComplete: false
-        });
-      }
+    console.log("Initializing new chat");
+    // Limpar mensagens anteriores
+    setMessages([]);
+    
+    // Adicionar a primeira mensagem do bot
+    const firstStep = steps[0];
+    addMessage(firstStep.question, "bot");
+    
+    // Mostrar opções se o primeiro passo tiver opções
+    if (firstStep.options) {
+      setShowOptions({
+        options: firstStep.options,
+        step: 0,
+        isComplete: false
+      });
     }
   };
 

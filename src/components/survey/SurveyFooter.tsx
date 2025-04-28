@@ -33,6 +33,9 @@ const SurveyFooter: React.FC<SurveyFooterProps> = ({
   showInput,
   processingId
 }) => {
+  // Determine se o último passo está ativo
+  const isLastStep = currentStep === totalSteps - 1;
+  
   return (
     <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
       <div className="flex items-center gap-2 max-w-[600px] mx-auto">
@@ -65,7 +68,7 @@ const SurveyFooter: React.FC<SurveyFooterProps> = ({
           </div>
         )}
         
-        {currentStep === totalSteps - 1 && (
+        {isLastStep && (
           <Button
             onClick={processingId ? onCheckStatus : onSubmit}
             disabled={isSubmitting || isDownloading}

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { SurveyMessagesProps } from "./types";
 import ChatMessage from "../ChatMessage";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,15 @@ const SurveyMessages: React.FC<SurveyMessagesProps> = ({
   onSliderComplete,
   isComplete = false
 }) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Rolagem automática para a última mensagem
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   return (
     <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
       {messages.map((message) => (
@@ -66,9 +75,10 @@ const SurveyMessages: React.FC<SurveyMessagesProps> = ({
           </Button>
         </div>
       )}
+      
+      <div ref={messagesEndRef} />
     </div>
   );
 };
 
 export default SurveyMessages;
-

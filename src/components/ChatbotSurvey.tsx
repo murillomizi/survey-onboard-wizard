@@ -113,6 +113,13 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     }, 1000);
   };
 
+  // Efeito para atualizar o botão onSubmitSuccess quando o ID de processamento é definido
+  useEffect(() => {
+    if (surveyForm.processingId && onSubmitSuccess) {
+      onSubmitSuccess(surveyForm.processingId);
+    }
+  }, [surveyForm.processingId, onSubmitSuccess]);
+
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
       <SurveyHeader
