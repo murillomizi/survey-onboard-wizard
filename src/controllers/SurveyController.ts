@@ -1,3 +1,4 @@
+
 import { toast } from "@/components/ui/use-toast";
 import { SurveyModel, SurveyData, ProcessingStatus } from "@/models/SurveyModel";
 import Papa from "papaparse";
@@ -35,7 +36,8 @@ export class SurveyController {
         description: survey.csv_file_name || 'Sem arquivo',
         canal: survey.canal,
         websiteUrl: survey.website_url,
-        csvRowCount: Array.isArray(survey.csv_data) ? survey.csv_data.length : 0
+        csvRowCount: Array.isArray(survey.csv_data) ? survey.csv_data.length : 0,
+        isComplete: false // Adicionando a propriedade isComplete com valor padrão
       }));
     } catch (error) {
       console.error("Error in getChatHistory:", error);

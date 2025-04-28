@@ -68,12 +68,12 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     try {
       const history = await SurveyController.getChatHistory();
       
-      // Prevent unnecessary status checks by limiting to recent items or batch processing
+      // Corrigido: garantir que TODOS os itens tenham a propriedade isComplete
       const historyWithStatus = await Promise.all(
         history.slice(0, 15).map(async (chat) => {
           try {
             // Verify component is still mounted
-            if (!isMountedRef.current) return chat;
+            if (!isMountedRef.current) return { ...chat, isComplete: false };
             
             // Check status through edge function
             const status = await supabase.functions.invoke('checkProgress', {
@@ -98,7 +98,8 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
       );
       
       if (isMountedRef.current) {
-        setChatHistory(historyWithStatus);
+        // Garantir que o tipo está correto antes de atribuir ao state
+        setChatHistory(historyWithStatus as ChatHistoryItem[]);
         fetchedRef.current = true;
       }
     } catch (error) {
