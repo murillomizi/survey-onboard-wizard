@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader } from "lucide-react";
@@ -121,7 +122,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     addMessage(surveyForm.surveyData.websiteUrl || "", "user");
     
     addMessage(steps[3].question, "bot");
-    addMessage(`${surveyForm.surveyData.tamanho} caracteres", "user");
+    addMessage(`${surveyForm.surveyData.tamanho} caracteres`, "user");
     
     addMessage(steps[4].question, "bot");
     const toneLabel = getOptionLabel("tomVoz", surveyForm.surveyData.tomVoz);
