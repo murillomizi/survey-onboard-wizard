@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Download, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,22 +16,19 @@ const CompletionMessage: React.FC<CompletionMessageProps> = ({
   isDownloading,
   surveyId
 }) => {
-  // Garantir que o valor exibido seja válido
   const safeProcessedCount = isNaN(processedCount) ? 0 : processedCount;
 
-  // Registrar valores para debug
   useEffect(() => {
     console.log(`CompletionMessage rendered with count: ${processedCount}, valid: ${safeProcessedCount}, ID: ${surveyId || 'none'}`);
   }, [processedCount, safeProcessedCount, surveyId]);
 
-  // Handler seguro para download
   const handleSafeDownload = () => {
     try {
       if (safeProcessedCount <= 0) {
         toast({
           title: "Atenção",
           description: "Não há contatos processados para download",
-          variant: "warning"
+          variant: "default"
         });
         return;
       }
