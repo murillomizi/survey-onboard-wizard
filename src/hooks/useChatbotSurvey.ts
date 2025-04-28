@@ -112,6 +112,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
   const loadPastSurvey = async (surveyId: string) => {
     try {
       setIsLoadingPastChat(true);
+      console.log("Loading survey with ID:", surveyId);
       
       const { data, error } = await supabase
         .from('mizi_ai_surveys')
@@ -130,6 +131,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
       }
       
       if (data) {
+        console.log("Survey data loaded:", data);
         const csvDataArray = Array.isArray(data.csv_data) ? data.csv_data : [];
         surveyForm.setSurveyData({
           ...surveyForm.surveyData,
@@ -146,6 +148,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
         });
         
         if (csvDataArray.length > 0) {
+          console.log(`Loaded ${csvDataArray.length} CSV entries`);
           surveyForm.setParsedCsvData(csvDataArray);
           surveyForm.setTotalCount(csvDataArray.length);
         }
@@ -162,6 +165,11 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
       
     } catch (error) {
       console.error("Error loading past survey:", error);
+      toast({
+        title: "Erro ao carregar chat",
+        description: "Ocorreu um erro ao carregar o chat selecionado.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoadingPastChat(false);
     }

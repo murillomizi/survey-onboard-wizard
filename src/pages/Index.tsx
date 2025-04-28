@@ -16,9 +16,12 @@ const Index = () => {
   const handleSelectSurvey = async (surveyId: string) => {
     try {
       setIsLoading(true);
+      console.log("Loading survey ID:", surveyId);
       setSelectedSurveyId(surveyId);
       setShowSurveyForm(true);
-      // Force a refresh of the ChatbotSurvey component
+      
+      // Importante: Forcamos um refresh do componente ChatbotSurvey para garantir 
+      // que os dados mais recentes sejam carregados
       setRefresh(prev => prev + 1);
     } catch (error) {
       console.error("Error selecting survey:", error);
@@ -49,11 +52,7 @@ const Index = () => {
     setTimeout(async () => {
       try {
         // Refresh the chat history sidebar to show the new entry
-        const sidebar = document.querySelector('[data-sidebar="sidebar"]');
-        if (sidebar) {
-          // Trigger a rerender if needed
-          setRefresh(prev => prev + 1);
-        }
+        setRefresh(prev => prev + 1);
       } catch (error) {
         console.error("Error refreshing after submission:", error);
       }

@@ -116,6 +116,7 @@ const ChatHistorySidebar = ({ onSelectSurvey, onNewCampaign, currentSurveyId, re
 
   const handleSelectItem = (surveyId: string) => {
     console.log("Survey selected:", surveyId);
+    // Prevenção do comportamento padrão que possa estar causando reload
     onSelectSurvey(surveyId);
   };
 
