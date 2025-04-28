@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   const [surveyData, setSurveyData] = useState({
     canal: "",
     funnelStage: "",
@@ -40,12 +39,9 @@ const ChatbotSurvey = () => {
     websiteUrl: "",
     tamanho: 350,
     tomVoz: "",
-    gatilhos: ""
+    gatilhos: "",
+    surveyId: ''
   });
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const steps = [
     {
@@ -382,10 +378,12 @@ const ChatbotSurvey = () => {
         return;
       }
 
-      toast({
-        title: "Configurações salvas!",
-        description: "Suas preferências de mensagem foram salvas com sucesso.",
-      });
+      setSurveyData(prev => ({
+        ...prev,
+        surveyId: data[0].id
+      }));
+      
+      setIsProcessing(true);
       
       console.log('Survey data saved:', data);
       setIsSubmitting(false);
@@ -402,146 +400,155 @@ const ChatbotSurvey = () => {
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-xl">
-      <div className="p-3 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            {currentStep > 0 && (
-              <Button
-                onClick={handleBack}
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-gray-100"
-                title="Voltar para a pergunta anterior"
-              >
-                <ArrowLeft size={16} className="text-gray-500" />
-              </Button>
-            )}
-            <div className="text-sm font-medium text-gray-600">
-              Passo {currentStep + 1} de {steps.length}
-            </div>
-          </div>
-          <div className="text-xs text-gray-400">
-            {Math.round(progressPercentage)}% concluído
-          </div>
-        </div>
-        <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
-      </div>
-      
-      <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            content={message.content}
-            type={message.type}
-          />
-        ))}
-        
-        {isWaitingForResponse && (
-          <ChatMessage content="" type="bot" isTyping={true} />
-        )}
-        
-        {showOptions && (
-          <div className="mb-4">
-            <ChatOptions
-              options={showOptions.options}
-              onSelect={handleOptionSelect}
-            />
-          </div>
-        )}
-        
-        {showSlider && (
-          <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
-            <div className="mb-2">
-              <span className="text-gray-800">{sliderValue} caracteres</span>
-            </div>
-            <Slider
-              defaultValue={[350]}
-              max={1000}
-              min={100}
-              step={10}
-              value={[sliderValue]}
-              onValueChange={handleSliderChange}
-              className="mb-2"
-            />
-            <p className="text-gray-500 text-sm mt-1 italic">
-              Recomendado: 350-500 caracteres para maior impacto
-            </p>
-            <Button 
-              onClick={handleSliderComplete}
-              className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
-            >
-              Confirmar
-            </Button>
-          </div>
-        )}
-        
-        {currentStep === 7 && (
-          <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
-            <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
-            <p className="text-sm mb-2">
-              Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
-            </p>
-            <p className="text-xs text-gray-500 italic">
-              Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
-            </p>
-          </div>
-        )}
-        
-        <input
-          type="file"
-          accept=".csv"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
+      {isProcessing ? (
+        <LoadingProgress 
+          surveyId={surveyData.surveyId} 
+          totalContacts={surveyData.csvData?.length || 0} 
         />
-        
-        <div ref={chatEndRef} />
-      </div>
-      
-      <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
-        <div className="flex items-center gap-2 max-w-[600px] mx-auto">
-          {currentStep === 6 && (
-            <Button
-              type="button"
-              onClick={triggerFileUpload}
-              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow transition-all duration-200"
-            >
-              <Paperclip size={18} />
-              Upload CSV
-            </Button>
-          )}
+      ) : (
+        <>
+          <div className="p-3 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                {currentStep > 0 && (
+                  <Button
+                    onClick={handleBack}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-gray-100"
+                    title="Voltar para a pergunta anterior"
+                  >
+                    <ArrowLeft size={16} className="text-gray-500" />
+                  </Button>
+                )}
+                <div className="text-sm font-medium text-gray-600">
+                  Passo {currentStep + 1} de {steps.length}
+                </div>
+              </div>
+              <div className="text-xs text-gray-400">
+                {Math.round(progressPercentage)}% concluído
+              </div>
+            </div>
+            <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
+          </div>
           
-          {currentStep < 6 && showOptions === null && !showSlider && (
-            <>
-              <div className="relative flex-1">
-                <Input
-                  value={currentInput}
-                  onChange={(e) => setCurrentInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  placeholder="Digite sua resposta..."
-                  className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
+          <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                content={message.content}
+                type={message.type}
+              />
+            ))}
+            
+            {isWaitingForResponse && (
+              <ChatMessage content="" type="bot" isTyping={true} />
+            )}
+            
+            {showOptions && (
+              <div className="mb-4">
+                <ChatOptions
+                  options={showOptions.options}
+                  onSelect={handleOptionSelect}
                 />
-                <Button
-                  onClick={handleSendMessage}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
+              </div>
+            )}
+            
+            {showSlider && (
+              <div className="mb-4 p-4 border border-gray-200 bg-white rounded-xl shadow-sm">
+                <div className="mb-2">
+                  <span className="text-gray-800">{sliderValue} caracteres</span>
+                </div>
+                <Slider
+                  defaultValue={[350]}
+                  max={1000}
+                  min={100}
+                  step={10}
+                  value={[sliderValue]}
+                  onValueChange={handleSliderChange}
+                  className="mb-2"
+                />
+                <p className="text-gray-500 text-sm mt-1 italic">
+                  Recomendado: 350-500 caracteres para maior impacto
+                </p>
+                <Button 
+                  onClick={handleSliderComplete}
+                  className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200"
                 >
-                  <Send size={14} />
+                  Confirmar
                 </Button>
               </div>
-            </>
-          )}
+            )}
+            
+            {currentStep === 7 && (
+              <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
+                <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
+                <p className="text-sm mb-2">
+                  Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
+                </p>
+                <p className="text-xs text-gray-500 italic">
+                  Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
+                </p>
+              </div>
+            )}
+            
+            <input
+              type="file"
+              accept=".csv"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            
+            <div ref={chatEndRef} />
+          </div>
           
-          {currentStep === steps.length - 1 && (
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
-            >
-              {isSubmitting ? 'Salvando...' : 'Continuar'}
-            </Button>
-          )}
-        </div>
-      </div>
+          <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
+            <div className="flex items-center gap-2 max-w-[600px] mx-auto">
+              {currentStep === 6 && (
+                <Button
+                  type="button"
+                  onClick={triggerFileUpload}
+                  className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow transition-all duration-200"
+                >
+                  <Paperclip size={18} />
+                  Upload CSV
+                </Button>
+              )}
+              
+              {currentStep < 6 && showOptions === null && !showSlider && (
+                <>
+                  <div className="relative flex-1">
+                    <Input
+                      value={currentInput}
+                      onChange={(e) => setCurrentInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                      placeholder="Digite sua resposta..."
+                      className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
+                    />
+                    <Button
+                      onClick={handleSendMessage}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
+                    >
+                      <Send size={14} />
+                    </Button>
+                  </div>
+                </>
+              )}
+              
+              {currentStep === steps.length - 1 && (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
+                >
+                  {isSubmitting ? 'Salvando...' : 'Continuar'}
+                </Button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
