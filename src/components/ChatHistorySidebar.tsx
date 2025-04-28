@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Clock, Loader2, CheckCircle } from "lucide-react";
@@ -33,6 +33,8 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
 }) => {
   const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const fetchedRef = useRef<boolean>(false);
+  const refreshCountRef = useRef<number>(0);
 
   const groupChats = (chats: ChatHistoryItem[]): GroupedChats => {
     const today = new Date();
@@ -58,11 +60,19 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
   };
 
   useEffect(() => {
+    // Evitar múltiplas chamadas para o mesmo refresh
+    if (refreshCountRef.current === refresh && fetchedRef.current) {
+      return;
+    }
+    
+    refreshCountRef.current = refresh;
+    
     const fetchHistory = async () => {
+      if (isLoading) return;
+      
       setIsLoading(true);
       try {
         const history = await SurveyController.getChatHistory();
-        console.log("History fetched:", history);
         
         const historyWithStatus = await Promise.all(
           history.map(async (chat) => {
@@ -76,7 +86,6 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
               });
               
               const isComplete = status?.data?.isComplete || false;
-              console.log(`Survey ${chat.id} processing status: ${isComplete ? 'Complete' : 'Incomplete'}`);
               
               return {
                 ...chat,
@@ -92,8 +101,8 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
           })
         );
         
-        console.log("History with status:", historyWithStatus);
         setChatHistory(historyWithStatus);
+        fetchedRef.current = true;
       } catch (error) {
         console.error("Error fetching chat history:", error);
       } finally {
@@ -102,7 +111,12 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     };
 
     fetchHistory();
-  }, [refresh]);
+    
+    // Limpar o efeito ao desmontar
+    return () => {
+      fetchedRef.current = false;
+    };
+  }, [refresh, isLoading]);
 
   const renderChatGroup = (chats: ChatHistoryItem[], title: string) => {
     if (chats.length === 0) return null;

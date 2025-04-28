@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useChatbotLogic } from "@/hooks/useChatbotLogic";
 import SurveyHeader from "./survey/SurveyHeader";
 import SurveyMessages from "./survey/SurveyMessages";
@@ -19,6 +19,9 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
   onSubmitSuccess,
   isLoading = false
 }) => {
+  // Ref para controlar notificações ao componente pai
+  const notifiedParentRef = useRef(false);
+  
   const {
     currentStep,
     currentInput,
@@ -111,11 +114,11 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     }, 1000);
   };
 
-  // Efeito para atualizar o botão onSubmitSuccess quando o ID de processamento é definido
+  // Efeito para notificar o componente pai sobre o ID de processamento, apenas uma vez
   useEffect(() => {
-    if (surveyForm.processingId && onSubmitSuccess) {
-      console.log("Notifying parent about processing ID:", surveyForm.processingId);
+    if (surveyForm.processingId && onSubmitSuccess && !notifiedParentRef.current) {
       onSubmitSuccess(surveyForm.processingId);
+      notifiedParentRef.current = true;
     }
   }, [surveyForm.processingId, onSubmitSuccess]);
 

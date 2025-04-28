@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import ChatbotSurvey from "@/components/ChatbotSurvey";
 import ChatHistorySidebar from "@/components/ChatHistorySidebar";
@@ -12,16 +12,17 @@ const Index = () => {
   const [showSurveyForm, setShowSurveyForm] = useState(true);
   const [refresh, setRefresh] = useState(0); // Add a refresh key to force re-rendering
   const [isLoading, setIsLoading] = useState(false);
+  const loadingRef = useRef(false);
 
   const handleSelectSurvey = async (surveyId: string) => {
     try {
       // Don't reload if we're already viewing this survey
-      if (surveyId === selectedSurveyId) {
+      if (surveyId === selectedSurveyId || loadingRef.current) {
         return;
       }
       
+      loadingRef.current = true;
       setIsLoading(true);
-      console.log("Loading survey ID:", surveyId);
       
       // First hide the survey form
       setShowSurveyForm(false);
@@ -37,6 +38,7 @@ const Index = () => {
         // Show the survey form with new ID
         setShowSurveyForm(true);
         setIsLoading(false);
+        loadingRef.current = false;
       }, 100);
       
     } catch (error) {
@@ -47,10 +49,15 @@ const Index = () => {
         variant: "destructive"
       });
       setIsLoading(false);
+      loadingRef.current = false;
     }
   };
 
   const handleNewCampaign = () => {
+    if (loadingRef.current) return;
+    
+    loadingRef.current = true;
+    
     // Hide the current form
     setShowSurveyForm(false);
     
@@ -60,6 +67,7 @@ const Index = () => {
       // Force a refresh of the ChatbotSurvey component
       setRefresh(prev => prev + 1);
       setShowSurveyForm(true);
+      loadingRef.current = false;
     }, 100);
   };
 

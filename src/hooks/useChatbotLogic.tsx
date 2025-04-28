@@ -21,32 +21,44 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const [sliderValue, setSliderValue] = useState(350);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
   
-  // Refs para controlar estados internos
+  // Refs para controlar estados internos e evitar loops infinitos
   const completionMessageAddedRef = useRef(false);
   const statusCheckedRef = useRef(false);
   const loadedSurveyIdRef = useRef<string | null>(null);
   const chatInitializedRef = useRef(false);
+  const effectRanRef = useRef(false);
   
   const { messages, setMessages, addMessage } = useChatMessages();
   const surveyForm = useSurveyForm();
 
   // Efeito para inicializar o chat ou carregar um chat existente apenas uma vez
   useEffect(() => {
-    console.log("ChatbotLogic effect running. initialSurveyId:", initialSurveyId, "loadedSurveyId:", loadedSurveyIdRef.current);
+    // Prevenir múltiplas execuções do efeito durante o desenvolvimento
+    if (effectRanRef.current) return;
     
-    if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
-      console.log("Loading past survey:", initialSurveyId);
-      resetAndLoadPastSurvey(initialSurveyId);
-      loadedSurveyIdRef.current = initialSurveyId;
-      completionMessageAddedRef.current = false;
-      statusCheckedRef.current = false;
-      chatInitializedRef.current = true;
-    } else if (!initialSurveyId && !chatInitializedRef.current) {
-      console.log("Initializing new chat");
-      loadedSurveyIdRef.current = null;
-      chatInitializedRef.current = true;
-      initializeChat();
-    }
+    const handleInitialSetup = async () => {
+      effectRanRef.current = true;
+      
+      if (initialSurveyId && initialSurveyId !== loadedSurveyIdRef.current) {
+        loadedSurveyIdRef.current = initialSurveyId;
+        completionMessageAddedRef.current = false;
+        statusCheckedRef.current = false;
+        chatInitializedRef.current = true;
+        await resetAndLoadPastSurvey(initialSurveyId);
+      } else if (!initialSurveyId && !chatInitializedRef.current) {
+        loadedSurveyIdRef.current = null;
+        chatInitializedRef.current = true;
+        initializeChat();
+      }
+    };
+    
+    handleInitialSetup();
+    
+    // Limpar o efeito quando o componente é desmontado
+    return () => {
+      effectRanRef.current = false;
+      chatInitializedRef.current = false;
+    };
   }, [initialSurveyId]);
 
   const resetAndLoadPastSurvey = async (surveyId: string) => {
@@ -57,11 +69,9 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       setShowSlider(false);
       setCurrentInput("");
       
-      console.log("Loading survey with ID:", surveyId);
       const data = await surveyForm.loadSurvey(surveyId);
       
       if (data) {
-        console.log("Survey data loaded:", data);
         rebuildChatHistory();
       }
     } catch (error) {
@@ -74,7 +84,6 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   };
 
   const initializeChat = () => {
-    console.log("Initializing new chat - resetting messages");
     // Limpar mensagens anteriores
     setMessages([]);
     
@@ -153,9 +162,6 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   };
 
   const addCompletionMessage = () => {
-    console.log("Adding completion message");
-    console.log(`Completion data: processedCount=${surveyForm.processedCount}, totalCount=${surveyForm.totalCount}`);
-    
     // Adiciona a mensagem de conclusão apenas se não foi adicionada antes
     if (!completionMessageAddedRef.current) {
       addMessage(
@@ -180,8 +186,6 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     }
     
     try {
-      console.log("Checking status for survey ID:", surveyForm.processingId);
-      
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: {
           surveyId: surveyForm.processingId,
@@ -190,8 +194,6 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
       });
       
       if (error) throw error;
-      
-      console.log("CheckProgress response:", data);
       
       if (data.isComplete) {
         surveyForm.setIsComplete(true);
