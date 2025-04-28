@@ -9,6 +9,7 @@ import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import LoadingProgress from "./LoadingProgress";
 
 interface Message {
   id: number;
