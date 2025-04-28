@@ -4,7 +4,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/comp
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Clock, Loader2, CheckCircle } from "lucide-react";
 import { SurveyController } from "@/controllers/SurveyController";
-import { supabase } from "@/integrations/supabase/client"; // Added missing import
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatHistorySidebarProps {
   onSelectSurvey: (id: string) => void;
@@ -67,14 +67,16 @@ const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
         const historyWithStatus = await Promise.all(
           history.map(async (chat) => {
             try {
-              // Verificar diretamente os registros processados para esse chat
-              const { data: processedData, error } = await supabase
-                .from('mizi_ai_personalized_return')
-                .select('id')
-                .eq('mizi_ai_id', chat.id);
+              // Verificar status processado através da edge function checkProgress
+              const status = await supabase.functions.invoke('checkProgress', {
+                body: {
+                  surveyId: chat.id,
+                  fetchData: false
+                }
+              });
               
-              const isComplete = processedData && processedData.length > 0;
-              console.log(`Survey ${chat.id} has ${processedData?.length || 0} processed records, isComplete: ${isComplete}`);
+              const isComplete = status?.data?.isComplete || false;
+              console.log(`Survey ${chat.id} processing status: ${isComplete ? 'Complete' : 'Incomplete'}`);
               
               return {
                 ...chat,

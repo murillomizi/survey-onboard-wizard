@@ -62,7 +62,8 @@ serve(async (req) => {
     const processedCount = processedData?.length || 0;
     console.log(`${processedCount} processed`);
     
-    // Verificar se está completo - consideramos processado se tiver pelo menos 1 registro
+    // Verificar se está completo - consideramos processado se tiver pelo menos um registro processado
+    // e se o número de registros processados for maior ou igual ao número total de entradas
     const isComplete = processedCount > 0 && (processedCount >= totalEntries);
     
     // Retornar resposta
