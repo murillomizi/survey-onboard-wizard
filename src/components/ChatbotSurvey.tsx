@@ -129,7 +129,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 
     addMessage(selectedOption.label, "user");
 
-    const fieldName = steps[currentStep].field as keyof typeof surveyForm.surveyData;
+    const fieldName = steps[currentStep].field;
     surveyForm.setSurveyData(prev => ({ ...prev, [fieldName]: value }));
 
     setTimeout(() => {
@@ -220,7 +220,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     }
     
     try {
-      await surveyForm.checkProgress(surveyForm.processingId);
+      const data = await surveyForm.checkProgress(surveyForm.processingId);
       
       const totalRows = surveyForm.totalCount || 0;
       const count = surveyForm.processedCount || 0;
@@ -238,7 +238,7 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
               Todos os {count} contatos foram processados com sucesso.
             </p>
             <Button
-              onClick={surveyForm.handleDownload}
+              onClick={() => surveyForm.handleDownload()}
               disabled={surveyForm.isDownloading}
               className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
             >
@@ -313,4 +313,3 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
 };
 
 export default ChatbotSurvey;
-

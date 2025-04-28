@@ -4,6 +4,7 @@ import { useSurveyProgress } from "./useSurveyProgress";
 import { useSurveyDownload } from "./useSurveyDownload";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import Papa from "papaparse";
 
 export const useSurveyForm = () => {
   const {
@@ -25,7 +26,7 @@ export const useSurveyForm = () => {
 
   const { isDownloading, handleDownload } = useSurveyDownload();
 
-  const { startPolling, stopPolling, pollingRef } = useSurveyProgress((count) => {
+  const { startPolling, stopPolling, pollingRef, checkProgress } = useSurveyProgress((count) => {
     setProcessedCount(count);
     if (count >= totalCount && totalCount > 0) {
       setIsComplete(true);
@@ -33,8 +34,57 @@ export const useSurveyForm = () => {
     }
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFileUpload = async (file: File): Promise<boolean> => {
+    if (file.type !== "text/csv") {
+      toast({
+        title: "Formato inválido",
+        description: "Por favor, selecione um arquivo CSV.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    return new Promise((resolve) => {
+      const csvFileName = file.name;
+      
+      Papa.parse(file, {
+        complete: (results) => {
+          if (results.data && Array.isArray(results.data)) {
+            const filteredData = results.data.filter(row => 
+              row && typeof row === 'object' && Object.keys(row).length > 0
+            );
+            
+            if (filteredData.length > 0) {
+              setTotalCount(filteredData.length);
+              setParsedCsvData(filteredData);
+              resolve(true);
+            } else {
+              toast({
+                title: "Arquivo vazio",
+                description: "O arquivo CSV não contém dados válidos.",
+                variant: "destructive"
+              });
+              resolve(false);
+            }
+          }
+        },
+        header: true,
+        skipEmptyLines: true,
+        error: (error) => {
+          console.error('Error parsing CSV:', error);
+          toast({
+            title: "Erro ao processar arquivo",
+            description: "Não foi possível ler o arquivo CSV. Verifique se o formato está correto.",
+            variant: "destructive"
+          });
+          resolve(false);
+        }
+      });
+    });
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     if (!surveyData.canal || parsedCsvData.length === 0) {
       toast({
@@ -97,8 +147,12 @@ export const useSurveyForm = () => {
     parsedCsvData,
     setParsedCsvData,
     handleSubmit,
-    handleDownload,
+    handleDownload: () => processingId ? handleDownload(processingId) : null,
     isDownloading,
-    pollingRef
+    pollingRef,
+    handleFileUpload,
+    checkProgress,
+    isSubmitting: isProcessing,
+    csvFileName: surveyData.csvFileName
   };
 };

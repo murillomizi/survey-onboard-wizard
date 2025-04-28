@@ -98,7 +98,7 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
-  const toast = useToast();
+  const { toast } = useToast();
   
   const surveyForm = useSurveyForm();
 
@@ -125,16 +125,21 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
       if (data) {
         const csvDataArray = Array.isArray(data.csv_data) ? data.csv_data : [];
         surveyForm.setSurveyData({
+          ...surveyForm.surveyData,
           canal: data.canal || "",
+          touchpoints: data.funnel_stage || "",
           funnelStage: data.funnel_stage || "",
-          csvData: csvDataArray,
           websiteUrl: data.website_url || "",
           tamanho: data.message_length || 350,
           tomVoz: data.tone_of_voice || "",
-          gatilhos: data.persuasion_trigger || ""
+          gatilhos: data.persuasion_trigger || "",
+          csvFileName: "",
+          csvFile: null,
+          template: surveyForm.surveyData.template
         });
         
         if (csvDataArray.length > 0) {
+          surveyForm.setParsedCsvData(csvDataArray);
           surveyForm.setTotalCount(csvDataArray.length);
         }
       }
@@ -164,4 +169,3 @@ export const useChatbotSurvey = (initialSurveyId?: string | null) => {
     surveyForm
   };
 };
-

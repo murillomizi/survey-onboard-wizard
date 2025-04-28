@@ -25,6 +25,8 @@ export const useSurveyProgress = (onProgressUpdate: (count: number) => void) => 
         const count = data.count || 0;
         onProgressUpdate(count);
       }
+      
+      return data;
     } catch (error) {
       console.error("Error in checkProgress:", error);
     }

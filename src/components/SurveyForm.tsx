@@ -138,7 +138,7 @@ const SurveyForm = () => {
           processedCount={processedCount}
           totalCount={totalCount}
           isComplete={isComplete}
-          onDownload={handleDownload}
+          onDownload={() => handleDownload()}
           surveyId={processingId}
         />
       )}

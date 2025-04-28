@@ -11,6 +11,7 @@ interface SurveyFormState {
   tomVoz: string;
   template: string;
   gatilhos: string;
+  funnelStage: string;
 }
 
 export const useSurveyFormState = () => {
@@ -23,7 +24,8 @@ export const useSurveyFormState = () => {
     touchpoints: "3",
     tomVoz: "neutro",
     template: "proposta",
-    gatilhos: "sem-gatilho"
+    gatilhos: "sem-gatilho",
+    funnelStage: "topo"
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
