@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -297,7 +298,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
       if (firstStep.options) {
         setShowOptions({
           options: firstStep.options,
-          step: 0
+          step: 0,
+          isComplete: false
         });
       }
     }
@@ -620,7 +622,8 @@ const ChatbotSurvey: React.FC<ChatbotSurveyProps> = ({
     if (prevStepData.options) {
       setShowOptions({
         options: prevStepData.options,
-        step: previousStep
+        step: previousStep,
+        isComplete: progress.isProcessingComplete
       });
     } else if (prevStepData.inputType === "slider") {
       setShowSlider(true);

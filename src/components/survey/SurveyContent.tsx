@@ -12,12 +12,14 @@ interface SurveyContentProps {
   showOptions: {
     options: { value: string; label: string }[];
     step: number;
+    isComplete?: boolean;
   } | null;
   showSlider: boolean;
   sliderValue: number;
   onOptionSelect: (value: string) => void;
   onSliderChange: (values: number[]) => void;
   onSliderComplete: () => void;
+  isComplete?: boolean;
 }
 
 const SurveyContent: React.FC<SurveyContentProps> = ({
@@ -28,7 +30,8 @@ const SurveyContent: React.FC<SurveyContentProps> = ({
   sliderValue,
   onOptionSelect,
   onSliderChange,
-  onSliderComplete
+  onSliderComplete,
+  isComplete = false
 }) => {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +54,7 @@ const SurveyContent: React.FC<SurveyContentProps> = ({
           <ChatOptions
             options={showOptions.options}
             onSelect={onOptionSelect}
+            isComplete={isComplete || (showOptions.isComplete || false)}
           />
         </div>
       )}
