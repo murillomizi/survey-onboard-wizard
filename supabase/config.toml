@@ -1,9 +1,1 @@
-
-# This file is used to configure your Supabase project.
-# It's very minimal at the moment and uses default values.
-# Learn more here: https://supabase.com/docs/guides/functions/config
-
 project_id = "lbrgzywltpkuthrxzlgj"
-
-[functions.checkProgress]
-verify_jwt = true

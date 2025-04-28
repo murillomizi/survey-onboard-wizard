@@ -6,15 +6,9 @@ import { motion } from "framer-motion";
 interface ChatOptionProps {
   options: { value: string; label: string }[];
   onSelect: (value: string) => void;
-  isComplete?: boolean;
 }
 
-const ChatOptions = ({ options, onSelect, isComplete = false }: ChatOptionProps) => {
-  // Don't render anything if isComplete is true
-  if (isComplete) {
-    return null;
-  }
-
+const ChatOptions = ({ options, onSelect }: ChatOptionProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
