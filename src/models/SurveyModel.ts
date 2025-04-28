@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 
@@ -28,20 +29,48 @@ export interface ProcessingStatus {
  * Modelo para operações relacionadas a enquetes e processamento de dados
  */
 export class SurveyModel {
+  private static retryDelay = 1000; // Delay inicial entre tentativas
+  private static maxRetries = 3;    // Número máximo de tentativas
+
+  /**
+   * Método utilitário para realizar tentativas com backoff exponencial
+   * @param operation Função a ser executada com tentativas
+   * @returns Resultado da operação
+   */
+  private static async withRetry<T>(operation: () => Promise<T>): Promise<T> {
+    let retries = 0;
+    let delay = this.retryDelay;
+    
+    while (true) {
+      try {
+        return await operation();
+      } catch (error) {
+        retries++;
+        if (retries >= this.maxRetries) throw error;
+        
+        console.log(`Tentativa ${retries} falhou, tentando novamente em ${delay}ms`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2; // Backoff exponencial
+      }
+    }
+  }
+
   /**
    * Obtém o histórico de chats/enquetes
    * @returns Lista de enquetes com timestamp
    */
   static async getChatHistory() {
     try {
-      const { data, error } = await supabase
-        .from('mizi_ai_surveys')
-        .select('id, created_at, canal, funnel_stage, website_url, csv_file_name, csv_data')
-        .order('created_at', { ascending: false });
+      return await this.withRetry(async () => {
+        const { data, error } = await supabase
+          .from('mizi_ai_surveys')
+          .select('id, created_at, canal, funnel_stage, website_url, csv_file_name, csv_data')
+          .order('created_at', { ascending: false });
+          
+        if (error) throw error;
         
-      if (error) throw error;
-      
-      return data || [];
+        return data || [];
+      });
     } catch (error) {
       console.error("Error fetching chat history:", error);
       toast({
@@ -61,11 +90,13 @@ export class SurveyModel {
   static async isProcessingComplete(surveyId: string): Promise<boolean> {
     try {
       // Usamos a edge function para verificação consistente
-      const { data, error } = await supabase.functions.invoke('checkProgress', {
-        body: {
-          surveyId: surveyId,
-          fetchData: false
-        }
+      const { data, error } = await this.withRetry(async () => {
+        return await supabase.functions.invoke('checkProgress', {
+          body: {
+            surveyId: surveyId,
+            fetchData: false
+          }
+        });
       });
       
       if (error) {
@@ -90,11 +121,13 @@ export class SurveyModel {
     try {
       // Esta função foi substituída pela chamada direta à edge function
       // Mantida para compatibilidade com código existente
-      const { data, error } = await supabase.functions.invoke('checkProgress', {
-        body: {
-          surveyId: surveyId,
-          fetchData: fetchData
-        }
+      const { data, error } = await this.withRetry(async () => {
+        return await supabase.functions.invoke('checkProgress', {
+          body: {
+            surveyId: surveyId,
+            fetchData: fetchData
+          }
+        });
       });
       
       if (error) throw error;
@@ -185,14 +218,19 @@ export class SurveyModel {
    */
   static async getProcessedDataForDownload(surveyId: string) {
     try {
-      const { data, error } = await supabase
-        .from('mizi_ai_personalized_return')
-        .select('*')
-        .eq('mizi_ai_id', surveyId);
+      // Obter dados com tentativas e backoff exponencial
+      const result = await this.withRetry(async () => {
+        const { data, error } = await supabase
+          .from('mizi_ai_personalized_return')
+          .select('*')
+          .eq('mizi_ai_id', surveyId);
+        
+        if (error) throw error;
+        return data || [];
+      });
       
-      if (error) throw error;
-      
-      return data || [];
+      console.log(`Retrieved ${result.length} processed items for survey ${surveyId}`);
+      return result;
     } catch (error) {
       console.error("Error fetching processed data:", error);
       toast({

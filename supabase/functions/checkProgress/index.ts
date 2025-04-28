@@ -37,7 +37,7 @@ serve(async (req) => {
       .from('mizi_ai_surveys')
       .select('csv_data')
       .eq('id', surveyId)
-      .single();
+      .maybeSingle();
       
     if (surveyError) {
       console.error('Error fetching survey data:', surveyError);
@@ -51,7 +51,7 @@ serve(async (req) => {
     // Contar registros processados
     const { data: processedData, error: dataError } = await supabase
       .from('mizi_ai_personalized_return')
-      .select('*')
+      .select(fetchData ? '*' : 'id')
       .eq('mizi_ai_id', surveyId);
       
     if (dataError) {
@@ -62,8 +62,13 @@ serve(async (req) => {
     const processedCount = processedData?.length || 0;
     console.log(`${processedCount} processed`);
     
-    // Verificar se está completo
+    // Verificar se está completo:
+    // - Se não há dados CSV mas há itens processados, considerar completo (para compatibilidade)
+    // - Ou se há itens processados e o total é igual ou menor que o que foi processado
     const isComplete = (totalEntries === 0 && processedCount > 0) || (processedCount > 0 && processedCount >= totalEntries);
+    
+    // Logar para debugging
+    console.log(`Status: complete=${isComplete}, processed=${processedCount}, total=${totalEntries}`);
     
     // Retornar resposta
     return new Response(

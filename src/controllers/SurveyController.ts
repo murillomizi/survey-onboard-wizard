@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 import { SurveyModel, SurveyData, ProcessingStatus } from "@/models/SurveyModel";
 import Papa from "papaparse";
@@ -21,6 +20,9 @@ export interface SurveyFormState {
  * Controlador para gerenciamento de enquetes e conversão de dados
  */
 export class SurveyController {
+  // Cache de verificações de status
+  private static statusCache: Record<string, {timestamp: number, data: ProcessingStatus}> = {};
+  
   /**
    * Obtém o histórico de chats/enquetes
    * @returns Lista de enquetes formatada
@@ -29,6 +31,7 @@ export class SurveyController {
     try {
       const surveys = await SurveyModel.getChatHistory();
       
+      // Garantir que todas as entradas tenham a propriedade isComplete
       return surveys.map(survey => ({
         id: survey.id,
         created_at: survey.created_at,
@@ -49,10 +52,27 @@ export class SurveyController {
    * Verifica o progresso do processamento
    * @param surveyId ID da enquete
    * @param fetchData Se deve trazer os dados processados
+   * @param bypassCache Se deve ignorar o cache de status
    * @returns Status do processamento
    */
-  static async checkProgress(surveyId: string, fetchData: boolean = false): Promise<ProcessingStatus> {
+  static async checkProgress(
+    surveyId: string, 
+    fetchData: boolean = false,
+    bypassCache: boolean = false
+  ): Promise<ProcessingStatus> {
     try {
+      console.log(`Checking progress for ID: ${surveyId}, fetchData: ${fetchData}, bypassCache: ${bypassCache}`);
+      
+      // Verificar cache (válido por 10 segundos)
+      const now = Date.now();
+      const cachedResult = this.statusCache[surveyId];
+      const isCacheValid = cachedResult && (now - cachedResult.timestamp < 10000) && !bypassCache && !fetchData;
+      
+      if (isCacheValid) {
+        console.log("Using cached status result");
+        return cachedResult.data;
+      }
+      
       // Chama a edge function para verificar o progresso
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: {
@@ -68,14 +88,25 @@ export class SurveyController {
       
       console.log("checkProgress response:", data);
       
-      return {
+      // Criar objeto de resposta
+      const result: ProcessingStatus = {
         totalCount: data.total || 0,
         processedCount: data.count || 0,
         isComplete: data.isComplete || false,
         data: data.processedData
       };
+      
+      // Atualizar cache
+      this.statusCache[surveyId] = {
+        timestamp: now,
+        data: result
+      };
+      
+      return result;
     } catch (error) {
       console.error("Error in checkProgress:", error);
+      
+      // Resposta de fallback em caso de erro
       return {
         totalCount: 0,
         processedCount: 0,
@@ -110,8 +141,8 @@ export class SurveyController {
         funnelStage: survey.funnel_stage || 'topo'
       };
       
-      // Obter status de processamento via edge function
-      const status = await this.checkProgress(surveyId);
+      // Obter status de processamento via edge function com bypass de cache para dados mais recentes
+      const status = await this.checkProgress(surveyId, false, true);
       console.log("Survey processing status:", status);
       
       return {
@@ -183,8 +214,11 @@ export class SurveyController {
    */
   static async downloadProcessedData(surveyId: string): Promise<boolean> {
     try {
-      // Verificar se o processamento está completo usando a edge function
-      const status = await this.checkProgress(surveyId, true);
+      console.log(`Iniciando download para ID: ${surveyId}`);
+      
+      // Verificar se o processamento está completo usando a edge function com bypass de cache
+      const status = await this.checkProgress(surveyId, true, true);
+      console.log("Download check status:", status);
       
       if (!status.isComplete) {
         toast({
@@ -197,6 +231,7 @@ export class SurveyController {
       
       // Obter os dados processados
       const processedData = status.data || await SurveyModel.getProcessedDataForDownload(surveyId);
+      console.log(`Dados para download obtidos: ${processedData?.length} registros`);
       
       if (!processedData || processedData.length === 0) {
         toast({

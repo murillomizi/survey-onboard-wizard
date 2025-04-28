@@ -29,6 +29,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
   const chatInitializedRef = useRef(false);
   const effectRanRef = useRef(false);
   const isMountedRef = useRef(true);
+  const statusCheckAttempts = useRef(0);
   
   const { messages, setMessages, addMessage } = useChatMessages();
   const surveyForm = useSurveyForm();
@@ -40,6 +41,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     chatInitializedRef.current = false;
     completionMessageAddedRef.current = false;
     statusCheckedRef.current = false;
+    statusCheckAttempts.current = 0;
     
     isMountedRef.current = true;
     
@@ -64,6 +66,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
         setCurrentInput("");
         completionMessageAddedRef.current = false;
         statusCheckedRef.current = false;
+        statusCheckAttempts.current = 0;
         
         // Marcar como carregando e definir o chat atual
         setIsLoadingPastChat(true);
@@ -83,6 +86,15 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
               surveyForm.setIsComplete(true);
               surveyForm.setProcessedCount(data.processingStatus.processedCount || 0);
               surveyForm.setTotalCount(data.processingStatus.totalCount || 0);
+              
+              console.log("Survey is complete, processed count:", data.processingStatus.processedCount);
+              
+              // Verificar novamente para garantir dados corretos
+              setTimeout(() => {
+                if (isMountedRef.current) {
+                  handleCheckStatus(true);
+                }
+              }, 1000);
             }
           }
         } catch (error) {
@@ -124,6 +136,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     setMessages([]);
     completionMessageAddedRef.current = false;
     statusCheckedRef.current = false;
+    statusCheckAttempts.current = 0;
     
     // Adicionar a primeira mensagem do bot
     const firstStep = steps[0];
@@ -161,6 +174,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
         if (data.processingStatus?.isComplete) {
           surveyForm.setIsComplete(true);
           surveyForm.setProcessedCount(data.processingStatus.processedCount || 0);
+          surveyForm.setTotalCount(data.processingStatus.totalCount || 0);
         }
       }
     } catch (error) {
@@ -241,11 +255,13 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     
     // Adiciona a mensagem de conclusão apenas se não foi adicionada antes
     if (!completionMessageAddedRef.current) {
+      console.log("Adding completion message, processed count:", surveyForm.processedCount);
       addMessage(
         <CompletionMessage
           processedCount={surveyForm.processedCount || 0}
           onDownload={surveyForm.handleDownload}
           isDownloading={surveyForm.isDownloading}
+          surveyId={surveyForm.processingId}
         />,
         "bot"
       );
@@ -253,7 +269,7 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     }
   };
 
-  const handleCheckStatus = async () => {
+  const handleCheckStatus = async (forceCheck = false) => {
     if (!isMountedRef.current) return;
     
     if (!surveyForm.processingId) {
@@ -265,17 +281,21 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     }
     
     // Prevent duplicate status checks
-    if (statusCheckedRef.current) {
+    if (statusCheckedRef.current && !forceCheck) {
       return;
     }
     
     statusCheckedRef.current = true;
+    statusCheckAttempts.current += 1;
+    
     // Reset flag after 3 seconds to allow another check
     setTimeout(() => {
       statusCheckedRef.current = false;
     }, 3000);
     
     try {
+      console.log(`Checking status for ID: ${surveyForm.processingId}, attempt #${statusCheckAttempts.current}`);
+      
       const { data, error } = await supabase.functions.invoke('checkProgress', {
         body: {
           surveyId: surveyForm.processingId,
@@ -283,12 +303,19 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error from checkProgress function:", error);
+        throw error;
+      }
+      
+      console.log("Status check response:", data);
       
       if (data.isComplete) {
         surveyForm.setIsComplete(true);
         surveyForm.setProcessedCount(data.count);
         surveyForm.setTotalCount(data.total);
+        
+        console.log("Processing is complete, count:", data.count);
         
         if (!completionMessageAddedRef.current && isMountedRef.current) {
           addCompletionMessage();
@@ -338,6 +365,8 @@ export const useChatbotLogic = (initialSurveyId?: string | null) => {
     // Adicionar mensagem de status
     if (data.processingStatus?.isComplete) {
       if (isMountedRef.current) {
+        console.log("Data is complete, adding completion message with count:", data.processingStatus.processedCount);
+        surveyForm.setProcessedCount(data.processingStatus.processedCount);
         addCompletionMessage();
         completionMessageAddedRef.current = true;
       }
