@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send, Paperclip, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, ArrowLeft, Download, Loader } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatOptions from "./ChatOptions";
 import { Slider } from "@/components/ui/slider";
@@ -43,6 +43,7 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
   const [processingId, setProcessingId] = useState<string | null>(initialSurveyId);
   const pollingRef = useRef<number | null>(null);
   const [isLoadingPastChat, setIsLoadingPastChat] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -175,9 +176,20 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
               </p>
               <Button
                 onClick={handleDownload}
+                disabled={isDownloading}
                 className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
               >
-                Baixar Campanha Personalizada
+                {isDownloading ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Gerando arquivo...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    Baixar Campanha Personalizada
+                  </>
+                )}
               </Button>
             </div>,
             "bot"
@@ -517,9 +529,20 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
               </p>
               <Button
                 onClick={handleDownload}
+                disabled={isDownloading}
                 className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
               >
-                Baixar Campanha Personalizada
+                {isDownloading ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Gerando arquivo...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    Baixar Campanha Personalizada
+                  </>
+                )}
               </Button>
             </div>,
             "bot"
@@ -534,11 +557,17 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
   const handleDownload = async () => {
     if (!processingId) {
       console.error("Cannot download: No processing ID available");
+      toast({
+        title: "Erro no download",
+        description: "ID de processamento não disponível. Por favor, tente novamente.",
+        variant: "destructive"
+      });
       return;
     }
     
     try {
-      console.log("Fetching processed data for download for ID:", processingId);
+      setIsDownloading(true);
+      console.log("Iniciando download para ID:", processingId);
       
       toast({
         title: "Preparando download",
@@ -559,6 +588,7 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
           description: "Não foi possível baixar os resultados processados.",
           variant: "destructive"
         });
+        setIsDownloading(false);
         return;
       }
       
@@ -569,6 +599,7 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
           description: "Não há dados processados disponíveis para download.",
           variant: "destructive"
         });
+        setIsDownloading(false);
         return;
       }
       
@@ -596,6 +627,8 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
         description: "Ocorreu um erro ao tentar baixar o arquivo.",
         variant: "destructive"
       });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -737,9 +770,20 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
             </p>
             <Button
               onClick={handleDownload}
+              disabled={isDownloading}
               className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
             >
-              Baixar Campanha Personalizada
+              {isDownloading ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Gerando arquivo...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-4 w-4" />
+                  Baixar Campanha Personalizada
+                </>
+              )}
             </Button>
           </div>,
           "bot"
@@ -884,9 +928,19 @@ const ChatbotSurvey = ({ initialSurveyId = null, onSubmitSuccess }: ChatbotSurve
           {currentStep === steps.length - 1 && (
             <Button
               onClick={processingId ? handleCheckStatus : handleSubmit}
+              disabled={isSubmitting || isDownloading}
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
             >
-              {processingId ? 'Consultar Status' : (isSubmitting ? 'Salvando...' : 'Continuar')}
+              {isSubmitting ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : processingId ? (
+                'Consultar Status'
+              ) : (
+                'Continuar'
+              )}
             </Button>
           )}
         </div>
