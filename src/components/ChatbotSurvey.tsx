@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ const ChatbotSurvey = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     canal: "",
@@ -356,6 +358,16 @@ const ChatbotSurvey = () => {
   };
 
   const handleSubmit = async () => {
+    // Check if the survey has already been submitted
+    if (hasSubmitted) {
+      toast({
+        title: "Submissão já realizada",
+        description: "Sua base já foi processada, espere o e-mail com os contatos personalizados.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       setIsSubmitting(true);
       
@@ -405,6 +417,9 @@ const ChatbotSurvey = () => {
       
       console.log('Survey data saved:', data);
       setIsSubmitting(false);
+      
+      // Mark as submitted to prevent multiple submissions
+      setHasSubmitted(true);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -568,10 +583,14 @@ const ChatbotSurvey = () => {
           {currentStep === steps.length - 1 && (
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm hover:shadow-md hover:opacity-90 transition-all duration-200"
+              disabled={isSubmitting || hasSubmitted}
+              className={`w-full text-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 ${
+                hasSubmitted 
+                  ? "bg-gray-400" 
+                  : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:opacity-90"
+              }`}
             >
-              {isSubmitting ? 'Salvando...' : 'Continuar'}
+              {isSubmitting ? 'Salvando...' : hasSubmitted ? 'Enviado' : 'Continuar'}
             </Button>
           )}
         </div>
