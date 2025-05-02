@@ -17,15 +17,15 @@ const fadeIn = {
 };
 
 const Landing = () => {
-  // Workflow steps for the process - Updated for kids
+  // Workflow steps for the process - Updated for SDRs/BDRs
   const workflowSteps = [
     {
       icon: <Upload className="h-12 w-12 text-blue-500" />,
       title: "Import your contact list",
       description: "Upload your target accounts and Mizi automatically reads their website to understand their business.",
       animation: "animate-float",
-      kidFriendlyTitle: "Collect Friends",
-      kidFriendlyDescription: "Just like gathering your toys for playtime!",
+      sdrbdrTitle: "Identify Decision Makers",
+      sdrbdrDescription: "Import your prospect list and let our AI analyze their business context for maximum relevance.",
       bgColor: "bg-[#F2FCE2]", // Soft green
       borderColor: "border-[#85D073]",
       characterSrc: "/images/friendly-robot-collecting.svg"
@@ -35,8 +35,8 @@ const Landing = () => {
       title: "Configure your campaign",
       description: "Our AI identifies the perfect approach for each prospect based on their business context and needs.",
       animation: "animate-pulse",
-      kidFriendlyTitle: "Choose Your Adventure",
-      kidFriendlyDescription: "Pick how you want to talk to your new friends!",
+      sdrbdrTitle: "Personalize at Scale",
+      sdrbdrDescription: "Select approach and tone to match your ICP - casual, formal, or direct without sacrificing personalization.",
       bgColor: "bg-[#FEF7CD]", // Soft yellow
       borderColor: "border-[#FFD166]",
       characterSrc: "/images/friendly-robot-thinking.svg"
@@ -46,8 +46,8 @@ const Landing = () => {
       title: "Get personalized copy",
       description: "Receive customized outreach templates for both email and LinkedIn that speak directly to your prospect's needs.",
       animation: "animate-scale",
-      kidFriendlyTitle: "Magic Messages Appear!",
-      kidFriendlyDescription: "Special letters for each friend that they'll love to read!",
+      sdrbdrTitle: "Drive Higher Response Rates",
+      sdrbdrDescription: "Deploy hyper-personalized messages that reference prospects' business challenges and spark genuine interest.",
       bgColor: "bg-[#E5DEFF]", // Soft purple
       borderColor: "border-[#A78BFA]",
       characterSrc: "/images/friendly-robot-writing.svg"
@@ -113,7 +113,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Features section with connected workflow cards - Kid-friendly version */}
+      {/* Features section with connected workflow cards - SDR/BDR version */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-white to-blue-50"
         initial="hidden"
@@ -124,14 +124,14 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              How Mizi Works
+              Simplify Your Outreach Workflow
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              It's as easy as 1-2-3! Follow the magic journey:
+              From prospect identification to personalized messaging in three simple steps
             </p>
           </div>
           
-          {/* Kid-friendly Connected Workflow Cards */}
+          {/* SDR/BDR-focused Connected Workflow Cards */}
           <div className="relative max-w-6xl mx-auto mb-20">
             {/* Connection lines between cards */}
             <div className="absolute top-1/2 left-0 w-full h-4 hidden md:block">
@@ -210,14 +210,14 @@ const Landing = () => {
                   <div className={`w-28 h-28 mb-6 ${step.animation}`}>
                     <img 
                       src={step.characterSrc} 
-                      alt={step.kidFriendlyTitle}
+                      alt={step.sdrbdrTitle}
                       className="w-full h-full object-contain" 
                     />
                   </div>
                   
                   {/* Content */}
-                  <h3 className="text-3xl font-bold mb-3 text-center">{step.kidFriendlyTitle}</h3>
-                  <p className="text-lg text-gray-700 mb-5 text-center">{step.kidFriendlyDescription}</p>
+                  <h3 className="text-3xl font-bold mb-3 text-center">{step.sdrbdrTitle}</h3>
+                  <p className="text-lg text-gray-700 mb-5 text-center">{step.sdrbdrDescription}</p>
                   
                   {/* Visual representation of the process */}
                   <div className="w-full mt-auto">
@@ -242,7 +242,7 @@ const Landing = () => {
                         </div>
                         <div className="mt-3 text-center">
                           <span className="text-sm font-bold bg-green-50 text-green-700 px-3 py-1 rounded-full">
-                            Your friends waiting to play!
+                            Target accounts ready for outreach
                           </span>
                         </div>
                       </div>
@@ -282,7 +282,7 @@ const Landing = () => {
                         </div>
                         <div className="mt-3 text-center">
                           <span className="text-sm font-bold bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full">
-                            Pick your adventure style!
+                            Select your outreach approach
                           </span>
                         </div>
                       </div>
@@ -307,32 +307,32 @@ const Landing = () => {
                             ))}
                           </div>
                           
-                          {/* Magic message */}
+                          {/* Personalized message */}
                           <div className="bg-purple-50 rounded-xl p-3 border border-purple-200 relative z-10">
                             <div className="flex justify-between items-center mb-2">
-                              <span className="text-xs font-bold text-purple-700">Magic Message</span>
+                              <span className="text-xs font-bold text-purple-700">Personalized Outreach</span>
                               <Copy className="h-4 w-4 text-purple-600" />
                             </div>
                             <p className="text-sm text-left text-gray-800">
-                              <span className="font-bold">Dear Friend,</span><br/>
-                              I saw you like 
-                              <span className="inline-block animate-bounce mx-1 text-blue-500 font-bold">blocks</span>! 
-                              Let's play with my 
-                              <span className="inline-block animate-pulse mx-1 text-purple-500 font-bold">magic toys</span>
-                              together!
+                              <span className="font-bold">Hi [Name],</span><br/>
+                              I noticed your team at
+                              <span className="inline-block animate-pulse mx-1 text-blue-500 font-bold">[Company]</span> 
+                              is focusing on 
+                              <span className="inline-block animate-bounce mx-1 text-purple-500 font-bold">[Pain Point]</span>
+                              this quarter...
                             </p>
                           </div>
                         </div>
                         <div className="mt-3 text-center">
                           <span className="text-sm font-bold bg-purple-50 text-purple-700 px-3 py-1 rounded-full">
-                            Your magic letter is ready!
+                            AI-crafted personalized messages
                           </span>
                         </div>
                       </div>
                     )}
                   </div>
                   
-                  {/* Adult explanation in smaller text */}
+                  {/* Professional explanation */}
                   <div className="mt-6 text-xs text-gray-500 border-t border-gray-200 pt-4 w-full">
                     <p><strong>{step.title}</strong>: {step.description}</p>
                   </div>
