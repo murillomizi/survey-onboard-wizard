@@ -109,12 +109,12 @@ const Landing = () => {
     }
   ];
 
-  // Pricing plans
+  // Pricing plans - Updated with new prices
   const pricingPlans = [
     {
       name: "MVP",
       description: "Perfect for SDRs getting started with personalized outreach",
-      price: "19",
+      price: "150",
       period: "mo",
       color: "bg-gray-50",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
@@ -135,8 +135,8 @@ const Landing = () => {
     {
       name: "SCALE",
       description: "For sales teams looking to scale personalized outreach",
-      price: "49",
-      period: "mo",
+      price: "Custom Quote",
+      period: "",
       color: "bg-indigo-50",
       buttonColor: "bg-indigo-600 hover:bg-indigo-700",
       borderColor: "border-indigo-200",
@@ -612,7 +612,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Pricing section - Replacing the Testimonials/Social proof section */}
+      {/* Pricing section - Updated with new prices */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-24 bg-white"
         initial="hidden"
@@ -646,14 +646,22 @@ const Landing = () => {
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <p className="text-gray-600 mb-6">{plan.description}</p>
                   <div className="flex items-center justify-center gap-1 mb-1">
-                    <span className="text-sm align-top mt-1">$</span>
-                    <span className="text-5xl font-bold">{plan.price}</span>
-                    <span className="text-gray-500">/{plan.period}</span>
+                    {plan.price !== "Custom Quote" ? (
+                      <>
+                        <span className="text-sm align-top mt-1">$</span>
+                        <span className="text-5xl font-bold">{plan.price}</span>
+                        {plan.period && <span className="text-gray-500">/{plan.period}</span>}
+                      </>
+                    ) : (
+                      <span className="text-3xl font-bold">{plan.price}</span>
+                    )}
                   </div>
-                  <p className="text-sm text-gray-500 mb-6">billed monthly</p>
+                  {plan.price !== "Custom Quote" && (
+                    <p className="text-sm text-gray-500 mb-6">billed monthly</p>
+                  )}
                   
                   <Button className={`w-full ${plan.buttonColor}`}>
-                    Get Started
+                    {plan.price === "Custom Quote" ? "Contact Sales" : "Get Started"}
                   </Button>
                 </div>
                 
