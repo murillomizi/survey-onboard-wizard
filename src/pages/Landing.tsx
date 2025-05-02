@@ -24,7 +24,7 @@ const fadeIn = {
 };
 
 const Landing = () => {
-  // Workflow steps for the process - Updated for SDRs/BDRs
+  // Workflow steps for the process - Updated for SDRs/BDRs with more minimalist colors
   const workflowSteps = [
     {
       icon: <Upload className="h-12 w-12 text-blue-500" />,
@@ -33,8 +33,8 @@ const Landing = () => {
       animation: "animate-float",
       sdrbdrTitle: "Identify Decision Makers",
       sdrbdrDescription: "Import your prospect list and let our AI analyze their business context for maximum relevance.",
-      bgColor: "bg-[#F2FCE2]", // Soft green
-      borderColor: "border-[#85D073]",
+      bgColor: "bg-gray-50", // Updated to minimalist gray
+      borderColor: "border-gray-200",
       characterSrc: "/images/friendly-robot-collecting.svg"
     },
     {
@@ -44,8 +44,8 @@ const Landing = () => {
       animation: "animate-pulse",
       sdrbdrTitle: "Personalize at Scale",
       sdrbdrDescription: "Select approach and tone to match your ICP - casual, formal, or direct without sacrificing personalization.",
-      bgColor: "bg-[#FEF7CD]", // Soft yellow
-      borderColor: "border-[#FFD166]",
+      bgColor: "bg-blue-50", // Updated to light blue
+      borderColor: "border-blue-200",
       characterSrc: "/images/friendly-robot-thinking.svg"
     },
     {
@@ -55,8 +55,8 @@ const Landing = () => {
       animation: "animate-scale",
       sdrbdrTitle: "Drive Higher Response Rates",
       sdrbdrDescription: "Deploy hyper-personalized messages that reference prospects' business challenges and spark genuine interest.",
-      bgColor: "bg-[#E5DEFF]", // Soft purple
-      borderColor: "border-[#A78BFA]",
+      bgColor: "bg-indigo-50", // Updated to light indigo
+      borderColor: "border-indigo-200",
       characterSrc: "/images/friendly-robot-writing.svg"
     }
   ];
@@ -162,7 +162,7 @@ const Landing = () => {
 
       {/* Features section with connected workflow cards - SDR/BDR version */}
       <motion.section 
-        className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-white to-blue-50"
+        className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-white to-gray-50" // Updated to a subtle gradient
         initial="hidden"
         animate="visible"
         variants={fadeIn}
@@ -170,7 +170,7 @@ const Landing = () => {
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600">
               Simplify Your Outreach Workflow
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -183,35 +183,35 @@ const Landing = () => {
             {/* Connection lines between cards */}
             <div className="absolute top-1/2 left-0 w-full h-4 hidden md:block">
               {/* First connection line */}
-              <div className="absolute left-[25%] right-[62%] h-4 bg-gradient-to-r from-[#85D073] to-[#FFD166] rounded-full 
+              <div className="absolute left-[25%] right-[62%] h-4 bg-gradient-to-r from-gray-300 to-blue-300 rounded-full 
                             transform -translate-y-1/2 z-0">
                 {/* Arrow decorations on the connection line */}
                 <div className="absolute right-8 top-1/2 transform -translate-y-1/2 rotate-0">
-                  <div className="w-4 h-4 bg-[#FFD166] rounded-full animate-pulse"></div>
+                  <div className="w-4 h-4 bg-blue-300 rounded-full animate-pulse"></div>
                 </div>
                 <div className="absolute right-16 top-1/2 transform -translate-y-1/2 rotate-0">
-                  <div className="w-3 h-3 bg-[#FFD166] rounded-full animate-pulse" 
+                  <div className="w-3 h-3 bg-blue-300 rounded-full animate-pulse" 
                       style={{animationDelay: "0.2s"}}></div>
                 </div>
                 <div className="absolute right-24 top-1/2 transform -translate-y-1/2 rotate-0">
-                  <div className="w-2 h-2 bg-[#FFD166] rounded-full animate-pulse"
+                  <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"
                       style={{animationDelay: "0.4s"}}></div>
                 </div>
               </div>
               
               {/* Second connection line */}
-              <div className="absolute left-[63%] right-[25%] h-4 bg-gradient-to-r from-[#FFD166] to-[#A78BFA] rounded-full 
+              <div className="absolute left-[63%] right-[25%] h-4 bg-gradient-to-r from-blue-300 to-indigo-300 rounded-full 
                             transform -translate-y-1/2 z-0">
                 {/* Arrow decorations on the connection line */}
                 <div className="absolute right-8 top-1/2 transform -translate-y-1/2 rotate-0">
-                  <div className="w-4 h-4 bg-[#A78BFA] rounded-full animate-pulse"></div>
+                  <div className="w-4 h-4 bg-indigo-300 rounded-full animate-pulse"></div>
                 </div>
                 <div className="absolute right-16 top-1/2 transform -translate-y-1/2 rotate-0">
-                  <div className="w-3 h-3 bg-[#A78BFA] rounded-full animate-pulse"
+                  <div className="w-3 h-3 bg-indigo-300 rounded-full animate-pulse"
                       style={{animationDelay: "0.2s"}}></div>
                 </div>
                 <div className="absolute right-24 top-1/2 transform -translate-y-1/2 rotate-0">
-                  <div className="w-2 h-2 bg-[#A78BFA] rounded-full animate-pulse"
+                  <div className="w-2 h-2 bg-indigo-300 rounded-full animate-pulse"
                       style={{animationDelay: "0.4s"}}></div>
                 </div>
               </div>
@@ -220,18 +220,18 @@ const Landing = () => {
             {/* Mobile-friendly connection lines (vertical) */}
             <div className="absolute top-0 left-1/2 h-full w-4 block md:hidden transform -translate-x-1/2">
               {/* First vertical connection */}
-              <div className="absolute top-[25%] bottom-[62%] w-4 bg-gradient-to-b from-[#85D073] to-[#FFD166] rounded-full z-0">
+              <div className="absolute top-[25%] bottom-[62%] w-4 bg-gradient-to-b from-gray-300 to-blue-300 rounded-full z-0">
                 {/* Arrow decorations */}
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-                  <div className="w-4 h-4 bg-[#FFD166] rounded-full animate-pulse"></div>
+                  <div className="w-4 h-4 bg-blue-300 rounded-full animate-pulse"></div>
                 </div>
               </div>
               
               {/* Second vertical connection */}
-              <div className="absolute top-[63%] bottom-[25%] w-4 bg-gradient-to-b from-[#FFD166] to-[#A78BFA] rounded-full z-0">
+              <div className="absolute top-[63%] bottom-[25%] w-4 bg-gradient-to-b from-blue-300 to-indigo-300 rounded-full z-0">
                 {/* Arrow decorations */}
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-                  <div className="w-4 h-4 bg-[#A78BFA] rounded-full animate-pulse"></div>
+                  <div className="w-4 h-4 bg-indigo-300 rounded-full animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -241,16 +241,16 @@ const Landing = () => {
               {workflowSteps.map((step, index) => (
                 <motion.div 
                   key={index}
-                  className={`${step.bgColor} rounded-2xl p-6 shadow-xl border-4 ${step.borderColor} 
+                  className={`${step.bgColor} rounded-2xl p-6 shadow-lg border-2 ${step.borderColor} 
                              relative flex flex-col items-center z-20 max-w-md mx-auto w-full
                              transform transition-all duration-300 hover:-translate-y-2`}
                   variants={fadeIn}
                   custom={5 + index * 0.5}
                 >
                   {/* Step number */}
-                  <div className="w-14 h-14 rounded-full bg-white border-4 border-dashed 
-                               border-blue-300 flex items-center justify-center mb-4 shadow-inner">
-                    <span className="text-2xl font-bold text-blue-500">{index + 1}</span>
+                  <div className="w-14 h-14 rounded-full bg-white border-2 border-dashed 
+                               border-gray-300 flex items-center justify-center mb-4 shadow-inner">
+                    <span className="text-2xl font-bold text-gray-700">{index + 1}</span>
                   </div>
                   
                   {/* Character image */}
@@ -263,14 +263,14 @@ const Landing = () => {
                   </div>
                   
                   {/* Content */}
-                  <h3 className="text-3xl font-bold mb-3 text-center">{step.sdrbdrTitle}</h3>
+                  <h3 className="text-3xl font-bold mb-3 text-center text-gray-800">{step.sdrbdrTitle}</h3>
                   <p className="text-lg text-gray-700 mb-5 text-center">{step.sdrbdrDescription}</p>
                   
-                  {/* Visual representation of the process */}
+                  {/* Visual representation of the process - keep these with their existing styles but update any color references */}
                   <div className="w-full mt-auto">
                     {index === 0 && (
                       <div className="flex flex-col items-center">
-                        <div className="bg-white/60 p-4 rounded-xl border-2 border-dashed border-green-300">
+                        <div className="bg-white/80 p-4 rounded-xl border-2 border-dashed border-gray-300">
                           {/* Animated characters representing contacts */}
                           <div className="flex gap-2 flex-wrap justify-center">
                             {[...Array(5)].map((_, i) => (
@@ -288,7 +288,7 @@ const Landing = () => {
                           </div>
                         </div>
                         <div className="mt-3 text-center">
-                          <span className="text-sm font-bold bg-green-50 text-green-700 px-3 py-1 rounded-full">
+                          <span className="text-sm font-bold bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
                             Target accounts ready for outreach
                           </span>
                         </div>
@@ -297,15 +297,15 @@ const Landing = () => {
                     
                     {index === 1 && (
                       <div className="flex flex-col items-center">
-                        <div className="bg-white/60 p-4 rounded-xl border-2 border-dashed border-yellow-300">
+                        <div className="bg-white/80 p-4 rounded-xl border-2 border-dashed border-blue-200">
                           <div className="grid grid-cols-3 gap-2">
                             {["Friendly", "Professional", "Direct"].map((tone, i) => {
                               const isSelected = i === 0;
                               const baseClasses = "rounded-xl p-2 text-center transition-all duration-300 cursor-pointer border-2";
                               const colors = [
-                                "bg-[#FDE1D3] border-[#F97316] text-orange-800",  // Orange
-                                "bg-[#D3E4FD] border-[#0EA5E9] text-blue-800",    // Blue
-                                "bg-[#FFDEE2] border-[#F43F5E] text-pink-800",    // Pink
+                                "bg-blue-50 border-blue-300 text-blue-800",  // Blue
+                                "bg-gray-50 border-gray-300 text-gray-800",  // Gray
+                                "bg-indigo-50 border-indigo-300 text-indigo-800",  // Indigo
                               ];
                               
                               return (
@@ -328,7 +328,7 @@ const Landing = () => {
                           </div>
                         </div>
                         <div className="mt-3 text-center">
-                          <span className="text-sm font-bold bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full">
+                          <span className="text-sm font-bold bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
                             Select your outreach approach
                           </span>
                         </div>
@@ -337,13 +337,13 @@ const Landing = () => {
                     
                     {index === 2 && (
                       <div className="flex flex-col items-center">
-                        <div className="bg-white/60 p-4 rounded-xl border-2 border-dashed border-purple-300 relative overflow-hidden">
+                        <div className="bg-white/80 p-4 rounded-xl border-2 border-dashed border-indigo-200 relative overflow-hidden">
                           {/* Magic sparkles animation */}
                           <div className="absolute inset-0 overflow-hidden">
                             {[...Array(10)].map((_, i) => (
                               <div 
                                 key={i}
-                                className="absolute w-2 h-2 bg-yellow-300 rounded-full animate-ping"
+                                className="absolute w-2 h-2 bg-indigo-200 rounded-full animate-ping"
                                 style={{
                                   top: `${Math.random() * 100}%`,
                                   left: `${Math.random() * 100}%`,
@@ -355,23 +355,23 @@ const Landing = () => {
                           </div>
                           
                           {/* Personalized message */}
-                          <div className="bg-purple-50 rounded-xl p-3 border border-purple-200 relative z-10">
+                          <div className="bg-indigo-50 rounded-xl p-3 border border-indigo-100 relative z-10">
                             <div className="flex justify-between items-center mb-2">
-                              <span className="text-xs font-bold text-purple-700">Personalized Outreach</span>
-                              <Copy className="h-4 w-4 text-purple-600" />
+                              <span className="text-xs font-bold text-indigo-700">Personalized Outreach</span>
+                              <Copy className="h-4 w-4 text-indigo-600" />
                             </div>
                             <p className="text-sm text-left text-gray-800">
                               <span className="font-bold">Hi [Name],</span><br/>
                               I noticed your team at
-                              <span className="inline-block animate-pulse mx-1 text-blue-500 font-bold">[Company]</span> 
+                              <span className="inline-block animate-pulse mx-1 text-blue-600 font-bold">[Company]</span> 
                               is focusing on 
-                              <span className="inline-block animate-bounce mx-1 text-purple-500 font-bold">[Pain Point]</span>
+                              <span className="inline-block animate-bounce mx-1 text-indigo-600 font-bold">[Pain Point]</span>
                               this quarter...
                             </p>
                           </div>
                         </div>
                         <div className="mt-3 text-center">
-                          <span className="text-sm font-bold bg-purple-50 text-purple-700 px-3 py-1 rounded-full">
+                          <span className="text-sm font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">
                             AI-crafted personalized messages
                           </span>
                         </div>
@@ -400,7 +400,7 @@ const Landing = () => {
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600">
               Stop Wasting Time on Personalization
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -408,13 +408,16 @@ const Landing = () => {
             </p>
           </div>
 
-          {/* Visual Time Comparison Cards */}
+          {/* Visual Time Comparison Cards - updated with minimalist colors */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {timeComparisonScenarios.map((scenario, index) => (
               <motion.div
                 key={index}
-                className={`rounded-xl p-6 border-2 shadow-lg ${scenario.color} 
-                         transition-all duration-300 hover:-translate-y-2`}
+                className={`rounded-xl p-6 border-2 shadow-lg ${
+                  index === 0 ? "bg-gray-50 border-gray-200" : 
+                  index === 1 ? "bg-blue-50 border-blue-200" : 
+                  "bg-indigo-50 border-indigo-200"
+                } transition-all duration-300 hover:-translate-y-2`}
                 variants={fadeIn}
                 custom={7.5 + index * 0.2}
               >
@@ -428,9 +431,9 @@ const Landing = () => {
                 {/* Time indicator */}
                 <div className="flex items-center justify-center mb-8">
                   <div className={`rounded-full py-2 px-8 ${
-                    index === 0 ? "bg-red-100 text-red-700" :
-                    index === 1 ? "bg-amber-100 text-amber-700" :
-                    "bg-green-100 text-green-700"
+                    index === 0 ? "bg-gray-100 text-gray-700" :
+                    index === 1 ? "bg-blue-100 text-blue-700" :
+                    "bg-indigo-100 text-indigo-700"
                   }`}>
                     <div className="flex items-center gap-2">
                       <Clock className="h-5 w-5" />
@@ -445,8 +448,8 @@ const Landing = () => {
                     scenario.problems.map((problem, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <div className="mt-1 flex-shrink-0">
-                          <div className="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center">
-                            <span className="text-red-600 text-sm">✕</span>
+                          <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center">
+                            <span className="text-gray-600 text-sm">✕</span>
                           </div>
                         </div>
                         <span className="text-gray-700">{problem}</span>
@@ -456,8 +459,8 @@ const Landing = () => {
                     scenario.benefits && scenario.benefits.map((benefit, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <div className="mt-1 flex-shrink-0">
-                          <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
-                            <Check className="h-3 w-3 text-green-600" />
+                          <div className="h-5 w-5 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <Check className="h-3 w-3 text-indigo-600" />
                           </div>
                         </div>
                         <span className="text-gray-700">{benefit}</span>
