@@ -1,0 +1,39 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#0EA5E9" />
+    </linearGradient>
+    <linearGradient id="paperGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5DEFF" />
+      <stop offset="100%" stop-color="#D3E4FD" />
+    </linearGradient>
+  </defs>
+  <!-- Paper/message -->
+  <rect x="110" y="70" width="70" height="90" rx="5" fill="url(#paperGradient)" stroke="#8B5CF6" stroke-width="2" />
+  <line x1="120" y1="90" x2="170" y2="90" stroke="#8B5CF6" stroke-width="2" />
+  <line x1="120" y1="110" x2="170" y2="110" stroke="#8B5CF6" stroke-width="2" />
+  <line x1="120" y1="130" x2="150" y2="130" stroke="#8B5CF6" stroke-width="2" />
+  <!-- Robot body -->
+  <rect x="30" y="70" width="80" height="90" rx="15" fill="url(#bodyGradient)" />
+  <!-- Robot head -->
+  <circle cx="70" cy="50" r="30" fill="#0EA5E9" />
+  <!-- Robot eyes -->
+  <circle cx="55" cy="45" r="8" fill="white" />
+  <circle cx="85" cy="45" r="8" fill="white" />
+  <circle cx="55" cy="45" r="4" fill="black" />
+  <circle cx="85" cy="45" r="4" fill="black" />
+  <!-- Robot happy expression -->
+  <path d="M55,60 Q70,70 85,60" fill="none" stroke="white" stroke-width="3" />
+  <!-- Robot arm writing -->
+  <rect x="110" y="90" width="30" height="10" rx="5" fill="#0EA5E9" transform="rotate(-20, 110, 95)" />
+  <!-- Pencil -->
+  <polygon points="140,85 150,80 152,85 142,90" fill="#F97316" />
+  <rect x="142" y="80" width="2" height="10" fill="black" transform="rotate(-20, 143, 85)" />
+  <!-- Magic sparkles -->
+  <circle cx="170" cy="90" r="3" fill="#F97316" opacity="0.8" />
+  <circle cx="160" cy="110" r="2" fill="#8B5CF6" opacity="0.8" />
+  <circle cx="140" cy="130" r="2" fill="#0EA5E9" opacity="0.8" />
+  <circle cx="120" cy="150" r="3" fill="#F97316" opacity="0.8" />
+</svg>

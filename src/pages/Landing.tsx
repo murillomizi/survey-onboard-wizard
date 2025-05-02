@@ -26,27 +26,47 @@ const fadeIn = {
 const Landing = () => {
   const [activeStep, setActiveStep] = useState(0);
   
-  // Animation steps for the workflow process
+  // Animation steps for the workflow process - Updated for kids
   const workflowSteps = [
     {
       icon: <Upload className="h-12 w-12 text-blue-500" />,
       title: "Import your contact list",
       description: "Upload your target accounts and Mizi automatically reads their website to understand their business.",
-      animation: "animate-float"
+      animation: "animate-float",
+      kidFriendlyTitle: "Collect Friends",
+      kidFriendlyDescription: "Just like gathering your toys for playtime!",
+      bgColor: "bg-[#F2FCE2]", // Soft green
+      borderColor: "border-[#85D073]",
+      characterSrc: "/images/friendly-robot-collecting.svg"
     },
     {
       icon: <Settings className="h-12 w-12 text-indigo-500" />,
       title: "Configure your campaign",
       description: "Our AI identifies the perfect approach for each prospect based on their business context and needs.",
-      animation: "animate-pulse"
+      animation: "animate-pulse",
+      kidFriendlyTitle: "Choose Your Adventure",
+      kidFriendlyDescription: "Pick how you want to talk to your new friends!",
+      bgColor: "bg-[#FEF7CD]", // Soft yellow
+      borderColor: "border-[#FFD166]",
+      characterSrc: "/images/friendly-robot-thinking.svg"
     },
     {
       icon: <Copy className="h-12 w-12 text-purple-500" />,
       title: "Get personalized copy",
       description: "Receive customized outreach templates for both email and LinkedIn that speak directly to your prospect's needs.",
-      animation: "animate-scale"
+      animation: "animate-scale",
+      kidFriendlyTitle: "Magic Messages Appear!",
+      kidFriendlyDescription: "Special letters for each friend that they'll love to read!",
+      bgColor: "bg-[#E5DEFF]", // Soft purple
+      borderColor: "border-[#A78BFA]",
+      characterSrc: "/images/friendly-robot-writing.svg"
     }
   ];
+
+  // Function to handle carousel navigation
+  const handleSetActiveStep = (index: number) => {
+    setActiveStep(index);
+  };
 
   return (
     <div className="bg-white min-h-screen w-full text-gray-900 font-sans">
@@ -107,9 +127,9 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Features section with animated workflow */}
+      {/* Features section with animated workflow - Now more kid-friendly! */}
       <motion.section 
-        className="px-4 md:px-8 py-16 md:py-20 bg-gray-50"
+        className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-white to-blue-50"
         initial="hidden"
         animate="visible"
         variants={fadeIn}
@@ -117,78 +137,165 @@ const Landing = () => {
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How Mizi works</h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Personalize your outreach with AI that truly understands your target accounts.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+              How Mizi Works
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              It's as easy as 1-2-3! Follow the magic journey:
+            </p>
           </div>
           
-          {/* Workflow Animation Carousel */}
+          {/* Kid-friendly Workflow Animation Carousel */}
           <div className="mb-16">
             <Carousel
               opts={{ loop: true, align: "center" }}
               className="w-full max-w-4xl mx-auto"
-              onSelect={(index) => setActiveStep(index)}
+              onSelect={(index) => handleSetActiveStep(index)}
             >
               <CarouselContent>
                 {workflowSteps.map((step, index) => (
                   <CarouselItem key={index} className="md:basis-1/1">
-                    <Card className="border-0 shadow-lg bg-white rounded-xl overflow-hidden">
+                    <Card className={`border-4 ${step.borderColor} shadow-lg ${step.bgColor} rounded-xl overflow-hidden`}>
                       <CardContent className="flex flex-col items-center p-8">
-                        <div className={`mb-6 p-4 rounded-full bg-blue-50 ${step.animation}`}>
-                          {step.icon}
+                        {/* Fun character or mascot */}
+                        <div className={`w-32 h-32 mb-6 ${step.animation}`}>
+                          {/* Will fall back to the icon if SVG isn't available */}
+                          {step.characterSrc ? 
+                            <img 
+                              src={step.characterSrc} 
+                              alt={step.kidFriendlyTitle}
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                document.getElementById(`icon-fallback-${index}`)!.style.display = 'flex';
+                              }} 
+                              className="w-full h-full object-contain" 
+                            /> :
+                            <div id={`icon-fallback-${index}`} className={`mb-6 p-4 rounded-full ${step.bgColor}`}>
+                              {step.icon}
+                            </div>
+                          }
                         </div>
-                        <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                        <p className="text-gray-600 text-center">{step.description}</p>
                         
-                        {/* Visual representation of the process */}
+                        {/* Kid-friendly step number */}
+                        <div className="w-12 h-12 mb-4 rounded-full bg-white border-4 border-dashed border-blue-400 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-blue-500">{index + 1}</span>
+                        </div>
+                        
+                        <h3 className="text-2xl font-bold mb-2 text-center">{step.kidFriendlyTitle}</h3>
+                        <p className="text-gray-700 text-center text-lg mb-6">{step.kidFriendlyDescription}</p>
+                        
+                        {/* Adult explanation in smaller text */}
+                        <div className="mt-2 text-sm text-gray-500 border-t border-gray-200 pt-4 w-full text-center">
+                          <p><strong>{step.title}</strong>: {step.description}</p>
+                        </div>
+                        
+                        {/* Visual representation of the process - More playful */}
                         <div className="mt-8 w-full">
                           {index === 0 && (
                             <div className="flex flex-col items-center">
-                              <div className="relative w-full max-w-md h-32 border-2 border-dashed border-blue-300 rounded-lg flex items-center justify-center bg-blue-50 mb-4">
-                                <Users className="text-blue-400 h-10 w-10 animate-pulse" />
-                                <div className="absolute -right-2 -top-2 bg-blue-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                              <div className="relative w-full max-w-md h-40 border-4 border-dashed border-blue-300 rounded-2xl flex items-center justify-center bg-blue-50 mb-4 overflow-hidden">
+                                {/* Animated characters representing contacts */}
+                                <div className="flex gap-3">
+                                  {[...Array(5)].map((_, i) => (
+                                    <div 
+                                      key={i}
+                                      className={`bg-white rounded-full h-14 w-14 flex items-center justify-center shadow-md animate-bounce`}
+                                      style={{ 
+                                        animationDuration: `${1 + i * 0.2}s`,
+                                        animationDelay: `${i * 0.1}s`
+                                      }}
+                                    >
+                                      <Users className={`text-blue-${400 + i * 100} h-8 w-8`} />
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="absolute -right-2 -top-2 bg-blue-500 text-white text-lg rounded-full h-10 w-10 flex items-center justify-center border-2 border-white">
                                   <span>10</span>
                                 </div>
                               </div>
-                              <p className="text-sm text-gray-500">Your contact list is ready to be processed</p>
+                              <p className="text-lg text-blue-700 font-medium">Your friends are ready to play!</p>
                             </div>
                           )}
                           
                           {index === 1 && (
                             <div className="flex flex-col items-center">
-                              <div className="grid grid-cols-3 gap-3 w-full max-w-md">
-                                <div className="bg-indigo-100 rounded-lg p-3 text-center hover:bg-indigo-200 transition-colors cursor-pointer border-2 border-indigo-300">
-                                  <p className="text-xs font-medium text-indigo-800">Friendly</p>
-                                </div>
-                                <div className="bg-indigo-500 rounded-lg p-3 text-center shadow-md transform scale-110 border-2 border-indigo-600">
-                                  <p className="text-xs font-medium text-white">Professional</p>
-                                </div>
-                                <div className="bg-indigo-100 rounded-lg p-3 text-center hover:bg-indigo-200 transition-colors cursor-pointer border-2 border-indigo-300">
-                                  <p className="text-xs font-medium text-indigo-800">Direct</p>
-                                </div>
+                              <div className="grid grid-cols-3 gap-4 w-full max-w-md">
+                                {["Friendly", "Professional", "Direct"].map((tone, i) => {
+                                  const isSelected = i === 1;
+                                  const baseClasses = "rounded-2xl p-5 text-center transition-all duration-300 cursor-pointer border-4";
+                                  const colors = [
+                                    "bg-[#FDE1D3] border-[#F97316] text-orange-800",  // Orange
+                                    "bg-[#D3E4FD] border-[#0EA5E9] text-blue-800",    // Blue
+                                    "bg-[#FFDEE2] border-[#F43F5E] text-pink-800",    // Pink
+                                  ];
+                                  
+                                  return (
+                                    <div 
+                                      key={i}
+                                      className={`
+                                        ${baseClasses} ${colors[i]}
+                                        ${isSelected ? 'transform scale-110 shadow-lg animate-pulse' : 'opacity-70 hover:opacity-100'}
+                                      `}
+                                    >
+                                      <div className="mb-2">
+                                        {/* Emoji icons */}
+                                        <span className="text-2xl">
+                                          {i === 0 ? '😊' : i === 1 ? '👔' : '🎯'}
+                                        </span>
+                                      </div>
+                                      <p className="text-base font-bold">{tone}</p>
+                                    </div>
+                                  );
+                                })}
                               </div>
-                              <p className="text-sm text-gray-500 mt-4">Choose the tone that fits your campaign</p>
+                              <p className="text-lg text-blue-700 font-medium mt-6">Pick your favorite color!</p>
                             </div>
                           )}
                           
                           {index === 2 && (
                             <div className="flex flex-col items-center">
-                              <div className="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg p-4 w-full max-w-md border border-purple-200">
-                                <div className="flex justify-between items-center mb-2">
-                                  <p className="text-xs font-semibold text-purple-800">To: prospect@company.com</p>
-                                  <Copy className="h-4 w-4 text-purple-600 cursor-pointer hover:text-purple-800" />
+                              <div className="bg-white rounded-2xl p-6 w-full max-w-md border-4 border-purple-300 shadow-lg relative overflow-hidden">
+                                {/* Magic sparkles animation */}
+                                <div className="absolute inset-0 overflow-hidden">
+                                  {[...Array(20)].map((_, i) => (
+                                    <div 
+                                      key={i}
+                                      className="absolute w-2 h-2 bg-yellow-300 rounded-full animate-ping"
+                                      style={{
+                                        top: `${Math.random() * 100}%`,
+                                        left: `${Math.random() * 100}%`,
+                                        animationDuration: `${1 + Math.random() * 3}s`,
+                                        animationDelay: `${Math.random() * 2}s`
+                                      }}
+                                    />
+                                  ))}
                                 </div>
-                                <div className="bg-white rounded-md p-3 shadow-sm">
-                                  <p className="text-sm text-gray-800 leading-relaxed">
-                                    Hi [Name], I noticed that [Company] has been focusing on [insight from website]. 
-                                    Our solution could help you [personalized value proposition]...
-                                  </p>
+                                
+                                <div className="relative z-10">
+                                  <div className="flex justify-between items-center mb-4">
+                                    <p className="text-sm font-bold text-purple-800 bg-purple-100 px-3 py-1 rounded-full">Magic Message</p>
+                                    <Copy className="h-5 w-5 text-purple-600 cursor-pointer hover:text-purple-800" />
+                                  </div>
+                                  
+                                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 shadow-inner border border-purple-100">
+                                    <p className="text-lg text-gray-800 leading-relaxed">
+                                      <span className="font-bold">Dear Friend,</span><br/>
+                                      I saw you like 
+                                      <span className="inline-block animate-bounce mx-1 text-blue-500 font-bold">building blocks</span>
+                                      ! I have cool 
+                                      <span className="inline-block animate-pulse mx-1 text-purple-500 font-bold">magic blocks</span>
+                                      to show you!<br/>
+                                      <span className="font-bold">Let's play together!</span>
+                                    </p>
+                                  </div>
                                 </div>
-                                <div className="mt-2 flex justify-between">
-                                  <span className="text-xs text-purple-700">Personalized for: Company Inc.</span>
-                                  <span className="text-xs text-green-600 font-medium">✓ Ready to send</span>
+                                
+                                <div className="mt-4 flex justify-between">
+                                  <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">For: Building Block Store</span>
+                                  <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">✓ Ready to send!</span>
                                 </div>
                               </div>
-                              <p className="text-sm text-gray-500 mt-4">Your personalized outreach is ready</p>
+                              <p className="text-lg text-blue-700 font-medium mt-6">Your magic letter is ready!</p>
                             </div>
                           )}
                         </div>
@@ -201,42 +308,52 @@ const Landing = () => {
                 {workflowSteps.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setActiveStep(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      activeStep === index ? "bg-blue-600 w-8" : "bg-gray-300 hover:bg-gray-400"
+                    onClick={() => handleSetActiveStep(index)}
+                    className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                      activeStep === index 
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 w-12 shadow-md" 
+                        : "bg-gray-300 hover:bg-gray-400"
                     }`}
                     aria-label={`Go to step ${index + 1}`}
                   />
                 ))}
               </div>
-              <div className="flex justify-center mt-6">
-                <CarouselPrevious className="relative inset-0 translate-y-0 -left-4" />
-                <CarouselNext className="relative inset-0 translate-y-0 -right-4" />
+              <div className="flex justify-center mt-6 gap-8">
+                <CarouselPrevious className="relative inset-0 translate-y-0 -left-4 h-12 w-12 rounded-full border-4 border-blue-300 bg-white text-blue-500 hover:bg-blue-50" />
+                <CarouselNext className="relative inset-0 translate-y-0 -right-4 h-12 w-12 rounded-full border-4 border-blue-300 bg-white text-blue-500 hover:bg-blue-50" />
               </div>
             </Carousel>
           </div>
           
-          {/* Three steps summary cards */}
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+          {/* Three steps summary cards - Kid-friendly version */}
+          <div className="grid md:grid-cols-3 gap-8 md:gap-12 max-w-5xl mx-auto">
             {workflowSteps.map((step, i) => (
               <motion.div 
                 key={i}
-                className="bg-white p-8 rounded-lg shadow-sm border border-gray-100"
+                className={`${step.bgColor} p-8 rounded-2xl shadow-lg border-4 ${step.borderColor}`}
                 variants={fadeIn}
                 custom={5 + i}
+                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-blue-600 text-xl font-bold">{i + 1}</span>
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 border-4 border-dashed border-blue-300 shadow-inner">
+                  <span className="text-3xl font-bold bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent">{i + 1}</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
+                <h3 className="text-2xl font-bold mb-3">{step.kidFriendlyTitle}</h3>
+                <p className="text-gray-700 text-lg">{step.kidFriendlyDescription}</p>
+                
+                {/* Icon at the bottom */}
+                <div className="mt-4 flex justify-end">
+                  <div className={`p-3 rounded-full ${i === 0 ? 'bg-blue-100' : i === 1 ? 'bg-yellow-100' : 'bg-purple-100'}`}>
+                    {step.icon}
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </motion.section>
 
-      {/* Testimonials/Social proof section (placeholders) */}
+      {/* Testimonials/Social proof section */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-20"
         initial="hidden"
