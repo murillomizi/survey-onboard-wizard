@@ -1,10 +1,17 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Upload, Settings, Copy, Users } from "lucide-react";
+import { ArrowRight, Check, Upload, Settings, Copy, Users, Clock, ZapIcon, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -51,6 +58,46 @@ const Landing = () => {
       bgColor: "bg-[#E5DEFF]", // Soft purple
       borderColor: "border-[#A78BFA]",
       characterSrc: "/images/friendly-robot-writing.svg"
+    }
+  ];
+
+  // Time-saving comparison scenarios
+  const timeComparisonScenarios = [
+    {
+      title: "The Manual Method",
+      description: "Hours researching each prospect individually",
+      time: "8+ hours",
+      icon: <Clock className="h-8 w-8 text-red-500" />,
+      color: "bg-red-50 border-red-200",
+      problems: [
+        "Research fatigue leads to shortcuts",
+        "Inconsistent quality across outreach",
+        "Limited scalability - you can only do so many per day"
+      ]
+    },
+    {
+      title: "The Generic Blast",
+      description: "One message sent to everyone",
+      time: "15 minutes",
+      icon: <ZapIcon className="h-8 w-8 text-amber-500" />,
+      color: "bg-amber-50 border-amber-200",
+      problems: [
+        "Terrible response rates (<1%)",
+        "Damages your reputation and domain",
+        "Wastes valuable prospects"
+      ]
+    },
+    {
+      title: "The Mizi Way",
+      description: "AI-powered personalization at scale",
+      time: "1 hour",
+      icon: <TrendingUp className="h-8 w-8 text-green-500" />,
+      color: "bg-green-50 border-green-200",
+      benefits: [
+        "3X higher response rates",
+        "Consistent quality personalization",
+        "Scales with your prospect list size"
+      ]
     }
   ];
 
@@ -339,6 +386,172 @@ const Landing = () => {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* New Section: Time-saving Personalization Comparison */}
+      <motion.section 
+        className="px-4 md:px-8 py-16 md:py-24 bg-white"
+        initial="hidden"
+        animate="visible"
+        variants={fadeIn}
+        custom={7}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
+              Stop Wasting Time on Personalization
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              There's a better way to personalize your outreach without spending hours or settling for generic templates
+            </p>
+          </div>
+
+          {/* Visual Time Comparison Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {timeComparisonScenarios.map((scenario, index) => (
+              <motion.div
+                key={index}
+                className={`rounded-xl p-6 border-2 shadow-lg ${scenario.color} 
+                         transition-all duration-300 hover:-translate-y-2`}
+                variants={fadeIn}
+                custom={7.5 + index * 0.2}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-2xl font-bold text-gray-800">{scenario.title}</h3>
+                  {scenario.icon}
+                </div>
+                
+                <p className="text-gray-600 mb-4">{scenario.description}</p>
+                
+                {/* Time indicator */}
+                <div className="flex items-center justify-center mb-8">
+                  <div className={`rounded-full py-2 px-8 ${
+                    index === 0 ? "bg-red-100 text-red-700" :
+                    index === 1 ? "bg-amber-100 text-amber-700" :
+                    "bg-green-100 text-green-700"
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
+                      <span className="text-xl font-bold">{scenario.time}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Problems or Benefits list */}
+                <ul className="space-y-3">
+                  {scenario.problems ? (
+                    scenario.problems.map((problem, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <div className="mt-1 flex-shrink-0">
+                          <div className="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center">
+                            <span className="text-red-600 text-sm">✕</span>
+                          </div>
+                        </div>
+                        <span className="text-gray-700">{problem}</span>
+                      </li>
+                    ))
+                  ) : (
+                    scenario.benefits && scenario.benefits.map((benefit, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <div className="mt-1 flex-shrink-0">
+                          <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
+                            <Check className="h-3 w-3 text-green-600" />
+                          </div>
+                        </div>
+                        <span className="text-gray-700">{benefit}</span>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Carousel of Testimonials/Examples */}
+          <div className="mt-20 max-w-5xl mx-auto">
+            <h3 className="text-2xl font-bold text-center mb-8">See how other sales teams transformed their outreach</h3>
+            
+            <Carousel
+              opts={{
+                align: "center",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {[
+                  {
+                    quote: "Our response rates jumped from 2% to 7% after switching to Mizi's personalized approach.",
+                    name: "Alex Rodriguez",
+                    role: "BDR Manager",
+                    company: "SalesTech Inc.",
+                    before: "22 hours per week on research",
+                    after: "5 hours per week, triple the results"
+                  },
+                  {
+                    quote: "I was spending 2 hours per day on prospect research. Now I use that time for actual calls.",
+                    name: "Sarah Johnson",
+                    role: "SDR Team Lead",
+                    company: "GrowthMetrics",
+                    before: "15 prospects researched daily",
+                    after: "50+ personalized outreach messages daily"
+                  },
+                  {
+                    quote: "Mizi helped me stop sending generic templates while still maintaining my outreach volume.",
+                    name: "Michael Chen",
+                    role: "Sales Development Rep",
+                    company: "CloudScale",
+                    before: "1.5% response rate with templates",
+                    after: "6.2% response rate with Mizi"
+                  }
+                ].map((testimonial, index) => (
+                  <CarouselItem key={index} className="md:basis-3/4">
+                    <div className="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+                      <div className="flex flex-col md:flex-row items-center gap-8">
+                        {/* Avatar/image placeholder */}
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-400 to-blue-400 flex items-center justify-center text-white text-xl font-bold">
+                          {testimonial.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        
+                        <div className="flex-1">
+                          <blockquote className="text-lg italic mb-4">"{testimonial.quote}"</blockquote>
+                          <div className="mb-4">
+                            <p className="font-bold">{testimonial.name}</p>
+                            <p className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</p>
+                          </div>
+                          
+                          <div className="flex flex-col sm:flex-row gap-4 text-sm">
+                            <div className="flex-1 bg-white p-3 rounded-lg border border-red-200">
+                              <p className="text-gray-500 mb-1">Before Mizi:</p>
+                              <p className="font-medium text-red-700">{testimonial.before}</p>
+                            </div>
+                            <div className="flex-1 bg-white p-3 rounded-lg border border-green-200">
+                              <p className="text-gray-500 mb-1">With Mizi:</p>
+                              <p className="font-medium text-green-700">{testimonial.after}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex justify-center mt-8 gap-4">
+                <CarouselPrevious className="static transform-none" />
+                <CarouselNext className="static transform-none" />
+              </div>
+            </Carousel>
+          </div>
+
+          {/* CTA for this section */}
+          <div className="mt-16 text-center">
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-8">
+              <Link to="/" className="flex items-center gap-2">
+                Save Time with Mizi <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </motion.section>
