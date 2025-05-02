@@ -1,7 +1,8 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Upload, Settings, Copy, Users, Clock, ZapIcon, TrendingUp } from "lucide-react";
+import { ArrowRight, Check, Upload, Settings, Copy, Users, Clock, ZapIcon, TrendingUp, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { Card, CardContent } from "@/components/ui/card";
@@ -158,15 +159,20 @@ const Landing = () => {
 
   return (
     <div className="bg-white min-h-screen w-full text-gray-900 font-sans">
-      {/* Navigation */}
+      {/* Navigation - UPDATED with Sign In and Sign Up buttons */}
       <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
         <Logo size="md" />
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Dashboard</Link>
           <Button size="sm" variant="outline" asChild>
             <Link to="/" className="flex items-center gap-1.5">
-              <span>Try Mizi Now</span> 
-              <ArrowRight className="h-3.5 w-3.5" />
+              <LogIn className="h-3.5 w-3.5" />
+              <span>Sign In</span> 
+            </Link>
+          </Button>
+          <Button size="sm" asChild>
+            <Link to="/" className="flex items-center gap-1.5">
+              <UserPlus className="h-3.5 w-3.5" />
+              <span>Sign Up</span> 
             </Link>
           </Button>
         </div>
@@ -780,7 +786,7 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-8">
               <Link to="/" className="flex items-center gap-2">
-                Try Mizi Now <ArrowRight className="h-4 w-4" />
+                <UserPlus className="h-4 w-4" /> Sign Up Now <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
