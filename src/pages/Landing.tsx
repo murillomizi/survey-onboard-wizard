@@ -109,15 +109,15 @@ const Landing = () => {
     }
   ];
 
-  // Pricing plans - Updated with new prices
+  // Pricing plans - Updated with new prices and improved structure
   const pricingPlans = [
     {
       name: "MVP",
       description: "Perfect for SDRs getting started with personalized outreach",
       price: "150",
       period: "mo",
-      color: "bg-gray-50",
-      buttonColor: "bg-blue-600 hover:bg-blue-700",
+      color: "bg-white",
+      buttonColor: "bg-blue-500 hover:bg-blue-600 text-white",
       borderColor: "border-gray-200",
       features: [
         "Up to 100 personalized messages",
@@ -137,9 +137,9 @@ const Landing = () => {
       description: "For sales teams looking to scale personalized outreach",
       price: "Custom Quote",
       period: "",
-      color: "bg-indigo-50",
-      buttonColor: "bg-indigo-600 hover:bg-indigo-700",
-      borderColor: "border-indigo-200",
+      color: "bg-blue-50",
+      buttonColor: "bg-indigo-600 hover:bg-indigo-700 text-white",
+      borderColor: "border-blue-100",
       features: [
         "Unlimited personalized messages",
         "Email & LinkedIn templates",
@@ -612,7 +612,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Pricing section - Updated with new prices */}
+      {/* Pricing section - Updated with new prices and better alignment */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-24 bg-white"
         initial="hidden"
@@ -628,11 +628,12 @@ const Landing = () => {
             </p>
           </div>
           
+          {/* Updated pricing cards with improved alignment */}
           <div className="grid md:grid-cols-2 gap-8 mb-16 max-w-5xl mx-auto">
             {pricingPlans.map((plan, i) => (
               <motion.div 
                 key={i} 
-                className={`relative rounded-xl ${plan.color} border-2 ${plan.borderColor} p-8 shadow-lg`}
+                className={`relative rounded-xl ${plan.color} border-2 ${plan.borderColor} p-8 shadow-lg flex flex-col`}
                 variants={fadeIn}
                 custom={9 + i * 0.5}
               >
@@ -642,31 +643,37 @@ const Landing = () => {
                   </div>
                 )}
                 
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 flex-grow">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <p className="text-gray-600 mb-6">{plan.description}</p>
-                  <div className="flex items-center justify-center gap-1 mb-1">
+                  
+                  {/* Price display area */}
+                  <div className="mt-8 mb-8">
                     {plan.price !== "Custom Quote" ? (
-                      <>
-                        <span className="text-sm align-top mt-1">$</span>
-                        <span className="text-5xl font-bold">{plan.price}</span>
-                        {plan.period && <span className="text-gray-500">/{plan.period}</span>}
-                      </>
+                      <div className="flex flex-col items-center">
+                        <div className="flex items-center justify-center">
+                          <span className="text-sm mt-3 mr-1">$</span>
+                          <span className="text-5xl font-bold">{plan.price}</span>
+                          {plan.period && <span className="text-gray-500 ml-1">/{plan.period}</span>}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-2">billed monthly</p>
+                      </div>
                     ) : (
-                      <span className="text-3xl font-bold">{plan.price}</span>
+                      <div className="flex flex-col items-center">
+                        <span className="text-3xl font-bold">{plan.price}</span>
+                      </div>
                     )}
                   </div>
-                  {plan.price !== "Custom Quote" && (
-                    <p className="text-sm text-gray-500 mb-6">billed monthly</p>
-                  )}
                   
+                  {/* CTA Button */}
                   <Button className={`w-full ${plan.buttonColor}`}>
                     {plan.price === "Custom Quote" ? "Contact Sales" : "Get Started"}
                   </Button>
                 </div>
                 
-                <div className="space-y-4 mt-8">
-                  <p className="font-semibold">Includes:</p>
+                {/* Features section */}
+                <div className="mt-8 text-left">
+                  <p className="font-semibold mb-4">Includes:</p>
                   <ul className="space-y-3">
                     {plan.features.map((feature, j) => (
                       <li key={j} className="flex items-start gap-2">
@@ -676,9 +683,10 @@ const Landing = () => {
                     ))}
                   </ul>
                   
+                  {/* Limitations section */}
                   {plan.limitations && (
-                    <>
-                      <p className="font-semibold mt-6">Limitations:</p>
+                    <div className="mt-6">
+                      <p className="font-semibold mb-4">Limitations:</p>
                       <ul className="space-y-3 text-gray-500">
                         {plan.limitations.map((limitation, j) => (
                           <li key={j} className="flex items-start gap-2">
@@ -689,7 +697,7 @@ const Landing = () => {
                           </li>
                         ))}
                       </ul>
-                    </>
+                    </div>
                   )}
                 </div>
               </motion.div>
