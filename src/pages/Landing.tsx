@@ -1,9 +1,9 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/ui/logo";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -20,9 +20,7 @@ const Landing = () => {
     <div className="bg-white min-h-screen w-full text-gray-900 font-sans">
       {/* Navigation */}
       <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Mizi.app</h1>
-        </div>
+        <Logo size="md" />
         <div className="flex items-center gap-4">
           <Link to="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Dashboard</Link>
           <Button size="sm" variant="outline" asChild>
@@ -43,6 +41,13 @@ const Landing = () => {
         custom={0}
       >
         <div className="max-w-4xl mx-auto text-center">
+          <motion.div 
+            className="flex justify-center mb-8"
+            variants={fadeIn}
+            custom={0.5}
+          >
+            <Logo size="lg" withText={false} />
+          </motion.div>
           <motion.h1 
             className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
             variants={fadeIn}
@@ -206,7 +211,10 @@ const Landing = () => {
       {/* Footer */}
       <footer className="px-4 md:px-8 py-8 border-t border-gray-100">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Mizi.app. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <Logo size="sm" withText={false} />
+            <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Mizi.app. All rights reserved.</p>
+          </div>
           <div className="flex gap-6 mt-4 md:mt-0">
             <Link to="/" className="text-sm text-gray-500 hover:text-gray-900">Terms</Link>
             <Link to="/" className="text-sm text-gray-500 hover:text-gray-900">Privacy</Link>

@@ -1,0 +1,14 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="miziGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#0EA5E9" />
+    </linearGradient>
+  </defs>
+  <!-- Hexagon shape -->
+  <path d="M16,2 L28,9 L28,23 L16,30 L4,23 L4,9 L16,2 Z" fill="url(#miziGradient)" />
+  <!-- M letter inside -->
+  <path d="M10,10 L12,10 L14,16 L16,10 L18,10 L20,16 L22,10 L24,10 L20,22 L18,22 L16,16 L14,22 L12,22 L10,10 Z" fill="white" />
+</svg>
