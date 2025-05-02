@@ -12,6 +12,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -98,6 +106,51 @@ const Landing = () => {
         "Consistent quality personalization",
         "Scales with your prospect list size"
       ]
+    }
+  ];
+
+  // Pricing plans
+  const pricingPlans = [
+    {
+      name: "MVP",
+      description: "Perfect for SDRs getting started with personalized outreach",
+      price: "19",
+      period: "mo",
+      color: "bg-gray-50",
+      buttonColor: "bg-blue-600 hover:bg-blue-700",
+      borderColor: "border-gray-200",
+      features: [
+        "Up to 100 personalized messages",
+        "Email templates",
+        "Basic AI personalization",
+        "Export to CSV",
+        "Email support"
+      ],
+      limitations: [
+        "No LinkedIn integration",
+        "No custom branding",
+        "Basic analytics only"
+      ]
+    },
+    {
+      name: "SCALE",
+      description: "For sales teams looking to scale personalized outreach",
+      price: "49",
+      period: "mo",
+      color: "bg-indigo-50",
+      buttonColor: "bg-indigo-600 hover:bg-indigo-700",
+      borderColor: "border-indigo-200",
+      features: [
+        "Unlimited personalized messages",
+        "Email & LinkedIn templates",
+        "Advanced AI personalization",
+        "CRM integration",
+        "Team collaboration",
+        "Custom branding",
+        "Advanced analytics dashboard",
+        "Priority support"
+      ],
+      isMostPopular: true
     }
   ];
 
@@ -559,46 +612,138 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Testimonials/Social proof section */}
+      {/* Pricing section - Replacing the Testimonials/Social proof section */}
       <motion.section 
-        className="px-4 md:px-8 py-16 md:py-20"
+        className="px-4 md:px-8 py-16 md:py-24 bg-white"
         initial="hidden"
         animate="visible"
         variants={fadeIn}
         custom={8}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by growth-focused teams</h2>
-            <p className="text-gray-600 text-lg">Companies using Mizi see up to 3x higher response rates</p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, transparent pricing</h2>
+            <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+              Choose the plan that fits your outreach needs
+            </p>
           </div>
           
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 w-32 bg-gray-200 rounded-md flex items-center justify-center">
-                <p className="text-gray-500 font-medium">LOGO</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid md:grid-cols-2 gap-8 mb-16 max-w-5xl mx-auto">
+            {pricingPlans.map((plan, i) => (
               <motion.div 
                 key={i} 
-                className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
+                className={`relative rounded-xl ${plan.color} border-2 ${plan.borderColor} p-8 shadow-lg`}
                 variants={fadeIn}
-                custom={9 + i}
+                custom={9 + i * 0.5}
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                  <div>
-                    <p className="font-medium">Customer Name</p>
-                    <p className="text-sm text-gray-500">Position, Company</p>
+                {plan.isMostPopular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white text-sm font-bold py-1 px-4 rounded-full">
+                    Most Popular
                   </div>
+                )}
+                
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <span className="text-sm align-top mt-1">$</span>
+                    <span className="text-5xl font-bold">{plan.price}</span>
+                    <span className="text-gray-500">/{plan.period}</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-6">billed monthly</p>
+                  
+                  <Button className={`w-full ${plan.buttonColor}`}>
+                    Get Started
+                  </Button>
                 </div>
-                <p className="text-gray-600">"Mizi has completely transformed our outreach strategy. We're seeing response rates we never thought possible with personalized messages at scale."</p>
+                
+                <div className="space-y-4 mt-8">
+                  <p className="font-semibold">Includes:</p>
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, j) => (
+                      <li key={j} className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {plan.limitations && (
+                    <>
+                      <p className="font-semibold mt-6">Limitations:</p>
+                      <ul className="space-y-3 text-gray-500">
+                        {plan.limitations.map((limitation, j) => (
+                          <li key={j} className="flex items-start gap-2">
+                            <div className="h-5 w-5 flex items-center justify-center mt-0.5 shrink-0">
+                              <div className="h-1 w-5 bg-gray-300 rounded-full"></div>
+                            </div>
+                            <span>{limitation}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
               </motion.div>
             ))}
+          </div>
+          
+          {/* Feature comparison table */}
+          <div className="mt-16 mb-8">
+            <h3 className="text-2xl font-bold text-center mb-8">Feature comparison</h3>
+            <div className="overflow-x-auto">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[250px]">Feature</TableHead>
+                    <TableHead className="text-center">MVP</TableHead>
+                    <TableHead className="text-center">SCALE</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    { name: "Personalized messages", mvp: "100/month", scale: "Unlimited" },
+                    { name: "Email templates", mvp: true, scale: true },
+                    { name: "LinkedIn templates", mvp: false, scale: true },
+                    { name: "AI personalization", mvp: "Basic", scale: "Advanced" },
+                    { name: "CRM integration", mvp: false, scale: true },
+                    { name: "Team collaboration", mvp: false, scale: true },
+                    { name: "Analytics", mvp: "Basic", scale: "Advanced" },
+                    { name: "Support", mvp: "Email", scale: "Priority" }
+                  ].map((feature, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium">{feature.name}</TableCell>
+                      <TableCell className="text-center">
+                        {typeof feature.mvp === "boolean" ? (
+                          feature.mvp ? <Check className="h-5 w-5 text-green-500 mx-auto" /> : 
+                          <div className="h-5 w-5 flex items-center justify-center mx-auto">
+                            <div className="h-1 w-5 bg-gray-300 rounded-full"></div>
+                          </div>
+                        ) : feature.mvp}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {typeof feature.scale === "boolean" ? (
+                          feature.scale ? <Check className="h-5 w-5 text-green-500 mx-auto" /> : 
+                          <div className="h-5 w-5 flex items-center justify-center mx-auto">
+                            <div className="h-1 w-5 bg-gray-300 rounded-full"></div>
+                          </div>
+                        ) : feature.scale}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          
+          {/* FAQ Teaser */}
+          <div className="text-center mt-16">
+            <p className="text-lg text-gray-600 mb-4">Have questions about our plans?</p>
+            <Button variant="outline" size="lg" className="border-indigo-200 hover:bg-indigo-50">
+              <Link to="/" className="flex items-center gap-2">
+                Contact Sales <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </motion.section>
