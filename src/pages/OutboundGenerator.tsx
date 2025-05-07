@@ -173,7 +173,7 @@ Podemos agendar uma conversa rápida na próxima semana?`;
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-minimal-gray-100">
+    <div className="flex h-screen bg-minimal-gray-100">
       <ChatSidebar 
         messages={messages}
         input={input}
@@ -184,11 +184,13 @@ Podemos agendar uma conversa rápida na próxima semana?`;
         chatEndRef={chatEndRef}
       />
       
-      <CopyPreview 
-        contentType={contentType}
-        generatedContent={generatedContent}
-        onContentTypeChange={handleContentTypeChange}
-      />
+      <div className="ml-80 flex-1 h-full overflow-hidden">
+        <CopyPreview 
+          contentType={contentType}
+          generatedContent={generatedContent}
+          onContentTypeChange={handleContentTypeChange}
+        />
+      </div>
     </div>
   );
 };
