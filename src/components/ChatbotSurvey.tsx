@@ -250,14 +250,14 @@ const ChatbotSurvey = () => {
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-white rounded-xl">
+    <div className="flex flex-col h-[600px] bg-white rounded-xl border border-minimal-gray-200 shadow-sm">
       <SurveyProgress 
         currentStep={currentStep} 
         totalSteps={surveySteps.length} 
         onBack={handleBack} 
       />
       
-      <div className="flex-1 p-4 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
+      <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
         {messages.map((message) => (
           <ChatMessage
             key={message.id}
@@ -294,7 +294,7 @@ const ChatbotSurvey = () => {
         <div ref={chatEndRef} />
       </div>
       
-      <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
+      <div className="p-4 border-t border-minimal-gray-200 bg-white rounded-b-xl">
         <div className="flex items-center gap-2 max-w-[600px] mx-auto">
           {currentStep === 6 && (
             <div className="relative flex-1">
@@ -303,11 +303,11 @@ const ChatbotSurvey = () => {
                 onChange={(e) => setCurrentInput(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 placeholder="Digite seu e-mail..."
-                className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
+                className="w-full bg-minimal-gray-50 border-minimal-gray-200 text-minimal-black rounded-full pr-12 focus:border-minimal-black focus:ring-1 focus:ring-minimal-gray-100 transition-all duration-200"
               />
               <Button
                 onClick={handleSendMessage}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 transition-all duration-200 p-0"
               >
                 <Send size={14} />
               </Button>
@@ -322,11 +322,11 @@ const ChatbotSurvey = () => {
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                   placeholder="Digite sua resposta..."
-                  className="w-full bg-gray-50 border-gray-200 text-gray-800 rounded-full pr-12 focus:border-blue-300 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
+                  className="w-full bg-minimal-gray-50 border-minimal-gray-200 text-minimal-black rounded-full pr-12 focus:border-minimal-black focus:ring-1 focus:ring-minimal-gray-100 transition-all duration-200"
                 />
                 <Button
                   onClick={handleSendMessage}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 transition-all duration-200 p-0"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 transition-all duration-200 p-0"
                 >
                   <Send size={14} />
                 </Button>
@@ -338,10 +338,10 @@ const ChatbotSurvey = () => {
             <Button
               onClick={onSubmitSurvey}
               disabled={isSubmitting || hasSubmitted}
-              className={`w-full text-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 ${
+              className={`w-full text-minimal-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 ${
                 hasSubmitted 
-                  ? "bg-gray-400" 
-                  : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:opacity-90"
+                  ? "bg-minimal-gray-400" 
+                  : "bg-minimal-black hover:bg-minimal-gray-800"
               }`}
             >
               {isSubmitting ? 'Salvando...' : hasSubmitted ? 'Enviado' : 'Continuar'}
