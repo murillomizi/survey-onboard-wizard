@@ -8,11 +8,10 @@ import {
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import ChatMessage from "@/components/ChatMessage";
-import { ChatInput } from "@/components/ui/chat-input";
-import { ChatMessageList } from "@/components/ui/chat-message-list";
 import { Button } from "@/components/ui/button";
+import ChatMessage from "@/components/ChatMessage";
 import { toast } from "@/components/ui/use-toast";
+import ChatInputComponent from "@/components/survey/ChatInput";
 
 type MessageType = {
   content: string;
@@ -135,96 +134,110 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
   };
 
   return (
-    <div className="container mx-auto py-6 min-h-screen flex flex-col">
-      <h1 className="text-3xl font-bold text-center mb-6">Gerador de Copy para Outbound</h1>
-      
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col md:flex-row gap-6 flex-1"
-      >
-        {/* Chat LLM - Lado esquerdo */}
-        <Card className="w-full md:w-1/2 flex flex-col border-minimal-gray-300 shadow-lg">
-          <div className="p-4 bg-minimal-gray-100 border-b border-minimal-gray-300 flex items-center gap-2">
-            <MessageSquare size={20} />
-            <h2 className="text-lg font-semibold">Chat Assistente</h2>
-          </div>
-          
-          <div className="flex-1 flex flex-col h-[500px]">
-            <ChatMessageList className="flex-1">
-              {messages.map((msg, index) => (
-                <ChatMessage 
-                  key={index} 
-                  content={msg.content} 
-                  type={msg.type}
-                  isTyping={index === messages.length - 1 && isLoading && msg.type === "bot"}
-                />
-              ))}
-              {isLoading && (
-                <ChatMessage 
-                  content="" 
-                  type="bot"
-                  isTyping={true}
-                />
-              )}
-            </ChatMessageList>
-            
-            <div className="p-4 border-t border-minimal-gray-300">
-              <ChatInput 
-                onSend={handleSendMessage}
-                placeholder="Descreva seu produto ou serviço..."
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-        </Card>
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Chat LLM - Menu lateral fixo com tema escuro */}
+      <div className="w-full md:w-1/3 lg:w-1/4 bg-minimal-black text-minimal-white flex flex-col h-screen">
+        <div className="p-4 border-b border-minimal-gray-700 flex items-center gap-2">
+          <MessageSquare size={20} className="text-minimal-white" />
+          <h2 className="text-lg font-semibold text-minimal-white">Chat Assistente</h2>
+        </div>
         
-        {/* Preview de Copy - Lado direito */}
-        <Card className="w-full md:w-1/2 flex flex-col border-minimal-gray-300 shadow-lg">
-          <div className="p-4 bg-minimal-gray-100 border-b border-minimal-gray-300">
-            <Tabs defaultValue="email" onValueChange={(value) => setContentType(value as ContentType)}>
-              <TabsList className="w-full grid grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
-                <TabsTrigger value="linkedin">LinkedIn</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          <CardContent className="flex-1 p-6">
-            <div className="bg-minimal-white border border-minimal-gray-200 rounded-lg p-6 min-h-[400px] relative">
-              <pre className="font-sans text-left whitespace-pre-wrap">
-                {contentType === "email" ? generatedContent.email : generatedContent.linkedin}
-              </pre>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="absolute top-2 right-2 bg-minimal-white hover:bg-minimal-gray-100"
-                onClick={() => copyToClipboard(contentType === "email" ? generatedContent.email : generatedContent.linkedin)}
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((msg, index) => (
+              <div 
+                key={index} 
+                className={`p-3 rounded-lg ${
+                  msg.type === "user" 
+                    ? "bg-minimal-gray-800 ml-auto" 
+                    : "bg-minimal-gray-700"
+                } max-w-[85%] ${msg.type === "user" ? "self-end" : "self-start"}`}
               >
-                <Copy size={16} className="mr-1" />
-                Copiar
-              </Button>
-            </div>
-          </CardContent>
-          
-          <div className="p-4 border-t border-minimal-gray-300 flex justify-end">
-            <Button 
-              variant="default"
-              className="bg-minimal-black hover:bg-minimal-gray-800"
-              onClick={() => {
-                toast({
-                  title: "Copy exportado!",
-                  description: "O conteúdo foi salvo em seus rascunhos."
-                });
-              }}
-            >
-              Salvar Copy
-            </Button>
+                <p className="text-minimal-white text-sm">{msg.content}</p>
+                {index === messages.length - 1 && isLoading && msg.type === "bot" && (
+                  <div className="mt-2 flex items-center space-x-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-100"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-200"></div>
+                  </div>
+                )}
+              </div>
+            ))}
+            {isLoading && messages[messages.length - 1].type === "user" && (
+              <div className="p-3 rounded-lg bg-minimal-gray-700 max-w-[85%]">
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-100"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-200"></div>
+                </div>
+              </div>
+            )}
           </div>
-        </Card>
-      </motion.div>
+          
+          <div className="p-4 border-t border-minimal-gray-700">
+            <ChatInputComponent 
+              onSend={handleSendMessage}
+              placeholder="Descreva seu produto ou serviço..."
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+      </div>
+      
+      {/* Preview de Copy - Conteúdo principal */}
+      <div className="flex-1 bg-minimal-white p-6 overflow-y-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto"
+        >
+          <h1 className="text-3xl font-bold text-center mb-6">Gerador de Copy para Outbound</h1>
+          
+          <Card className="border-minimal-gray-300 shadow-lg">
+            <div className="p-4 bg-minimal-gray-100 border-b border-minimal-gray-300">
+              <Tabs defaultValue="email" onValueChange={(value) => setContentType(value as ContentType)}>
+                <TabsList className="w-full grid grid-cols-2">
+                  <TabsTrigger value="email">Email</TabsTrigger>
+                  <TabsTrigger value="linkedin">LinkedIn</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            
+            <CardContent className="flex-1 p-6">
+              <div className="bg-minimal-white border border-minimal-gray-200 rounded-lg p-6 min-h-[400px] relative">
+                <pre className="font-sans text-left whitespace-pre-wrap">
+                  {contentType === "email" ? generatedContent.email : generatedContent.linkedin}
+                </pre>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-2 right-2 bg-minimal-white hover:bg-minimal-gray-100"
+                  onClick={() => copyToClipboard(contentType === "email" ? generatedContent.email : generatedContent.linkedin)}
+                >
+                  <Copy size={16} className="mr-1" />
+                  Copiar
+                </Button>
+              </div>
+            </CardContent>
+            
+            <div className="p-4 border-t border-minimal-gray-300 flex justify-end">
+              <button 
+                className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white px-6 py-2 rounded-md transition-all duration-200"
+                onClick={() => {
+                  toast({
+                    title: "Copy exportado!",
+                    description: "O conteúdo foi salvo em seus rascunhos."
+                  });
+                }}
+              >
+                Salvar Copy
+              </button>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };
