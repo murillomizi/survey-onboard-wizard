@@ -6,9 +6,10 @@ interface LogoProps {
   withText?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
+  projectName?: string;
 }
 
-const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
+const Logo = ({ withText = true, size = "md", className = "", projectName = "M" }: LogoProps) => {
   const sizeClasses = {
     sm: "h-6",
     md: "h-8",
@@ -16,7 +17,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
   };
 
   return (
-    <Link to="/" className={`flex items-center gap-1 ${className}`}>
+    <Link to="/" className={`flex items-center gap-2 ${className}`}>
       <div className="relative">
         {/* Logo icon similar to lemlist style */}
         <div className="relative flex items-center justify-center">
@@ -24,7 +25,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 32 32"
             className={`${sizeClasses[size]} w-auto transition-all duration-300 hover:scale-105`}
-            aria-label="Mizi Logo"
+            aria-label="Logo"
           >
             {/* Background square with rounded corners */}
             <rect x="2" y="2" width="28" height="28" rx="6" fill="#000000" />
@@ -43,9 +44,14 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
         </div>
       </div>
       {withText && (
-        <span className="font-bold text-xl tracking-tight">
-          mizi
-        </span>
+        <div className="flex items-center font-bold text-xl tracking-tight">
+          <span className="flex items-center">
+            {projectName}
+          </span>
+          <span className="text-xs ml-1 text-gray-400 font-normal cursor-pointer hover:text-gray-600">
+            ▼
+          </span>
+        </div>
       )}
     </Link>
   );
