@@ -25,7 +25,7 @@ const ChatOptions = ({ options, onSelect }: ChatOptionProps) => {
           whileHover={{ y: -2, scale: 1.02 }}
         >
           <Button
-            className="bg-white border border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50 shadow-sm hover:shadow transition-all duration-200"
+            className="bg-minimal-white border border-minimal-gray-200 text-minimal-black hover:border-minimal-black hover:bg-minimal-gray-100 shadow-sm hover:shadow transition-all duration-200"
             onClick={() => onSelect(option.value)}
           >
             {option.label}

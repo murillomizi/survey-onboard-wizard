@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { motion } from "framer-motion";
 
 interface SliderInputProps {
   value: number;
@@ -11,7 +12,12 @@ interface SliderInputProps {
 
 const SliderInput = ({ value, onChange, onComplete }: SliderInputProps) => {
   return (
-    <div className="p-4 border border-minimal-gray-200 bg-minimal-white rounded-xl shadow-sm">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="p-4 border border-minimal-gray-200 bg-minimal-white rounded-xl shadow-sm"
+    >
       <div className="mb-2">
         <span className="text-minimal-black font-medium">{value} caracteres</span>
       </div>
@@ -27,13 +33,18 @@ const SliderInput = ({ value, onChange, onComplete }: SliderInputProps) => {
       <p className="text-minimal-gray-500 text-sm mt-1 italic">
         Recomendado: 350-500 caracteres para maior impacto
       </p>
-      <Button 
-        onClick={onComplete}
-        className="mt-2 bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 transition-all duration-200"
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
-        Confirmar
-      </Button>
-    </div>
+        <Button 
+          onClick={onComplete}
+          className="mt-2 bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 transition-all duration-200"
+        >
+          Confirmar
+        </Button>
+      </motion.div>
+    </motion.div>
   );
 };
 

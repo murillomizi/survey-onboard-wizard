@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -20,14 +21,18 @@ const ChatInput = ({ onSend, placeholder = "Digite sua resposta...", disabled = 
   };
 
   return (
-    <div className="relative flex-1">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative flex-1"
+    >
       <Input
         value={currentInput}
         onChange={(e) => setCurrentInput(e.target.value)}
         onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full bg-minimal-gray-50 border-minimal-gray-200 text-minimal-black rounded-full pr-12 focus:border-minimal-black focus:ring-1 focus:ring-minimal-gray-100 transition-all duration-200"
+        className="w-full bg-minimal-white border-minimal-gray-200 text-minimal-black rounded-full pr-12 focus:border-minimal-black focus:ring-1 focus:ring-minimal-gray-100 transition-all duration-200"
       />
       <Button
         onClick={handleSendMessage}
@@ -36,7 +41,7 @@ const ChatInput = ({ onSend, placeholder = "Digite sua resposta...", disabled = 
       >
         <Send size={14} />
       </Button>
-    </div>
+    </motion.div>
   );
 };
 
