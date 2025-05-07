@@ -5,6 +5,15 @@ import { ArrowRight, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -70,6 +79,92 @@ const Landing = () => {
     "Scales with your prospect list size",
     "More meetings booked"
   ];
+  
+  // Dados da tabela comparativa
+  const comparisonData = {
+    categories: [
+      "Personalização", 
+      "Escalabilidade", 
+      "Velocidade", 
+      "Qualidade", 
+      "ROI", 
+      "Custo-benefício",
+      "Aprendizado contínuo"
+    ],
+    solutions: [
+      {
+        name: "Mizi AI",
+        description: "Nossa plataforma de IA especializada em outreach",
+        ratings: [5, 5, 5, 5, 5, 5, 5],
+        benefits: [
+          "Personalização profunda baseada em contexto empresarial real",
+          "Capacidade de processar grandes volumes mantendo alta qualidade",
+          "Análise automática do ICP e personalização relevante",
+          "Mensagens que referenciam desafios específicos do prospect",
+          "Aprendizado contínuo com seu feedback e resultados"
+        ],
+        highlight: true
+      },
+      {
+        name: "LLMs Genéricos",
+        description: "ChatGPT e similares para outreach",
+        ratings: [3, 4, 5, 3, 2, 4, 3],
+        benefits: [
+          "Personalização superficial sem contexto de negócios",
+          "Requer prompt engineering avançado",
+          "Saída inconsistente dependendo do prompt",
+          "Sem otimização específica para vendas B2B"
+        ],
+        highlight: false
+      },
+      {
+        name: "Prospecção Manual",
+        description: "SDRs pesquisando e escrevendo manualmente",
+        ratings: [5, 1, 1, 4, 2, 1, 2],
+        benefits: [
+          "Alta personalização, mas extremamente demorado",
+          "Impossível escalar sem aumentar equipe",
+          "Qualidade varia conforme o profissional",
+          "Custo elevado por contato personalizado"
+        ],
+        highlight: false
+      },
+      {
+        name: "Plataformas Tradicionais",
+        description: "Ferramentas de automação de outreach",
+        ratings: [1, 5, 5, 1, 3, 3, 1],
+        benefits: [
+          "Automação sem personalização real",
+          "Escalabilidade alta com templates genéricos",
+          "Taxa de resposta tipicamente baixa (1-2%)",
+          "Sem inteligência contextual sobre o prospect"
+        ],
+        highlight: false
+      }
+    ]
+  };
+  
+  const getRatingColor = (rating) => {
+    switch(rating) {
+      case 1: return "text-red-500";
+      case 2: return "text-orange-400";
+      case 3: return "text-yellow-500"; 
+      case 4: return "text-green-400";
+      case 5: return "text-green-600 font-bold";
+      default: return "";
+    }
+  };
+  
+  const getRatingText = (rating) => {
+    switch(rating) {
+      case 1: return "Fraco";
+      case 2: return "Básico";
+      case 3: return "Médio"; 
+      case 4: return "Bom";
+      case 5: return "Excelente";
+      default: return "";
+    }
+  };
   
   return (
     <div className="bg-minimal-white min-h-screen w-full text-minimal-black font-sans">
@@ -313,6 +408,125 @@ const Landing = () => {
                 <p className="text-minimal-gray-600 mb-6">{step.description}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Tabela comparativa */}
+      <motion.section 
+        className="px-4 md:px-8 py-16 md:py-28 bg-minimal-white" 
+        initial="hidden" 
+        animate="visible" 
+        variants={fadeIn} 
+        custom={6}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Mizi AI vs. Traditional Solutions
+            </h2>
+            <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
+              See how we compare to other approaches in the market
+            </p>
+          </div>
+          
+          {/* Tabela de comparação de recursos em desktop */}
+          <div className="hidden lg:block overflow-x-auto">
+            <Table className="w-full border-collapse">
+              <TableHeader>
+                <TableRow className="bg-minimal-gray-50">
+                  <TableHead className="w-[180px] text-base font-bold">Solution</TableHead>
+                  {comparisonData.categories.map((category, idx) => (
+                    <TableHead key={idx} className="text-base font-bold text-center">
+                      {category}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {comparisonData.solutions.map((solution, idx) => (
+                  <TableRow 
+                    key={idx} 
+                    className={`${solution.highlight ? 'bg-minimal-gray-100' : ''} hover:bg-minimal-gray-50`}
+                  >
+                    <TableCell className="align-top">
+                      <div className="font-bold text-lg mb-1 flex items-center gap-2">
+                        {solution.name}
+                        {solution.highlight && (
+                          <Badge variant="outline" className="bg-minimal-black text-minimal-white border-none">
+                            Recommended
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-sm text-minimal-gray-600">{solution.description}</div>
+                    </TableCell>
+                    
+                    {solution.ratings.map((rating, rIdx) => (
+                      <TableCell key={rIdx} className="text-center align-middle">
+                        <span className={`text-lg ${getRatingColor(rating)}`}>
+                          {"★".repeat(rating)}{"☆".repeat(5-rating)}
+                        </span>
+                        <div className="text-xs mt-1">{getRatingText(rating)}</div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          
+          {/* Tabela de comparação responsiva para mobile - Exibição em cards */}
+          <div className="lg:hidden space-y-8">
+            {comparisonData.solutions.map((solution, idx) => (
+              <div 
+                key={idx}
+                className={`p-6 rounded-lg border ${solution.highlight ? 'border-minimal-black shadow-md' : 'border-minimal-gray-200'}`}
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <div className="font-bold text-xl mb-1">{solution.name}</div>
+                    <div className="text-sm text-minimal-gray-600">{solution.description}</div>
+                  </div>
+                  {solution.highlight && (
+                    <Badge variant="outline" className="bg-minimal-black text-minimal-white border-none">
+                      Recommended
+                    </Badge>
+                  )}
+                </div>
+                
+                <div className="space-y-3 mt-6">
+                  {comparisonData.categories.map((category, cIdx) => (
+                    <div key={cIdx} className="grid grid-cols-2 gap-2">
+                      <div className="text-minimal-gray-600">{category}</div>
+                      <div className={`${getRatingColor(solution.ratings[cIdx])} text-right`}>
+                        {"★".repeat(solution.ratings[cIdx])}{"☆".repeat(5-solution.ratings[cIdx])}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 pt-4 border-t border-minimal-gray-200">
+                  <div className="font-medium mb-2">Key Benefits:</div>
+                  <ul className="text-sm space-y-1 list-disc pl-5">
+                    {solution.benefits.map((benefit, bIdx) => (
+                      <li key={bIdx}>{benefit}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-16 text-center">
+            <Button 
+              size="lg" 
+              asChild 
+              className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-3 h-auto rounded-md"
+            >
+              <Link to="/" className="flex items-center gap-2">
+                Try Mizi Now <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </motion.section>
