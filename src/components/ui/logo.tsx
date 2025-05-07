@@ -9,7 +9,7 @@ interface LogoProps {
   projectName?: string;
 }
 
-const Logo = ({ withText = true, size = "md", className = "", projectName = "M" }: LogoProps) => {
+const Logo = ({ withText = true, size = "md", className = "", projectName = "mizi-project-1" }: LogoProps) => {
   const sizeClasses = {
     sm: "h-6",
     md: "h-8",
