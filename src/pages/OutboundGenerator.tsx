@@ -16,8 +16,8 @@ const OutboundGenerator = () => {
   const [contentType, setContentType] = useState<ContentType>("email");
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState({
-    email: "Aqui será exibido seu copy para email de outbound...",
-    linkedin: "Aqui será exibido seu copy para mensagem de LinkedIn..."
+    email: "Assunto: Aumentando resultados com nossa solução\n\nOlá {nome},\n\nEspero que esteja tudo bem com você.\n\nEncontrei seu perfil e acredito que nossa solução pode ajudar a {empresa} a superar os desafios atuais de mercado.\n\nNossos clientes têm obtido uma média de 27% de aumento em resultados após implementarem nossa plataforma.\n\nPodemos agendar uma breve demonstração de 15 minutos para mostrar como funciona?\n\nAtenciosamente,\n{seu nome}\n{sua empresa}",
+    linkedin: "Olá {nome}! \n\nAcompanho o trabalho da {empresa} e fiquei impressionado com os resultados que vocês têm alcançado no mercado. \n\nTrabalho com uma solução que tem ajudado empresas similares a aumentarem suas conversões em 32%. \n\nSeria interessante conversarmos sobre como poderíamos aplicar isso ao seu contexto? \n\nAguardo seu retorno!"
   });
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -56,68 +56,99 @@ const OutboundGenerator = () => {
       // Simple logic to simulate response based on input
       if (input.toLowerCase().includes("software")) {
         botResponse = "Entendi que você trabalha com software. Criei um copy personalizado para seu produto de software.";
-        newContent.email = `Assunto: Aumente a produtividade da sua equipe com nossa solução
+        newContent.email = `Assunto: Transforme a eficiência da sua equipe com nossa solução de software
 
 Olá {nome},
 
-Percebi que sua empresa tem investido em ferramentas digitais recentemente e acredito que nossa solução de software pode ajudar a otimizar ainda mais os processos da {empresa}.
+Espero que esta mensagem o encontre bem.
 
-Nossos clientes têm conseguido aumentar a produtividade em até 30% nos primeiros 3 meses de uso. Gostaria de uma breve demonstração de 15 minutos para mostrar como podemos ajudar especificamente o seu time?
+Percebi que a {empresa} tem investido em transformação digital, e gostaria de apresentar nossa ferramenta de software que está ajudando empresas similares a otimizarem seus processos.
+
+Nosso software permite:
+• Redução de 40% no tempo gasto em tarefas administrativas
+• Aumento de 28% na produtividade da equipe
+• Economia de até 22% em custos operacionais
+
+Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Podemos mostrar como nossa solução se aplicaria especificamente ao contexto da {empresa}.
 
 Atenciosamente,
-{seu nome}`;
+{seu nome}
+{sua empresa} | {seu cargo}
+{seu telefone}`;
 
         newContent.linkedin = `Olá {nome}! 
 
-Acompanho o crescimento da {empresa} e notei que vocês estão expandindo a área de tecnologia. 
+Acompanho o crescimento da {empresa} e notei o destaque de vocês no setor de tecnologia.
 
-Nosso software tem ajudado empresas similares a reduzirem custos operacionais em 25%. 
+Desenvolvi um software que tem ajudado empresas do mesmo segmento a aumentarem sua eficiência operacional em 32%, principalmente nas áreas de {área específica}.
 
-Podemos conversar sobre como isso se aplicaria ao seu contexto? Tenho disponibilidade na próxima semana.`;
+Gostaria de compartilhar como isso poderia beneficiar diretamente a {empresa}, baseado nos desafios que identificamos no mercado.
+
+Podemos agendar 15 minutos para uma conversa na próxima semana?`;
       } else if (input.toLowerCase().includes("serviço") || input.toLowerCase().includes("servico")) {
-        botResponse = "Legal! Criei um copy personalizado para seu serviço de consultoria.";
-        newContent.email = `Assunto: Transforme resultados com nossa consultoria especializada
+        botResponse = "Entendi que você oferece serviços. Criei um copy personalizado para sua oferta de serviços.";
+        newContent.email = `Assunto: Como podemos elevar os resultados da {empresa} com nossos serviços
 
 Olá {nome},
 
-Acompanhando o mercado, percebi que a {empresa} está enfrentando desafios similares aos que nossos atuais clientes superaram com nossa consultoria.
+Espero que esteja tudo bem.
 
-Temos ajudado empresas do seu segmento a aumentarem seus resultados em média 40% após implementarem nossas recomendações estratégicas.
+Analisei o mercado em que a {empresa} atua e identifiquei oportunidades onde nossos serviços de {tipo de serviço} poderiam gerar impacto significativo para vocês.
 
-Podemos marcar uma conversa de 20 minutos para discutir como podemos criar um plano personalizado para a {empresa}?
+Ao trabalhar com clientes como {empresa similar}, conseguimos:
+• Aumentar a retenção de clientes em 35%
+• Melhorar as métricas de satisfação em 42%
+• Reduzir custos operacionais em 20%
+
+Gostaria de apresentar brevemente nossa abordagem e como ela se aplicaria especificamente aos desafios da {empresa}.
+
+Teria disponibilidade para uma conversa de 20 minutos na próxima semana?
 
 Atenciosamente,
-{seu nome}`;
+{seu nome}
+{sua empresa}
+{seu telefone}`;
 
         newContent.linkedin = `Olá {nome}!
 
-Sou especialista em {área da consultoria} e tenho trabalhado com empresas do setor de {setor} como a sua.
+Como especialista em {área de serviço}, tenho acompanhado o trabalho da {empresa} e notei que poderíamos contribuir significativamente com seu crescimento.
 
-Recentemente ajudamos a {empresa similar} a superar o desafio de {problema comum} em apenas 2 meses de trabalho.
+Recentemente, ajudamos a {empresa similar} a superar desafios muito parecidos com os que vocês enfrentam, resultando em {benefício específico} em apenas {período} de trabalho.
 
-Seria interessante conversarmos sobre como podemos aplicar esta metodologia na {empresa}?`;
+Seria possível uma breve conversa para mostrar como poderíamos aplicar essa metodologia ao contexto específico da {empresa}?`;
       } else {
         botResponse = "Baseado no que você compartilhou, preparei algumas sugestões de copy para outbound. Você pode personalizá-las conforme sua necessidade específica.";
-        newContent.email = `Assunto: Oportunidade de parceria que pode interessar à {empresa}
+        newContent.email = `Assunto: Oportunidade para ampliar resultados na {empresa}
 
 Olá {nome},
 
-Meu nome é {seu nome} da {sua empresa}, e estamos ajudando empresas como a {empresa} a superarem o desafio de {problema comum no setor}.
+Espero que esta mensagem o encontre bem.
 
-Nossos clientes têm conseguido {benefício principal} após implementarem nossa solução.
+Meu nome é {seu nome} da {sua empresa}, e temos ajudado organizações como a {empresa} a superarem desafios semelhantes aos que vocês enfrentam atualmente no mercado.
 
-Teria disponibilidade para uma conversa de 15 minutos na próxima semana para explorarmos como podemos gerar resultados similares para você?
+Nossos clientes têm conseguido:
+• {benefício principal} em {período curto}
+• {segundo benefício} sem aumentar custos operacionais
+• {terceiro benefício} mesmo em cenários econômicos desafiadores
+
+Gostaria de compartilhar brevemente como podemos aplicar essa mesma abordagem ao contexto específico da {empresa}.
+
+Teria disponibilidade para uma conversa de 15 minutos na próxima semana?
 
 Atenciosamente,
-{seu nome}`;
+{seu nome}
+{sua empresa} | {seu cargo}
+{seu telefone}`;
 
         newContent.linkedin = `Olá {nome}!
 
-Vi que você trabalha na {empresa} como {cargo} e acredito que posso agregar valor ao seu trabalho.
+Tenho acompanhado o trabalho da {empresa} e fiquei impressionado com {conquista/característica da empresa}.
 
-Na {sua empresa}, temos ajudado profissionais como você a {benefício principal} através de {sua solução/produto}.
+Na {sua empresa}, desenvolvemos uma solução que tem ajudado empresas do seu setor a {benefício principal}, mesmo em um cenário de mercado desafiador.
 
-Podemos conversar sobre como isso poderia beneficiar especificamente os desafios que a {empresa} enfrenta atualmente?`;
+Gostaria de compartilhar como isso poderia se aplicar especificamente ao contexto da {empresa}, considerando os desafios atuais que vocês enfrentam.
+
+Podemos agendar uma conversa rápida na próxima semana?`;
       }
       
       setMessages(prev => [...prev, { content: botResponse, role: "assistant" }]);
