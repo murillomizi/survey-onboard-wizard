@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -707,4 +708,13 @@ const Landing = () => {
               See how other sales teams transformed their outreach
             </h2>
             <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              Real results from real
+              Real results from real sales professionals
+            </p>
+          </div>
+        </div>
+      </motion.section>
+    </div>
+  );
+};
+
+export default Landing;
