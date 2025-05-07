@@ -48,9 +48,10 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto"
+        className="mx-auto"
+        style={{ maxWidth: "800px" }}
       >
-        <h1 className="text-3xl font-bold text-center mb-6">Gerador de Copy para Outbound</h1>
+        <h1 className="text-3xl font-bold mb-6">Gerador de Copy para Outbound</h1>
         
         <Card className="border-minimal-gray-300 shadow-lg">
           <div className="p-4 bg-minimal-gray-100 border-b border-minimal-gray-300">
