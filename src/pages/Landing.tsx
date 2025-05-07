@@ -107,6 +107,7 @@ const Landing = () => {
     features: ["Unlimited personalized messages", "Email & LinkedIn templates", "Advanced AI personalization", "CRM integration", "Team collaboration", "Custom branding", "Advanced analytics dashboard", "Priority support"],
     isMostPopular: true
   }];
+  
   return <div className="bg-white min-h-screen w-full text-gray-900 font-sans">
       {/* Navigation - UPDATED with Sign In and Sign Up buttons */}
       <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
@@ -397,14 +398,19 @@ const Landing = () => {
               </motion.div>)}
           </div>
 
-          {/* Carousel of Testimonials/Examples */}
+          {/* Carousel of Testimonials/Examples - UPDATED with autoplay */}
           <div className="mt-20 max-w-5xl mx-auto">
             <h3 className="text-2xl font-bold text-center mb-8">See how other sales teams transformed their outreach</h3>
             
-            <Carousel opts={{
-            align: "center",
-            loop: true
-          }} className="w-full">
+            <Carousel 
+              opts={{
+                align: "center",
+                loop: true
+              }} 
+              className="w-full"
+              autoplay={true}
+              autoplayInterval={3000}
+            >
               <CarouselContent>
                 {[{
                 quote: "Our response rates jumped from 2% to 7% after switching to Mizi's personalized approach.",
@@ -457,7 +463,6 @@ const Landing = () => {
                     </div>
                   </CarouselItem>)}
               </CarouselContent>
-              
             </Carousel>
           </div>
 
