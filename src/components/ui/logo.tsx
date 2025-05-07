@@ -16,7 +16,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
   };
 
   return (
-    <Link to="/" className={`flex items-center gap-3 ${className}`}>
+    <Link to="/" className={`flex items-center gap-1 ${className}`}>
       <div className="relative">
         {/* Logo icon similar to lemlist style */}
         <div className="relative flex items-center justify-center">
