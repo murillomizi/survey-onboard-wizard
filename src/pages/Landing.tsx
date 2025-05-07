@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -112,6 +111,120 @@ const Landing = () => {
               </Link>
             </Button>
           </motion.div>
+        </div>
+      </motion.section>
+
+      {/* New Section: Breaking Traditional Approach */}
+      <motion.section 
+        className="px-4 md:px-8 py-16 md:py-24 bg-minimal-white" 
+        initial="hidden" 
+        animate="visible" 
+        variants={fadeIn} 
+        custom={3.5}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Rompendo Paradigmas do Outreach
+            </h2>
+            <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
+              A dicotomia tradicional não faz mais sentido. Nossa IA quebra a lógica entre envios personalizados manuais ou envios genéricos automáticos.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
+            {/* Abordagem Tradicional - Personalização Manual */}
+            <motion.div 
+              className="bg-minimal-gray-100 rounded-lg p-8 text-center relative" 
+              variants={fadeIn} 
+              custom={4}
+            >
+              <h3 className="text-xl font-bold mb-4">Personalização Manual</h3>
+              <div className="mb-6 text-minimal-gray-700">
+                <p className="mb-4">Abordagem tradicional</p>
+                <ul className="space-y-2 text-left">
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
+                    <span>Alta qualidade</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
+                    <span>Extremamente demorado</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
+                    <span>Volume limitado</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+            
+            {/* Mizi AI - No centro */}
+            <motion.div 
+              className="bg-minimal-black text-minimal-white rounded-lg p-8 text-center transform md:scale-110 relative z-10 shadow-xl" 
+              variants={fadeIn} 
+              custom={4.5}
+            >
+              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+                <Logo size="sm" />
+              </div>
+              <h3 className="text-xl font-bold mb-4 mt-2">Mizi AI</h3>
+              <div className="mb-6">
+                <p className="mb-4">Nova abordagem</p>
+                <ul className="space-y-2 text-left">
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-white mr-2"></span>
+                    <span>Alta qualidade</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-white mr-2"></span>
+                    <span>Extremamente rápido</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-white mr-2"></span>
+                    <span>Volume escalável</span>
+                  </li>
+                </ul>
+              </div>
+              <Button size="sm" asChild variant="outline" className="border-minimal-white text-minimal-white hover:bg-minimal-white hover:text-minimal-black">
+                <Link to="/" className="flex items-center gap-2">
+                  Experimentar <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </motion.div>
+            
+            {/* Abordagem Tradicional - Automação Genérica */}
+            <motion.div 
+              className="bg-minimal-gray-100 rounded-lg p-8 text-center relative" 
+              variants={fadeIn} 
+              custom={5}
+            >
+              <h3 className="text-xl font-bold mb-4">Automação Genérica</h3>
+              <div className="mb-6 text-minimal-gray-700">
+                <p className="mb-4">Abordagem tradicional</p>
+                <ul className="space-y-2 text-left">
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
+                    <span>Baixa qualidade</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
+                    <span>Extremamente rápido</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
+                    <span>Volume escalável</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+          
+          {/* Visual de linhas conectando os cards */}
+          <div className="hidden md:block relative h-1 max-w-xl mx-auto -mt-32 mb-32">
+            <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 border-t-2 border-dashed border-minimal-gray-300"></div>
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-minimal-black"></div>
+          </div>
         </div>
       </motion.section>
 
