@@ -18,7 +18,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
   return (
     <Link to="/" className={`flex items-center gap-2 ${className}`}>
       <div className="relative">
-        {/* Logo minimalista em preto e branco */}
+        {/* Logo minimalista incorporando M, Z, e AI */}
         <div className="relative flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -29,22 +29,20 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
             {/* Círculo base preto */}
             <circle cx="16" cy="16" r="15" fill="#000000" />
             
-            {/* Elementos AI minimalistas em branco */}
+            {/* Letra M */}
             <path
-              d="M12,10 L12,22 M16,10 L16,22 M20,10 L20,22"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              d="M7,10 L7,22 L9,22 L9,14 L11,18 L13,14 L13,22 L15,22 L15,10 L13,10 L11,15 L9,10 Z"
+              fill="white"
             />
+            
+            {/* Letra Z */}
             <path
-              d="M8,16 L24,16"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinecap="round"
+              d="M17,10 L25,10 L25,12 L19,20 L25,20 L25,22 L17,22 L17,20 L23,12 L17,12 Z"
+              fill="white"
             />
-            <circle cx="12" cy="16" r="2" fill="white" />
-            <circle cx="20" cy="16" r="2" fill="white" />
+            
+            {/* Elemento AI - ponto conectivo */}
+            <circle cx="16" cy="16" r="1.5" fill="#000000" stroke="white" strokeWidth="0.5" />
           </svg>
         </div>
       </div>
