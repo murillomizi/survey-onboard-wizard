@@ -11,6 +11,10 @@ interface AuthContextType {
     error: Error | null;
     data: Session | null;
   }>;
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{
+    error: Error | null;
+    data: any;
+  }>;
   signOut: () => Promise<void>;
 }
 
@@ -53,6 +57,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { data: null, error: error as Error };
     }
   };
+  
+  const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      });
+      
+      return { data, error };
+    } catch (error) {
+      return { data: null, error: error as Error };
+    }
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -63,6 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     loading,
     signIn,
+    signUp,
     signOut,
   };
 

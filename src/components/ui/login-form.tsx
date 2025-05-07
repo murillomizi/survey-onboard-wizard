@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogIn, Loader } from "lucide-react";
+import { LogIn, Loader, AtSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,9 +11,10 @@ import { useAuth } from "@/contexts/AuthContext";
 interface LoginFormProps {
   onClose: () => void;
   className?: string;
+  switchToRegister: () => void;
 }
 
-export function LoginForm({ onClose, className }: LoginFormProps) {
+export function LoginForm({ onClose, className, switchToRegister }: LoginFormProps) {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -66,15 +67,20 @@ export function LoginForm({ onClose, className }: LoginFormProps) {
           <Label htmlFor="email" className="block text-sm font-medium mb-1">
             Email
           </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="your@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full"
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <AtSign className="h-4 w-4 text-gray-400" />
+            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="pl-10 w-full"
+            />
+          </div>
         </div>
         
         <div>
@@ -116,6 +122,19 @@ export function LoginForm({ onClose, className }: LoginFormProps) {
             "Login"
           )}
         </Button>
+        
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
+            <button
+              type="button"
+              onClick={switchToRegister}
+              className="text-minimal-black font-medium hover:underline"
+            >
+              Sign up
+            </button>
+          </p>
+        </div>
       </form>
     </div>
   );

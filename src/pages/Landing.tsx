@@ -41,6 +41,7 @@ const Landing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [initialDialogTab, setInitialDialogTab] = useState<"login" | "register">("login");
   
   // Check for existing session
   useEffect(() => {
@@ -49,7 +50,15 @@ const Landing = () => {
     }
   }, [user, navigate]);
   
-  // Rest of the component with the integrated login dialog
+  const handleOpenLoginDialog = () => {
+    setInitialDialogTab("login");
+    setShowLoginDialog(true);
+  };
+  
+  const handleOpenRegisterDialog = () => {
+    setInitialDialogTab("register");
+    setShowLoginDialog(true);
+  };
   
   // Workflow steps para o processo - Reestilizado para minimalista
   const workflowSteps = [{
@@ -242,16 +251,13 @@ const Landing = () => {
     }
   };
 
-  const handleOpenLoginDialog = () => {
-    setShowLoginDialog(true);
-  };
-  
   return (
     <div className="bg-minimal-white min-h-screen w-full text-minimal-black font-sans">
       {/* Login Dialog */}
       <LoginDialog 
         open={showLoginDialog} 
-        onOpenChange={setShowLoginDialog} 
+        onOpenChange={setShowLoginDialog}
+        initialTab={initialDialogTab}
       />
       
       {/* Navigation - Simplificado */}
@@ -270,7 +276,7 @@ const Landing = () => {
           <Button 
             size="sm" 
             className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"
-            onClick={handleOpenLoginDialog}
+            onClick={handleOpenRegisterDialog}
           >
             <UserPlus className="h-3.5 w-3.5 mr-1.5" />
             <span>Sign Up</span>
@@ -294,7 +300,7 @@ const Landing = () => {
             <Button 
               size="lg" 
               className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-6 h-auto rounded-md"
-              onClick={handleOpenLoginDialog}
+              onClick={handleOpenRegisterDialog}
             >
               Try Mizi Now <ArrowRight className="h-4 w-4" />
             </Button>
