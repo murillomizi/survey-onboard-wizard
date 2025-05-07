@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -511,98 +512,9 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Pricing Plans Section */}
-      <motion.section 
-        className="px-4 md:px-8 py-16 md:py-28 bg-minimal-white" 
-        initial="hidden" 
-        animate="visible" 
-        variants={fadeIn} 
-        custom={5.5}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-              Choose Your Mizi Plan
-            </h2>
-            <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              Flexible pricing options to match your outreach needs
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => {
-              const PlanIcon = plan.icon;
-              return (
-                <motion.div
-                  key={index}
-                  className={`rounded-xl overflow-hidden border ${plan.popular ? 'border-minimal-black ring-2 ring-minimal-black' : 'border-minimal-gray-200'}`}
-                  variants={fadeIn}
-                  custom={6 + index * 0.5}
-                >
-                  <Card className={`h-full ${plan.color}`}>
-                    <CardHeader className="text-center pb-4">
-                      <div className="mx-auto mb-4 p-2 rounded-full bg-opacity-10 bg-white inline-flex">
-                        <PlanIcon className="h-8 w-8" />
-                      </div>
-                      <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                      <CardDescription className={`${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-300' : 'text-minimal-gray-500'}`}>
-                        {plan.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center pt-4 pb-6">
-                      <div className="mb-6">
-                        <span className="text-4xl font-bold">{plan.price}</span>
-                        <span className={`text-sm ${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-300' : 'text-minimal-gray-500'}`}> {plan.duration}</span>
-                      </div>
-                      
-                      {plan.popular && (
-                        <Badge className="mx-auto mb-6 bg-minimal-white text-minimal-black hover:bg-minimal-gray-100">
-                          Most Popular
-                        </Badge>
-                      )}
-                      
-                      <ul className={`space-y-3 text-left mb-8 ${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-100' : 'text-minimal-gray-700'}`}>
-                        {plan.features.map((feature, fIndex) => (
-                          <li key={fIndex} className="flex items-start">
-                            <Check className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                    <CardFooter className="pt-2 pb-6 flex justify-center">
-                      <Button 
-                        className={plan.color === 'bg-minimal-black text-minimal-white' 
-                          ? "w-full bg-minimal-white text-minimal-black hover:bg-minimal-gray-100" 
-                          : "w-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"}
-                        size="lg"
-                        asChild
-                      >
-                        <Link to="/">{plan.cta}</Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-          
-          <div className="text-center mt-12 pt-8 border-t border-minimal-gray-200">
-            <p className="text-minimal-gray-600 mb-6">
-              Need a custom solution? Contact our sales team for enterprise options.
-            </p>
-            <Button variant="outline" size="lg" asChild className="border-minimal-gray-300">
-              <Link to="/" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" /> Contact Enterprise Sales
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </motion.section>
-
       {/* Comparison table */}
       <motion.section 
-        className="px-4 md:px-8 py-16 md:py-28 bg-minimal-gray-100" 
+        className="px-4 md:px-8 py-16 md:py-28 bg-minimal-white" 
         initial="hidden" 
         animate="visible" 
         variants={fadeIn} 
@@ -699,7 +611,7 @@ const Landing = () => {
             <Button 
               size="lg" 
               className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-3 h-auto rounded-md"
-              onClick={handleOpenLoginDialog}
+              onClick={handleOpenRegisterDialog}
             >
               Try Mizi Now <ArrowRight className="h-4 w-4" />
             </Button>
@@ -707,16 +619,89 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Testimonials section */}
-      <motion.section className="px-4 md:px-8 py-16 md:py-24 bg-minimal-white" initial="hidden" animate="visible" variants={fadeIn} custom={7}>
+      {/* Pricing Plans Section - Moved to the end of the page */}
+      <motion.section 
+        className="px-4 md:px-8 py-16 md:py-28 bg-minimal-gray-100" 
+        initial="hidden" 
+        animate="visible" 
+        variants={fadeIn} 
+        custom={7}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-              See how other sales teams transformed their outreach
+              Choose Your Mizi Plan
             </h2>
             <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              Real results from real sales professionals
+              Flexible pricing options to match your outreach needs
             </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {pricingPlans.map((plan, index) => {
+              const PlanIcon = plan.icon;
+              return (
+                <motion.div
+                  key={index}
+                  className={`rounded-xl overflow-hidden border ${plan.popular ? 'border-minimal-black ring-2 ring-minimal-black' : 'border-minimal-gray-200'}`}
+                  variants={fadeIn}
+                  custom={7.5 + index * 0.5}
+                >
+                  <Card className={`h-full ${plan.color}`}>
+                    <CardHeader className="text-center pb-4">
+                      <div className="mx-auto mb-4 p-2 rounded-full bg-opacity-10 bg-white inline-flex">
+                        <PlanIcon className="h-8 w-8" />
+                      </div>
+                      <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                      <CardDescription className={`${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-300' : 'text-minimal-gray-500'}`}>
+                        {plan.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center pt-4 pb-6">
+                      <div className="mb-6">
+                        <span className="text-4xl font-bold">{plan.price}</span>
+                        <span className={`text-sm ${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-300' : 'text-minimal-gray-500'}`}> {plan.duration}</span>
+                      </div>
+                      
+                      {plan.popular && (
+                        <Badge className="mx-auto mb-6 bg-minimal-white text-minimal-black hover:bg-minimal-gray-100">
+                          Most Popular
+                        </Badge>
+                      )}
+                      
+                      <ul className={`space-y-3 text-left mb-8 ${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-100' : 'text-minimal-gray-700'}`}>
+                        {plan.features.map((feature, fIndex) => (
+                          <li key={fIndex} className="flex items-start">
+                            <Check className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                    <CardFooter className="pt-2 pb-6 flex justify-center">
+                      <Button 
+                        className={plan.color === 'bg-minimal-black text-minimal-white' 
+                          ? "w-full bg-minimal-white text-minimal-black hover:bg-minimal-gray-100" 
+                          : "w-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"}
+                        size="lg"
+                        onClick={plan.popular ? handleOpenRegisterDialog : handleOpenLoginDialog}
+                      >
+                        {plan.cta}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+          
+          <div className="text-center mt-12 pt-8 border-t border-minimal-gray-200">
+            <p className="text-minimal-gray-600 mb-6">
+              Need a custom solution? Contact our sales team for enterprise options.
+            </p>
+            <Button variant="outline" size="lg" className="border-minimal-gray-300" onClick={handleOpenLoginDialog}>
+              <Shield className="h-4 w-4 mr-2" /> Contact Enterprise Sales
+            </Button>
           </div>
         </div>
       </motion.section>
