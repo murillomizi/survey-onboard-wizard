@@ -35,7 +35,7 @@ const Landing = () => {
     description: "Select approach and tone to match your ICP - casual, formal, or direct without sacrificing personalization.",
     step: "02"
   }, {
-    title: "Drive Higher Response Rates",
+    title: "Automate Your Outreach",
     description: "Deploy hyper-personalized messages that reference prospects' business challenges and spark genuine interest.",
     step: "03"
   }];
