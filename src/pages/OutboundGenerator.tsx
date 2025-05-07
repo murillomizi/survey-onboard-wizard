@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   Copy, 
   Send, 
@@ -19,6 +19,7 @@ import {
   ChatBubbleMessage, 
   ChatBubbleAvatar 
 } from "@/components/ui/chat-bubble";
+import Logo from "@/components/ui/logo";
 
 type Message = {
   content: string;
@@ -42,6 +43,14 @@ const OutboundGenerator = () => {
     email: "Aqui será exibido seu copy para email de outbound...",
     linkedin: "Aqui será exibido seu copy para mensagem de LinkedIn..."
   });
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll chat to bottom when new messages are added
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -157,16 +166,16 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Chat LLM - Dark theme fixed sidebar */}
-      <div className="w-full md:w-1/3 lg:w-1/4 bg-minimal-black text-minimal-white flex flex-col h-screen">
-        <div className="p-4 border-b border-minimal-gray-700 flex items-center gap-2">
-          <MessageSquare size={20} className="text-minimal-white" />
-          <h2 className="text-lg font-semibold text-minimal-white">Chat Assistente</h2>
+    <div className="flex h-screen overflow-hidden">
+      {/* Chat LLM - Fixed sidebar with dark theme */}
+      <div className="w-80 bg-minimal-black text-minimal-white flex flex-col h-full border-r border-minimal-gray-700 flex-shrink-0">
+        {/* Header with logo */}
+        <div className="p-4 border-b border-minimal-gray-700 flex items-center justify-center">
+          <Logo size="md" />
         </div>
         
         <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <ChatMessageList className="flex-1">
+          <div className="flex-1 overflow-y-auto p-4">
             {messages.map((message, index) => (
               <ChatBubble 
                 key={index}
@@ -184,7 +193,8 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
                 </ChatBubbleMessage>
               </ChatBubble>
             ))}
-          </ChatMessageList>
+            <div ref={chatEndRef} />
+          </div>
           
           <div className="p-4 border-t border-minimal-gray-700">
             <div className="relative flex items-center">
