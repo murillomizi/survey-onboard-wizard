@@ -18,7 +18,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
   return (
     <Link to="/" className={`flex items-center gap-2 ${className}`}>
       <div className="relative">
-        {/* Logo minimalista com temática de AI */}
+        {/* Logo minimalista em preto e branco */}
         <div className="relative flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -26,32 +26,25 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
             className={`${sizeClasses[size]} w-auto transition-all duration-300 hover:scale-105`}
             aria-label="Mizi Logo"
           >
-            {/* Círculo base com degradê */}
-            <defs>
-              <linearGradient id="miziGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#8B5CF6" />
-                <stop offset="50%" stopColor="#6366F1" />
-                <stop offset="100%" stopColor="#0EA5E9" />
-              </linearGradient>
-            </defs>
-            <circle cx="16" cy="16" r="14" fill="url(#miziGradient)" />
+            {/* Círculo base preto */}
+            <circle cx="16" cy="16" r="15" fill="#000000" />
             
-            {/* Elementos AI minimalistas */}
+            {/* Elementos AI minimalistas em branco */}
             <path
-              d="M12,11 L12,21 M16,11 L16,21 M20,11 L20,21"
+              d="M12,10 L12,22 M16,10 L16,22 M20,10 L20,22"
               stroke="white"
-              strokeWidth="1.5"
+              strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
             <path
-              d="M9,15 L23,15"
+              d="M8,16 L24,16"
               stroke="white"
-              strokeWidth="1.5"
+              strokeWidth="1.8"
               strokeLinecap="round"
             />
-            <circle cx="12" cy="15" r="1.5" fill="white" />
-            <circle cx="20" cy="15" r="1.5" fill="white" />
+            <circle cx="12" cy="16" r="2" fill="white" />
+            <circle cx="20" cy="16" r="2" fill="white" />
           </svg>
         </div>
       </div>
