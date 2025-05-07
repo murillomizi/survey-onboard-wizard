@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { LoginDialog } from "@/components/ui/login-dialog";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -36,146 +37,20 @@ const fadeIn = {
   })
 };
 
-// Login form component
-const LoginForm = () => {
-  const { signIn, user } = useAuth();
+const Landing = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !password) {
-      toast.error("Por favor, preencha todos os campos");
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      const { error } = await signIn(email, password);
-      
-      if (error) {
-        toast.error(error.message || "Erro ao fazer login");
-        return;
-      }
-      
-      toast.success("Login realizado com sucesso");
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Erro no login:", error);
-      toast.error("Erro ao realizar login");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+  
   // Check for existing session
   useEffect(() => {
     if (user) {
       navigate("/dashboard");
     }
   }, [user, navigate]);
-
-  if (showLoginForm) {
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden"
-        >
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Login</h2>
-              <button 
-                onClick={() => setShowLoginForm(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-1">
-                  Email
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium mb-1">
-                  Senha
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="********"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full"
-                />
-              </div>
-              
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => toast.info("Funcionalidade em desenvolvimento")}
-                  className="text-sm text-gray-600 hover:underline"
-                >
-                  Esqueci minha senha
-                </button>
-              </div>
-              
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    Entrando...
-                  </>
-                ) : (
-                  "Entrar"
-                )}
-              </Button>
-            </form>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  return (
-    <Button 
-      size="sm" 
-      variant="outline" 
-      className="border-minimal-gray-300 hover:bg-minimal-gray-100"
-      onClick={() => setShowLoginForm(true)}
-    >
-      <LogIn className="h-3.5 w-3.5 mr-1.5" />
-      <span>Login</span> 
-    </Button>
-  );
-};
-
-const Landing = () => {
+  
+  // Rest of the component with the integrated login dialog
+  
   // Workflow steps para o processo - Reestilizado para minimalista
   const workflowSteps = [{
     title: "Identify Decision Makers",
@@ -366,14 +241,32 @@ const Landing = () => {
       default: return "";
     }
   };
+
+  const handleOpenLoginDialog = () => {
+    setShowLoginDialog(true);
+  };
   
   return (
     <div className="bg-minimal-white min-h-screen w-full text-minimal-black font-sans">
+      {/* Login Dialog */}
+      <LoginDialog 
+        open={showLoginDialog} 
+        onOpenChange={setShowLoginDialog} 
+      />
+      
       {/* Navigation - Simplificado */}
       <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
         <Logo size="md" />
         <div className="flex items-center gap-4">
-          <LoginForm />
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="border-minimal-gray-300 hover:bg-minimal-gray-100"
+            onClick={handleOpenLoginDialog}
+          >
+            <LogIn className="h-3.5 w-3.5 mr-1.5" />
+            <span>Login</span> 
+          </Button>
           <Button size="sm" asChild className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800">
             <Link to="/" className="flex items-center gap-1.5">
               <UserPlus className="h-3.5 w-3.5" />
@@ -383,7 +276,7 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero section - Simplificado e minimalista */}
+      {/* Hero section and other sections */}
       <motion.section className="px-4 md:px-8 py-16 md:py-28 max-w-7xl mx-auto" initial="hidden" animate="visible" variants={fadeIn} custom={0}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.div className="flex justify-center mb-8" variants={fadeIn} custom={0.5}>
@@ -814,98 +707,4 @@ const Landing = () => {
               See how other sales teams transformed their outreach
             </h2>
             <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              Real results from real customers
-            </p>
-          </div>
-
-          {/* Redesigned testimonial carousel */}
-          <div className="mt-10 max-w-5xl mx-auto">
-            <Carousel 
-              opts={{
-                align: "center",
-                loop: true
-              }} 
-              className="w-full"
-              autoplay={true}
-              autoplayInterval={3000}
-            >
-              <CarouselContent>
-                {testimonials.map((testimonial, index) => (
-                  <CarouselItem key={index} className="md:basis-3/4">
-                    <div className="p-8 bg-minimal-white rounded-lg border border-minimal-gray-200 shadow-sm">
-                      <blockquote className="text-xl italic mb-6">"{testimonial.quote}"</blockquote>
-                      <div className="mb-6">
-                        <p className="font-bold">{testimonial.name}</p>
-                        <p className="text-sm text-minimal-gray-600">{testimonial.role}, {testimonial.company}</p>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                        <div className="p-4 bg-minimal-gray-100 rounded-lg">
-                          <p className="text-minimal-gray-600 mb-1">Before Mizi:</p>
-                          <p className="font-medium">{testimonial.before}</p>
-                        </div>
-                        <div className="p-4 bg-minimal-gray-100 rounded-lg">
-                          <p className="text-minimal-gray-600 mb-1">With Mizi:</p>
-                          <p className="font-medium">{testimonial.after}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
-
-          {/* CTA */}
-          <div className="mt-16 text-center">
-            <Button size="lg" asChild className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-3 h-auto rounded-md">
-              <Link to="/" className="flex items-center gap-2">
-                Save Time with Mizi <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* CTA Section - Simplificado */}
-      <motion.section className="px-4 md:px-8 py-16 md:py-24 bg-minimal-gray-100" initial="hidden" animate="visible" variants={fadeIn} custom={12}>
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">Ready to personalize your outreach?</h2>
-          <p className="text-xl text-minimal-gray-600 mb-10">Built for agencies, reps and founders who hate generic outreach.</p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" asChild className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-6 h-auto rounded-md">
-              <Link to="/" className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" /> Sign Up Now <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-            {benefits.map((benefit, i) => (
-              <div key={i} className="p-4 border border-minimal-gray-200 rounded-lg bg-minimal-white">
-                <span className="text-sm font-medium">{benefit}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Footer - Simplificado */}
-      <footer className="px-4 md:px-8 py-8 border-t border-minimal-gray-200">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Logo size="sm" withText={false} />
-            <p className="text-minimal-gray-500 text-sm">© {new Date().getFullYear()} Mizi.app. All rights reserved.</p>
-          </div>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <Link to="/" className="text-sm text-minimal-gray-500 hover:text-minimal-black">Terms</Link>
-            <Link to="/" className="text-sm text-minimal-gray-500 hover:text-minimal-black">Privacy</Link>
-            <Link to="/" className="text-sm text-minimal-gray-500 hover:text-minimal-black">Contact</Link>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-export default Landing;
+              Real results from real
