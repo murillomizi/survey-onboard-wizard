@@ -1,17 +1,24 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   Copy, 
   Send, 
-  MessageSquare
+  MessageSquare 
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { toast } from "@/components/ui/use-toast";
-import ChatMessage from "@/components/ChatMessage";
+import { 
+  ChatMessageList
+} from "@/components/ui/chat-message-list";
+import { 
+  ChatBubble, 
+  ChatBubbleMessage, 
+  ChatBubbleAvatar 
+} from "@/components/ui/chat-bubble";
 
 type Message = {
   content: string;
@@ -35,16 +42,6 @@ const OutboundGenerator = () => {
     email: "Aqui será exibido seu copy para email de outbound...",
     linkedin: "Aqui será exibido seu copy para mensagem de LinkedIn..."
   });
-  
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -160,43 +157,50 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="min-h-screen flex flex-col md:flex-row">
       {/* Chat LLM - Dark theme fixed sidebar */}
-      <div className="w-[350px] bg-minimal-black text-white flex flex-col h-full border-r border-gray-800">
-        <div className="p-4 border-b border-gray-800 flex items-center gap-3">
-          <MessageSquare size={20} />
-          <h2 className="text-lg font-medium">Assistente de Outbound</h2>
+      <div className="w-full md:w-1/3 lg:w-1/4 bg-minimal-black text-minimal-white flex flex-col h-screen">
+        <div className="p-4 border-b border-minimal-gray-700 flex items-center gap-2">
+          <MessageSquare size={20} className="text-minimal-white" />
+          <h2 className="text-lg font-semibold text-minimal-white">Chat Assistente</h2>
         </div>
         
         <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <ChatMessageList className="flex-1">
             {messages.map((message, index) => (
-              <ChatMessage
+              <ChatBubble 
                 key={index}
-                content={message.content}
-                type={message.role === "user" ? "user" : "bot"}
-                isTyping={message.isLoading}
-              />
+                variant={message.role === "user" ? "sent" : "received"}
+              >
+                {message.role === "assistant" && (
+                  <ChatBubbleAvatar fallback="AI" />
+                )}
+                <ChatBubbleMessage 
+                  variant={message.role === "user" ? "sent" : "received"}
+                  isLoading={message.isLoading}
+                  className={message.role === "user" ? "bg-minimal-gray-800" : "bg-minimal-gray-700"}
+                >
+                  {message.content}
+                </ChatBubbleMessage>
+              </ChatBubble>
             ))}
-            <div ref={messagesEndRef} />
-          </div>
+          </ChatMessageList>
           
-          <div className="p-3 border-t border-gray-800">
-            <div className="relative">
+          <div className="p-4 border-t border-minimal-gray-700">
+            <div className="relative flex items-center">
               <ChatInput 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Descreva seu produto ou serviço..."
                 disabled={isLoading}
-                className="pr-10 bg-gray-800 text-white border-gray-700 focus-visible:ring-gray-600"
+                className="pr-10 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700"
               />
               <Button 
                 size="icon" 
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent hover:bg-gray-700 text-white"
+                className="absolute right-2 bg-transparent hover:bg-minimal-gray-700 text-minimal-white"
                 onClick={handleSendMessage} 
                 disabled={isLoading || !input.trim()}
-                aria-label="Enviar mensagem"
               >
                 <Send size={18} />
               </Button>
@@ -205,95 +209,59 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
         </div>
       </div>
       
-      {/* Content Area - Clean, minimal design */}
-      <div className="flex-1 bg-white overflow-y-auto">
-        <div className="max-w-4xl mx-auto py-8 px-6 h-full flex flex-col">
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-6"
-          >
-            <h1 className="text-2xl font-bold text-gray-900">Gerador de Copy para Outbound</h1>
-            <p className="text-gray-600 mt-1">
-              Crie mensagens personalizadas com base na conversa com nosso assistente
-            </p>
-          </motion.div>
+      {/* Preview de Copy - Conteúdo principal */}
+      <div className="flex-1 bg-minimal-white p-6 overflow-y-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto"
+        >
+          <h1 className="text-3xl font-bold text-center mb-6">Gerador de Copy para Outbound</h1>
           
-          <Card className="flex-1 overflow-hidden shadow-sm border-gray-200">
-            <CardHeader className="bg-gray-50 border-b border-gray-100 pb-2">
-              <Tabs 
-                defaultValue="email" 
-                onValueChange={(value) => setContentType(value as ContentType)}
-                className="w-full"
-              >
-                <TabsList className="grid grid-cols-2 w-[300px]">
-                  <TabsTrigger value="email">Email de Outbound</TabsTrigger>
-                  <TabsTrigger value="linkedin">Mensagem LinkedIn</TabsTrigger>
+          <Card className="border-minimal-gray-300 shadow-lg">
+            <div className="p-4 bg-minimal-gray-100 border-b border-minimal-gray-300">
+              <Tabs defaultValue="email" onValueChange={(value) => setContentType(value as ContentType)}>
+                <TabsList className="w-full grid grid-cols-2">
+                  <TabsTrigger value="email">Email</TabsTrigger>
+                  <TabsTrigger value="linkedin">LinkedIn</TabsTrigger>
                 </TabsList>
               </Tabs>
-            </CardHeader>
+            </div>
             
-            <CardContent className="p-0 flex-1 overflow-y-auto">
-              <TabsContent value="email" className="m-0 p-0 h-full">
-                <div className="p-6 h-full">
-                  <div className="bg-white rounded-lg p-6 border border-gray-200 relative h-full">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="absolute top-3 right-3 bg-white border-gray-200 hover:bg-gray-50"
-                      onClick={() => copyToClipboard(generatedContent.email)}
-                    >
-                      <Copy size={15} className="mr-1" />
-                      Copiar
-                    </Button>
-                    <div className="mt-6 text-left whitespace-pre-wrap font-sans text-gray-800">
-                      {generatedContent.email}
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="linkedin" className="m-0 p-0 h-full">
-                <div className="p-6 h-full">
-                  <div className="bg-white rounded-lg p-6 border border-gray-200 relative h-full">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="absolute top-3 right-3 bg-white border-gray-200 hover:bg-gray-50"
-                      onClick={() => copyToClipboard(generatedContent.linkedin)}
-                    >
-                      <Copy size={15} className="mr-1" />
-                      Copiar
-                    </Button>
-                    <div className="mt-6 text-left whitespace-pre-wrap font-sans text-gray-800">
-                      {generatedContent.linkedin}
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </CardContent>
-            
-            <CardFooter className="px-4 py-3 border-t border-gray-100 bg-gray-50">
-              <div className="flex justify-between items-center w-full">
-                <p className="text-sm text-gray-500">
-                  {contentType === "email" ? "Email de Outbound" : "Mensagem LinkedIn"}
-                </p>
-                <Button 
-                  className="bg-black hover:bg-gray-800 text-white"
-                  onClick={() => {
-                    toast({
-                      title: "Copy salvo!",
-                      description: "O conteúdo foi salvo em seus rascunhos."
-                    });
-                  }}
+            <CardContent className="flex-1 p-6">
+              <div className="bg-minimal-white border border-minimal-gray-200 rounded-lg p-6 min-h-[400px] relative">
+                <pre className="font-sans text-left whitespace-pre-wrap">
+                  {contentType === "email" ? generatedContent.email : generatedContent.linkedin}
+                </pre>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-2 right-2 bg-minimal-white hover:bg-minimal-gray-100"
+                  onClick={() => copyToClipboard(contentType === "email" ? generatedContent.email : generatedContent.linkedin)}
                 >
-                  Salvar Copy
+                  <Copy size={16} className="mr-1" />
+                  Copiar
                 </Button>
               </div>
-            </CardFooter>
+            </CardContent>
+            
+            <div className="p-4 border-t border-minimal-gray-300 flex justify-end">
+              <button 
+                className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white px-6 py-2 rounded-md transition-all duration-200"
+                onClick={() => {
+                  toast({
+                    title: "Copy exportado!",
+                    description: "O conteúdo foi salvo em seus rascunhos."
+                  });
+                }}
+              >
+                Salvar Copy
+              </button>
+            </div>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
