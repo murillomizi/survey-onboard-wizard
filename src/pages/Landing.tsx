@@ -114,7 +114,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* New Section: Breaking Traditional Approach */}
+      {/* New Section: Breaking Traditional Approach - Improved with better visuals and English text */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-24 bg-minimal-white" 
         initial="hidden" 
@@ -125,105 +125,168 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-              Rompendo Paradigmas do Outreach
+              Breaking the Outreach Paradigm
             </h2>
             <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              A dicotomia tradicional não faz mais sentido. Nossa IA quebra a lógica entre envios personalizados manuais ou envios genéricos automáticos.
+              The traditional dichotomy no longer makes sense. Our AI breaks the logic between manual personalized outreach and generic automated sends.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
-            {/* Abordagem Tradicional - Personalização Manual */}
+            {/* Traditional Approach - Manual Personalization */}
             <motion.div 
-              className="bg-minimal-gray-100 rounded-lg p-8 text-center relative" 
+              className="bg-minimal-gray-100 rounded-lg p-8 text-center relative overflow-hidden" 
               variants={fadeIn} 
               custom={4}
             >
-              <h3 className="text-xl font-bold mb-4">Personalização Manual</h3>
+              <div className="absolute top-0 right-0 w-20 h-20 -mt-2 -mr-2">
+                <svg viewBox="0 0 80 80" className="w-full h-full opacity-10">
+                  <path d="M40,10 C18,10 0,28 0,50 C0,72 18,90 40,90 C62,90 80,72 80,50 C80,28 62,10 40,10 Z M40,80 C23.4,80 10,66.6 10,50 C10,33.4 23.4,20 40,20 C56.6,20 70,33.4 70,50 C70,66.6 56.6,80 40,80 Z" fill="#000000" />
+                  <path d="M60,40 L20,40 L20,60 L60,60 L60,40 Z" fill="#000000" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-4">Manual Personalization</h3>
               <div className="mb-6 text-minimal-gray-700">
-                <p className="mb-4">Abordagem tradicional</p>
-                <ul className="space-y-2 text-left">
+                <p className="mb-4">Traditional approach</p>
+                <ul className="space-y-3 text-left">
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
-                    <span>Alta qualidade</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-gray-300 mr-2">✓</span>
+                    <span>High quality</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
-                    <span>Extremamente demorado</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-gray-300 mr-2">✗</span>
+                    <span>Extremely time-consuming</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
-                    <span>Volume limitado</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-gray-300 mr-2">✗</span>
+                    <span>Limited volume</span>
                   </li>
                 </ul>
               </div>
+              <div className="mt-6 pt-6 border-t border-minimal-gray-200">
+                <div className="flex items-center justify-center">
+                  <span className="text-xs text-minimal-gray-500">HUMAN EFFORT</span>
+                  <div className="w-24 h-2 mx-2 bg-minimal-gray-200 rounded-full">
+                    <div className="w-full h-full bg-minimal-gray-700 rounded-full"></div>
+                  </div>
+                  <span className="text-xs text-minimal-gray-500">HIGH</span>
+                </div>
+              </div>
             </motion.div>
             
-            {/* Mizi AI - No centro */}
+            {/* Mizi AI - In the center */}
             <motion.div 
-              className="bg-minimal-black text-minimal-white rounded-lg p-8 text-center transform md:scale-110 relative z-10 shadow-xl" 
+              className="bg-minimal-black text-minimal-white rounded-lg p-8 text-center transform md:scale-110 relative z-10 shadow-xl overflow-hidden" 
               variants={fadeIn} 
               custom={4.5}
             >
               <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
                 <Logo size="sm" />
               </div>
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="white" strokeWidth="8" />
+                  <path d="M65,40 L45,60 L35,50" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <h3 className="text-xl font-bold mb-4 mt-2">Mizi AI</h3>
               <div className="mb-6">
-                <p className="mb-4">Nova abordagem</p>
-                <ul className="space-y-2 text-left">
+                <p className="mb-4">New approach</p>
+                <ul className="space-y-3 text-left">
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-white mr-2"></span>
-                    <span>Alta qualidade</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-white mr-2">✓</span>
+                    <span>High quality</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-white mr-2"></span>
-                    <span>Extremamente rápido</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-white mr-2">✓</span>
+                    <span>Extremely fast</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-white mr-2"></span>
-                    <span>Volume escalável</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-white mr-2">✓</span>
+                    <span>Scalable volume</span>
                   </li>
                 </ul>
               </div>
-              <Button size="sm" asChild variant="outline" className="border-minimal-white text-minimal-white hover:bg-minimal-white hover:text-minimal-black">
-                <Link to="/" className="flex items-center gap-2">
-                  Experimentar <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </Button>
+              <div className="mt-6 pt-6 border-t border-minimal-gray-700">
+                <Button size="sm" asChild variant="outline" className="border-minimal-white text-minimal-white hover:bg-minimal-white hover:text-minimal-black">
+                  <Link to="/" className="flex items-center gap-2">
+                    Try Now <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
             
-            {/* Abordagem Tradicional - Automação Genérica */}
+            {/* Traditional Approach - Generic Automation */}
             <motion.div 
-              className="bg-minimal-gray-100 rounded-lg p-8 text-center relative" 
+              className="bg-minimal-gray-100 rounded-lg p-8 text-center relative overflow-hidden" 
               variants={fadeIn} 
               custom={5}
             >
-              <h3 className="text-xl font-bold mb-4">Automação Genérica</h3>
+              <div className="absolute top-0 right-0 w-20 h-20 -mt-2 -mr-2">
+                <svg viewBox="0 0 80 80" className="w-full h-full opacity-10">
+                  <path d="M40,10 C18,10 0,28 0,50 C0,72 18,90 40,90 C62,90 80,72 80,50 C80,28 62,10 40,10 Z M40,80 C23.4,80 10,66.6 10,50 C10,33.4 23.4,20 40,20 C56.6,20 70,33.4 70,50 C70,66.6 56.6,80 40,80 Z" fill="#000000" />
+                  <path d="M55,30 L25,30 L25,45 L55,45 L55,30 Z M55,55 L25,55 L25,70 L55,70 L55,55 Z" fill="#000000" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-4">Generic Automation</h3>
               <div className="mb-6 text-minimal-gray-700">
-                <p className="mb-4">Abordagem tradicional</p>
-                <ul className="space-y-2 text-left">
+                <p className="mb-4">Traditional approach</p>
+                <ul className="space-y-3 text-left">
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
-                    <span>Baixa qualidade</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-gray-300 mr-2">✗</span>
+                    <span>Low quality</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
-                    <span>Extremamente rápido</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-gray-300 mr-2">✓</span>
+                    <span>Extremely fast</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="inline-block w-4 h-4 rounded-full bg-minimal-gray-400 mr-2"></span>
-                    <span>Volume escalável</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-minimal-gray-300 mr-2">✓</span>
+                    <span>Scalable volume</span>
                   </li>
                 </ul>
+              </div>
+              <div className="mt-6 pt-6 border-t border-minimal-gray-200">
+                <div className="flex items-center justify-center">
+                  <span className="text-xs text-minimal-gray-500">GENERIC</span>
+                  <div className="w-24 h-2 mx-2 bg-minimal-gray-200 rounded-full">
+                    <div className="w-full h-full bg-minimal-gray-400 rounded-full"></div>
+                  </div>
+                  <span className="text-xs text-minimal-gray-500">TEMPLATED</span>
+                </div>
               </div>
             </motion.div>
           </div>
           
-          {/* Visual de linhas conectando os cards */}
-          <div className="hidden md:block relative h-1 max-w-xl mx-auto -mt-32 mb-32">
-            <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 border-t-2 border-dashed border-minimal-gray-300"></div>
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-minimal-black"></div>
+          {/* Connecting line visuals - Improved for better visual explanation */}
+          <div className="hidden md:flex justify-center items-center relative h-20 mt-8 mb-16">
+            {/* Left arrow */}
+            <div className="absolute left-1/4 transform -translate-x-1/2 top-1/2 -translate-y-1/2">
+              <svg width="60" height="60" viewBox="0 0 60 60" className="opacity-30">
+                <path d="M30,10 L50,30 L45,35 L35,25 L35,50 L25,50 L25,25 L15,35 L10,30 L30,10 Z" fill="#000000" />
+              </svg>
+            </div>
+            
+            {/* Right arrow */}
+            <div className="absolute right-1/4 transform translate-x-1/2 top-1/2 -translate-y-1/2">
+              <svg width="60" height="60" viewBox="0 0 60 60" className="opacity-30">
+                <path d="M30,10 L50,30 L45,35 L35,25 L35,50 L25,50 L25,25 L15,35 L10,30 L30,10 Z" fill="#000000" />
+              </svg>
+            </div>
+            
+            {/* Middle circle with Mizi logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 w-16 h-16 bg-minimal-black rounded-full flex items-center justify-center shadow-lg">
+              <Logo size="sm" withText={false} className="transform scale-75" />
+            </div>
+            
+            <div className="w-full max-w-xl h-0.5 bg-minimal-gray-200"></div>
+          </div>
+          
+          {/* Text explanation of the paradigm shift */}
+          <div className="max-w-2xl mx-auto text-center mt-8">
+            <p className="text-minimal-gray-600">
+              Mizi AI creates a new category - combining the high quality of manual personalization with the speed and scale of automation. This isn't just an incremental improvement; it's a fundamental shift in how outreach works.
+            </p>
           </div>
         </div>
       </motion.section>
