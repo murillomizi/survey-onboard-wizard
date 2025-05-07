@@ -80,14 +80,12 @@ const Landing = () => {
     "More meetings booked"
   ];
   
-  // Dados da tabela comparativa
+  // Dados da tabela comparativa - com colunas "Qualidade" e "ROI" removidas
   const comparisonData = {
     categories: [
       "Personalização", 
       "Escalabilidade", 
       "Velocidade", 
-      "Qualidade", 
-      "ROI", 
       "Custo-benefício",
       "Aprendizado contínuo"
     ],
@@ -95,7 +93,7 @@ const Landing = () => {
       {
         name: "Mizi AI",
         description: "Nossa plataforma de IA especializada em outreach",
-        ratings: [5, 5, 5, 5, 5, 5, 5],
+        ratings: [5, 5, 5, 5, 5],
         benefits: [
           "Personalização profunda baseada em contexto empresarial real",
           "Capacidade de processar grandes volumes mantendo alta qualidade",
@@ -108,7 +106,7 @@ const Landing = () => {
       {
         name: "LLMs Genéricos",
         description: "ChatGPT e similares para outreach",
-        ratings: [3, 4, 5, 3, 2, 4, 3],
+        ratings: [3, 4, 5, 4, 3],
         benefits: [
           "Personalização superficial sem contexto de negócios",
           "Requer prompt engineering avançado",
@@ -120,7 +118,7 @@ const Landing = () => {
       {
         name: "Prospecção Manual",
         description: "SDRs pesquisando e escrevendo manualmente",
-        ratings: [5, 1, 1, 4, 2, 1, 2],
+        ratings: [5, 1, 1, 1, 2],
         benefits: [
           "Alta personalização, mas extremamente demorado",
           "Impossível escalar sem aumentar equipe",
@@ -132,7 +130,7 @@ const Landing = () => {
       {
         name: "Plataformas Tradicionais",
         description: "Ferramentas de automação de outreach",
-        ratings: [1, 5, 5, 1, 3, 3, 1],
+        ratings: [1, 5, 5, 3, 1],
         benefits: [
           "Automação sem personalização real",
           "Escalabilidade alta com templates genéricos",
@@ -412,7 +410,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Tabela comparativa */}
+      {/* Tabela comparativa - Com colunas removidas */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-28 bg-minimal-white" 
         initial="hidden" 
@@ -430,7 +428,7 @@ const Landing = () => {
             </p>
           </div>
           
-          {/* Tabela de comparação de recursos em desktop */}
+          {/* Tabela de comparação de recursos em desktop - Com colunas removidas */}
           <div className="hidden lg:block overflow-x-auto">
             <Table className="w-full border-collapse">
               <TableHeader>
@@ -470,7 +468,7 @@ const Landing = () => {
             </Table>
           </div>
           
-          {/* Tabela de comparação responsiva para mobile - Exibição em cards */}
+          {/* Tabela de comparação responsiva para mobile - Exibição em cards - Com colunas removidas */}
           <div className="lg:hidden space-y-8">
             {comparisonData.solutions.map((solution, idx) => (
               <div 
