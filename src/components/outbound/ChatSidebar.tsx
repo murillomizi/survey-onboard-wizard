@@ -1,10 +1,16 @@
 
 import React from "react";
-import { Send, MessageCircle } from "lucide-react";
+import { Send, MessageCircle, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
 import Logo from "@/components/ui/logo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Message = {
   content: string;
@@ -36,10 +42,28 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       {/* Header with logo */}
       <div className="p-4 border-b border-minimal-gray-700 flex items-center justify-between">
         <Logo size="md" />
-        <span className="text-xs text-minimal-gray-400 font-medium flex items-center gap-1">
-          <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          Assistente ativo
-        </span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
+            >
+              <Edit size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
+            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
+              Editar modelo
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
+              Configurações
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
+              Começar nova conversa
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="flex-1 flex flex-col h-full overflow-hidden">
