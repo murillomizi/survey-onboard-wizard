@@ -30,7 +30,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
     e.preventDefault();
     
     if (!firstName || !lastName || !email || !password || !companyWebsite || !jobTitle) {
-      toast.error("Please fill in all fields");
+      toast.error("Por favor, preencha todos os campos");
       return;
     }
     
@@ -45,15 +45,16 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       });
       
       if (error) {
-        toast.error(error.message || "Registration failed");
+        toast.error(error.message || "Falha no cadastro");
         return;
       }
       
-      toast.success("Registration successful! Please check your email to verify your account.");
+      toast.success("Cadastro realizado com sucesso! Por favor, verifique seu email para confirmar sua conta.");
       onClose();
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Registration error:", error);
-      toast.error("Error during registration");
+      console.error("Erro no cadastro:", error);
+      toast.error("Erro durante o cadastro");
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +63,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
   return (
     <div className={`p-6 bg-minimal-white rounded-lg shadow-lg ${className}`}>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Create Account</h2>
+        <h2 className="text-2xl font-bold">Criar Conta</h2>
         <button 
           onClick={onClose}
           className="text-minimal-gray-500 hover:text-minimal-gray-700"
@@ -75,7 +76,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="firstName" className="block text-sm font-medium mb-1">
-              First Name
+              Nome
             </Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -84,7 +85,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
               <Input
                 id="firstName"
                 type="text"
-                placeholder="John"
+                placeholder="João"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
@@ -95,7 +96,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
           
           <div>
             <Label htmlFor="lastName" className="block text-sm font-medium mb-1">
-              Last Name
+              Sobrenome
             </Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -104,7 +105,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
               <Input
                 id="lastName"
                 type="text"
-                placeholder="Doe"
+                placeholder="Silva"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
@@ -116,7 +117,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         
         <div>
           <Label htmlFor="email" className="block text-sm font-medium mb-1">
-            Professional Email
+            Email Profissional
           </Label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -125,7 +126,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
             <Input
               id="email"
               type="email"
-              placeholder="your@company.com"
+              placeholder="seu@empresa.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -136,7 +137,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         
         <div>
           <Label htmlFor="password" className="block text-sm font-medium mb-1">
-            Password
+            Senha
           </Label>
           <Input
             id="password"
@@ -151,7 +152,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         
         <div>
           <Label htmlFor="companyWebsite" className="block text-sm font-medium mb-1">
-            Company Website
+            Site da Empresa
           </Label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -160,7 +161,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
             <Input
               id="companyWebsite"
               type="url"
-              placeholder="https://company.com"
+              placeholder="https://empresa.com"
               value={companyWebsite}
               onChange={(e) => setCompanyWebsite(e.target.value)}
               required
@@ -171,7 +172,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         
         <div>
           <Label htmlFor="jobTitle" className="block text-sm font-medium mb-1">
-            Job Title
+            Cargo
           </Label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -180,7 +181,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
             <Input
               id="jobTitle"
               type="text"
-              placeholder="Sales Director"
+              placeholder="Diretor de Vendas"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               required
@@ -197,22 +198,22 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
           {isLoading ? (
             <>
               <Loader className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
+              Criando conta...
             </>
           ) : (
-            "Create Account"
+            "Criar Conta"
           )}
         </Button>
         
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Already have an account?{" "}
+            Já tem uma conta?{" "}
             <button
               type="button"
               onClick={switchToLogin}
               className="text-minimal-black font-medium hover:underline"
             >
-              Log in
+              Entrar
             </button>
           </p>
         </div>
