@@ -40,6 +40,7 @@ export function LoginForm({ onClose, className }: LoginFormProps) {
       
       toast.success("Login successful");
       navigate("/dashboard");
+      onClose();
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Error during login");

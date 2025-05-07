@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -268,11 +267,13 @@ const Landing = () => {
             <LogIn className="h-3.5 w-3.5 mr-1.5" />
             <span>Login</span> 
           </Button>
-          <Button size="sm" asChild className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800">
-            <Link to="/" className="flex items-center gap-1.5">
-              <UserPlus className="h-3.5 w-3.5" />
-              <span>Sign Up</span> 
-            </Link>
+          <Button 
+            size="sm" 
+            className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"
+            onClick={handleOpenLoginDialog}
+          >
+            <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+            <span>Sign Up</span>
           </Button>
         </div>
       </nav>
@@ -290,16 +291,18 @@ const Landing = () => {
             Hyper-personalized cold outreach at scale. Get more replies, book more meetings.
           </motion.p>
           <motion.div variants={fadeIn} custom={3}>
-            <Button size="lg" asChild className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-6 h-auto rounded-md">
-              <Link to="/" className="flex items-center gap-2">
-                Try Mizi Now <ArrowRight className="h-4 w-4" />
-              </Link>
+            <Button 
+              size="lg" 
+              className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-6 h-auto rounded-md"
+              onClick={handleOpenLoginDialog}
+            >
+              Try Mizi Now <ArrowRight className="h-4 w-4" />
             </Button>
           </motion.div>
         </div>
       </motion.section>
 
-      {/* New Section: Breaking Traditional Approach - Improved with better visuals and English text */}
+      {/* New Section: Breaking Traditional Approach */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-24 bg-minimal-white" 
         initial="hidden" 
@@ -469,7 +472,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Features section - Simplificado para estilo minimalista */}
+      {/* Features section */}
       <motion.section className="px-4 md:px-8 py-16 md:py-24 bg-minimal-gray-100" initial="hidden" animate="visible" variants={fadeIn} custom={4}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -502,7 +505,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Pricing Plans Section - NEW */}
+      {/* Pricing Plans Section */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-28 bg-minimal-white" 
         initial="hidden" 
@@ -591,7 +594,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Comparison table - With columns removed */}
+      {/* Comparison table */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-28 bg-minimal-gray-100" 
         initial="hidden" 
@@ -609,7 +612,7 @@ const Landing = () => {
             </p>
           </div>
           
-          {/* Comparison table for desktop - With columns removed */}
+          {/* Comparison table for desktop */}
           <div className="hidden lg:block overflow-x-auto">
             <Table className="w-full border-collapse">
               <TableHeader>
@@ -649,7 +652,7 @@ const Landing = () => {
             </Table>
           </div>
           
-          {/* Responsive comparison table for mobile - Card display - With columns removed */}
+          {/* Responsive comparison table for mobile */}
           <div className="lg:hidden space-y-8">
             {comparisonData.solutions.map((solution, idx) => (
               <div 
@@ -689,18 +692,16 @@ const Landing = () => {
           <div className="mt-16 text-center">
             <Button 
               size="lg" 
-              asChild 
               className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-3 h-auto rounded-md"
+              onClick={handleOpenLoginDialog}
             >
-              <Link to="/" className="flex items-center gap-2">
-                Try Mizi Now <ArrowRight className="h-4 w-4" />
-              </Link>
+              Try Mizi Now <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </motion.section>
 
-      {/* Testimonials section - Redesenhado para minimalismo */}
+      {/* Testimonials section */}
       <motion.section className="px-4 md:px-8 py-16 md:py-24 bg-minimal-white" initial="hidden" animate="visible" variants={fadeIn} custom={7}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
