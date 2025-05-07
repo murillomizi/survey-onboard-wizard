@@ -9,24 +9,33 @@ import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import ChatMessage from "@/components/ChatMessage";
+import { ChatInput } from "@/components/ui/chat-input";
 import { toast } from "@/components/ui/use-toast";
-import ChatInputComponent from "@/components/survey/ChatInput";
+import { 
+  ChatMessageList
+} from "@/components/ui/chat-message-list";
+import { 
+  ChatBubble, 
+  ChatBubbleMessage, 
+  ChatBubbleAvatar 
+} from "@/components/ui/chat-bubble";
 
-type MessageType = {
+type Message = {
   content: string;
-  type: "user" | "bot";
+  role: "user" | "assistant";
+  isLoading?: boolean;
 };
 
 type ContentType = "email" | "linkedin";
 
 const OutboundGenerator = () => {
-  const [messages, setMessages] = useState<MessageType[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       content: "Olá! Eu sou seu assistente para criação de cópias de outbound. Como posso ajudar hoje? Você pode me dar detalhes sobre seu público-alvo, produto ou serviço e objetivo da mensagem.",
-      type: "bot"
+      role: "assistant"
     }
   ]);
+  const [input, setInput] = useState("");
   const [contentType, setContentType] = useState<ContentType>("email");
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState({
@@ -34,25 +43,33 @@ const OutboundGenerator = () => {
     linkedin: "Aqui será exibido seu copy para mensagem de LinkedIn..."
   });
 
-  const handleSendMessage = (message: string) => {
-    if (!message.trim()) return;
+  const handleSendMessage = () => {
+    if (!input.trim()) return;
     
-    // Adiciona a mensagem do usuário
-    setMessages([...messages, { content: message, type: "user" }]);
+    // Add user message
+    const userMessage: Message = { content: input, role: "user" };
+    setMessages(prev => [...prev, userMessage]);
+    setInput("");
     
-    // Simula carregamento
+    // Set loading state
     setIsLoading(true);
     
-    // Simula resposta do bot (em produção, seria uma chamada API)
+    // Add temporary loading message
+    setMessages(prev => [...prev, { content: "", role: "assistant", isLoading: true }]);
+    
+    // Simulate AI response (would be replaced with actual API call)
     setTimeout(() => {
+      // Remove loading message
+      setMessages(prev => prev.filter(msg => !msg.isLoading));
+      
       let botResponse = "";
       let newContent = {
         email: generatedContent.email,
         linkedin: generatedContent.linkedin
       };
       
-      // Lógica simples para simular resposta baseada no input
-      if (message.toLowerCase().includes("software")) {
+      // Simple logic to simulate response based on input
+      if (input.toLowerCase().includes("software")) {
         botResponse = "Entendi que você trabalha com software. Criei um copy personalizado para seu produto de software.";
         newContent.email = `Assunto: Aumente a produtividade da sua equipe com nossa solução
 
@@ -72,7 +89,7 @@ Acompanho o crescimento da {empresa} e notei que vocês estão expandindo a áre
 Nosso software tem ajudado empresas similares a reduzirem custos operacionais em 25%. 
 
 Podemos conversar sobre como isso se aplicaria ao seu contexto? Tenho disponibilidade na próxima semana.`;
-      } else if (message.toLowerCase().includes("serviço") || message.toLowerCase().includes("servico")) {
+      } else if (input.toLowerCase().includes("serviço") || input.toLowerCase().includes("servico")) {
         botResponse = "Legal! Criei um copy personalizado para seu serviço de consultoria.";
         newContent.email = `Assunto: Transforme resultados com nossa consultoria especializada
 
@@ -118,11 +135,17 @@ Na {sua empresa}, temos ajudado profissionais como você a {benefício principal
 Podemos conversar sobre como isso poderia beneficiar especificamente os desafios que a {empresa} enfrenta atualmente?`;
       }
       
-      // Atualiza estados
-      setMessages(prevMessages => [...prevMessages, { content: botResponse, type: "bot" }]);
+      setMessages(prev => [...prev, { content: botResponse, role: "assistant" }]);
       setGeneratedContent(newContent);
       setIsLoading(false);
     }, 1500);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   const copyToClipboard = (text: string) => {
@@ -135,7 +158,7 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Chat LLM - Menu lateral fixo com tema escuro */}
+      {/* Chat LLM - Dark theme fixed sidebar */}
       <div className="w-full md:w-1/3 lg:w-1/4 bg-minimal-black text-minimal-white flex flex-col h-screen">
         <div className="p-4 border-b border-minimal-gray-700 flex items-center gap-2">
           <MessageSquare size={20} className="text-minimal-white" />
@@ -143,43 +166,45 @@ Podemos conversar sobre como isso poderia beneficiar especificamente os desafios
         </div>
         
         <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((msg, index) => (
-              <div 
-                key={index} 
-                className={`p-3 rounded-lg ${
-                  msg.type === "user" 
-                    ? "bg-minimal-gray-800 ml-auto" 
-                    : "bg-minimal-gray-700"
-                } max-w-[85%] ${msg.type === "user" ? "self-end" : "self-start"}`}
+          <ChatMessageList className="flex-1">
+            {messages.map((message, index) => (
+              <ChatBubble 
+                key={index}
+                variant={message.role === "user" ? "sent" : "received"}
               >
-                <p className="text-minimal-white text-sm">{msg.content}</p>
-                {index === messages.length - 1 && isLoading && msg.type === "bot" && (
-                  <div className="mt-2 flex items-center space-x-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse"></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-100"></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-200"></div>
-                  </div>
+                {message.role === "assistant" && (
+                  <ChatBubbleAvatar fallback="AI" />
                 )}
-              </div>
+                <ChatBubbleMessage 
+                  variant={message.role === "user" ? "sent" : "received"}
+                  isLoading={message.isLoading}
+                  className={message.role === "user" ? "bg-minimal-gray-800" : "bg-minimal-gray-700"}
+                >
+                  {message.content}
+                </ChatBubbleMessage>
+              </ChatBubble>
             ))}
-            {isLoading && messages[messages.length - 1].type === "user" && (
-              <div className="p-3 rounded-lg bg-minimal-gray-700 max-w-[85%]">
-                <div className="flex items-center space-x-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-100"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-minimal-gray-400 animate-pulse delay-200"></div>
-                </div>
-              </div>
-            )}
-          </div>
+          </ChatMessageList>
           
           <div className="p-4 border-t border-minimal-gray-700">
-            <ChatInputComponent 
-              onSend={handleSendMessage}
-              placeholder="Descreva seu produto ou serviço..."
-              disabled={isLoading}
-            />
+            <div className="relative flex items-center">
+              <ChatInput 
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Descreva seu produto ou serviço..."
+                disabled={isLoading}
+                className="pr-10 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700"
+              />
+              <Button 
+                size="icon" 
+                className="absolute right-2 bg-transparent hover:bg-minimal-gray-700 text-minimal-white"
+                onClick={handleSendMessage} 
+                disabled={isLoading || !input.trim()}
+              >
+                <Send size={18} />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
