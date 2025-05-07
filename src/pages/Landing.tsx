@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -54,11 +53,13 @@ const Landing = () => {
   const handleOpenLoginDialog = () => {
     setInitialDialogTab("login");
     setShowLoginDialog(true);
+    console.log("Opening login dialog");
   };
   
   const handleOpenRegisterDialog = () => {
     setInitialDialogTab("register");
     setShowLoginDialog(true);
+    console.log("Opening register dialog with register tab");
   };
   
   // Workflow steps para o processo - Reestilizado para minimalista
@@ -285,7 +286,7 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero section and other sections */}
+      {/* Hero section */}
       <motion.section className="px-4 md:px-8 py-16 md:py-28 max-w-7xl mx-auto" initial="hidden" animate="visible" variants={fadeIn} custom={0}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.div className="flex justify-center mb-8" variants={fadeIn} custom={0.5}>
@@ -575,7 +576,7 @@ const Landing = () => {
             {comparisonData.solutions.map((solution, idx) => (
               <div 
                 key={idx}
-                className={`p-6 rounded-lg border ${solution.highlight ? 'border-minimal-black shadow-md' : 'border-minimal-gray-200'}`}
+                className={`p-6 rounded-lg border ${solution.highlight ? 'border-minimal-black ring-2 ring-minimal-black' : 'border-minimal-gray-200'}`}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>

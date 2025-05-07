@@ -15,6 +15,7 @@ interface LoginDialogProps {
 }
 
 export function LoginDialog({ open, onOpenChange, initialTab = "login" }: LoginDialogProps) {
+  // Garantir que o estado inicial do tab seja corretamente definido pelo prop initialTab
   const [activeTab, setActiveTab] = useState<"login" | "register">(initialTab);
   
   const handleClose = () => {
@@ -28,6 +29,9 @@ export function LoginDialog({ open, onOpenChange, initialTab = "login" }: LoginD
   const switchToLogin = () => {
     setActiveTab("login");
   };
+
+  // Adicionar log para depuração
+  console.log("LoginDialog rendered with activeTab:", activeTab);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
