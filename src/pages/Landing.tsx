@@ -450,13 +450,8 @@ const Landing = () => {
                     className={`${solution.highlight ? 'bg-minimal-gray-100' : ''} hover:bg-minimal-gray-50`}
                   >
                     <TableCell className="align-top">
-                      <div className="font-bold text-lg mb-1 flex items-center gap-2">
+                      <div className="font-bold text-lg mb-1">
                         {solution.name}
-                        {solution.highlight && (
-                          <Badge variant="outline" className="bg-minimal-black text-minimal-white border-none">
-                            Recommended
-                          </Badge>
-                        )}
                       </div>
                       <div className="text-sm text-minimal-gray-600">{solution.description}</div>
                     </TableCell>
@@ -487,11 +482,6 @@ const Landing = () => {
                     <div className="font-bold text-xl mb-1">{solution.name}</div>
                     <div className="text-sm text-minimal-gray-600">{solution.description}</div>
                   </div>
-                  {solution.highlight && (
-                    <Badge variant="outline" className="bg-minimal-black text-minimal-white border-none">
-                      Recommended
-                    </Badge>
-                  )}
                 </div>
                 
                 <div className="space-y-3 mt-6">
