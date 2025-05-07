@@ -44,8 +44,8 @@ const Logo = ({ withText = true, size = "md", className = "", projectName = "miz
         </div>
       </div>
       {withText && (
-        <div className="flex items-center font-bold text-xl tracking-tight">
-          <span className="flex items-center">
+        <div className="flex items-center">
+          <span className="text-sm font-medium tracking-tight">
             {projectName}
           </span>
           <span className="text-xs ml-1 text-gray-400 font-normal cursor-pointer hover:text-gray-600">
