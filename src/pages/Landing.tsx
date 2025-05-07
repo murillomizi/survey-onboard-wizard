@@ -708,5 +708,52 @@ const Landing = () => {
     </div>
   );
 };
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+
+export default function RegisterForm() {
+  const { signUp } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await signUp(email, password);
+    if (error) {
+      setErrorMsg(error.message);
+    } else {
+      setSuccess(true);
+    }
+  };
+
+  if (success) {
+    return <p>Cadastro realizado! Verifique seu e-mail ✉️</p>;
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+      <input
+        type="email"
+        placeholder="Seu e-mail"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <br />
+      <input
+        type="password"
+        placeholder="Sua senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <br />
+      <button type="submit">Cadastrar</button>
+      {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
+    </form>
+  );
+}
 
 export default Landing;
