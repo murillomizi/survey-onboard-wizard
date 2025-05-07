@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb } from "lucide-react";
+import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +31,22 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     toast({
       title: "Conteúdo copiado!",
       description: "O texto foi copiado para a área de transferência."
+    });
+  };
+
+  // Download content as a text file
+  const downloadContent = (text: string, fileName: string) => {
+    const element = document.createElement("a");
+    const file = new Blob([text], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = fileName;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    
+    toast({
+      title: "Conteúdo baixado!",
+      description: `O arquivo ${fileName} foi baixado com sucesso.`
     });
   };
 
@@ -108,15 +124,26 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                       </div>
                       <span className="font-medium text-minimal-gray-700">Nova mensagem</span>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
-                      onClick={() => copyToClipboard(generatedContent.email)}
-                    >
-                      <Copy size={14} className="mr-1" />
-                      Copiar tudo
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
+                        onClick={() => downloadContent(generatedContent.email, "email_outbound.txt")}
+                      >
+                        <Download size={14} className="mr-1" />
+                        Baixar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
+                        onClick={() => copyToClipboard(generatedContent.email)}
+                      >
+                        <Copy size={14} className="mr-1" />
+                        Copiar tudo
+                      </Button>
+                    </div>
                   </div>
                   
                   {/* Email Subject Line */}
@@ -145,15 +172,26 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                   {generatedContent.linkedin}
                 </div>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="absolute top-2 right-2 bg-minimal-white hover:bg-minimal-gray-100 text-xs"
-                  onClick={() => copyToClipboard(generatedContent.linkedin)}
-                >
-                  <Copy size={14} className="mr-1" />
-                  Copiar
-                </Button>
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
+                    onClick={() => downloadContent(generatedContent.linkedin, "linkedin_outbound.txt")}
+                  >
+                    <Download size={14} className="mr-1" />
+                    Baixar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
+                    onClick={() => copyToClipboard(generatedContent.linkedin)}
+                  >
+                    <Copy size={14} className="mr-1" />
+                    Copiar
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
