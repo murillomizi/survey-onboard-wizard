@@ -25,22 +25,48 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Função para adicionar http:// ao início da URL se não existir
+  const formatWebsiteUrl = (url: string) => {
+    if (url && !url.match(/^https?:\/\//)) {
+      return `http://${url}`;
+    }
+    return url;
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!firstName) newErrors.firstName = "Nome é obrigatório";
+    if (!lastName) newErrors.lastName = "Sobrenome é obrigatório";
+    if (!email) newErrors.email = "Email é obrigatório";
+    if (!password) newErrors.password = "Senha é obrigatória";
+    if (!companyWebsite) newErrors.companyWebsite = "Site da empresa é obrigatório";
+    if (!jobTitle) newErrors.jobTitle = "Cargo é obrigatório";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!firstName || !lastName || !email || !password || !companyWebsite || !jobTitle) {
-      toast.error("Por favor, preencha todos os campos");
+    if (!validateForm()) {
+      toast.error("Por favor, preencha todos os campos obrigatórios");
       return;
     }
     
     setIsLoading(true);
     
     try {
+      // Formata a URL antes de enviar
+      const formattedWebsite = formatWebsiteUrl(companyWebsite);
+      
       const { error } = await signUp(email, password, {
         first_name: firstName,
         last_name: lastName,
-        company_website: companyWebsite,
+        company_website: formattedWebsite,
         job_title: jobTitle
       });
       
@@ -57,6 +83,17 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       toast.error("Erro durante o cadastro");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Manipulador específico para o campo de site da empresa
+  const handleWebsiteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCompanyWebsite(value);
+    
+    // Limpa o erro assim que o usuário começa a digitar
+    if (errors.companyWebsite) {
+      setErrors(prev => ({ ...prev, companyWebsite: "" }));
     }
   };
 
@@ -89,8 +126,9 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
-                className="pl-10 w-full"
+                className={`pl-10 w-full ${errors.firstName ? 'border-red-500' : ''}`}
               />
+              {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
             </div>
           </div>
           
@@ -109,8 +147,9 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
-                className="pl-10 w-full"
+                className={`pl-10 w-full ${errors.lastName ? 'border-red-500' : ''}`}
               />
+              {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
             </div>
           </div>
         </div>
@@ -130,8 +169,9 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="pl-10 w-full"
+              className={`pl-10 w-full ${errors.email ? 'border-red-500' : ''}`}
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
         </div>
         
@@ -146,8 +186,9 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full"
+            className={`w-full ${errors.password ? 'border-red-500' : ''}`}
           />
+          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
         </div>
         
         <div>
@@ -160,13 +201,14 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
             </div>
             <Input
               id="companyWebsite"
-              type="url"
-              placeholder="https://empresa.com"
+              type="text"
+              placeholder="www.empresa.com"
               value={companyWebsite}
-              onChange={(e) => setCompanyWebsite(e.target.value)}
+              onChange={handleWebsiteChange}
               required
-              className="pl-10 w-full"
+              className={`pl-10 w-full ${errors.companyWebsite ? 'border-red-500' : ''}`}
             />
+            {errors.companyWebsite && <p className="text-red-500 text-xs mt-1">{errors.companyWebsite}</p>}
           </div>
         </div>
         
@@ -185,8 +227,9 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               required
-              className="pl-10 w-full"
+              className={`pl-10 w-full ${errors.jobTitle ? 'border-red-500' : ''}`}
             />
+            {errors.jobTitle && <p className="text-red-500 text-xs mt-1">{errors.jobTitle}</p>}
           </div>
         </div>
         

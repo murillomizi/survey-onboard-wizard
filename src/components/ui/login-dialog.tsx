@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,14 @@ interface LoginDialogProps {
 export function LoginDialog({ open, onOpenChange, initialTab = "login" }: LoginDialogProps) {
   // Garantir que o estado inicial do tab seja corretamente definido pelo prop initialTab
   const [activeTab, setActiveTab] = useState<"login" | "register">(initialTab);
+  
+  // Atualizar o activeTab quando o initialTab mudar
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+      console.log("initialTab mudou para:", initialTab);
+    }
+  }, [initialTab]);
   
   const handleClose = () => {
     onOpenChange(false);
