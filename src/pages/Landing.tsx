@@ -139,10 +139,10 @@ const Landing = () => {
               variants={fadeIn} 
               custom={4}
             >
-              <div className="absolute top-0 right-0 w-20 h-20 -mt-2 -mr-2">
-                <svg viewBox="0 0 80 80" className="w-full h-full opacity-10">
-                  <path d="M40,10 C18,10 0,28 0,50 C0,72 18,90 40,90 C62,90 80,72 80,50 C80,28 62,10 40,10 Z M40,80 C23.4,80 10,66.6 10,50 C10,33.4 23.4,20 40,20 C56.6,20 70,33.4 70,50 C70,66.6 56.6,80 40,80 Z" fill="#000000" />
-                  <path d="M60,40 L20,40 L20,60 L60,60 L60,40 Z" fill="#000000" />
+              <div className="absolute top-3 right-3">
+                <svg viewBox="0 0 24 24" width="24" height="24" className="opacity-20">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
+                  <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold mb-4">Manual Personalization</h3>
@@ -180,13 +180,10 @@ const Landing = () => {
               variants={fadeIn} 
               custom={4.5}
             >
-              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-                <Logo size="sm" />
-              </div>
-              <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="white" strokeWidth="8" />
-                  <path d="M65,40 L45,60 L35,50" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+              <div className="absolute top-3 right-3">
+                <svg viewBox="0 0 24 24" width="24" height="24" className="opacity-20">
+                  <circle cx="12" cy="12" r="9" fill="none" stroke="white" strokeWidth="2" />
+                  <path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold mb-4 mt-2">Mizi AI</h3>
@@ -208,11 +205,7 @@ const Landing = () => {
                 </ul>
               </div>
               <div className="mt-6 pt-6 border-t border-minimal-gray-700">
-                <Button size="sm" asChild variant="outline" className="border-minimal-white text-minimal-white hover:bg-minimal-white hover:text-minimal-black">
-                  <Link to="/" className="flex items-center gap-2">
-                    Try Now <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </Button>
+                {/* Button removed from here */}
               </div>
             </motion.div>
             
@@ -222,10 +215,10 @@ const Landing = () => {
               variants={fadeIn} 
               custom={5}
             >
-              <div className="absolute top-0 right-0 w-20 h-20 -mt-2 -mr-2">
-                <svg viewBox="0 0 80 80" className="w-full h-full opacity-10">
-                  <path d="M40,10 C18,10 0,28 0,50 C0,72 18,90 40,90 C62,90 80,72 80,50 C80,28 62,10 40,10 Z M40,80 C23.4,80 10,66.6 10,50 C10,33.4 23.4,20 40,20 C56.6,20 70,33.4 70,50 C70,66.6 56.6,80 40,80 Z" fill="#000000" />
-                  <path d="M55,30 L25,30 L25,45 L55,45 L55,30 Z M55,55 L25,55 L25,70 L55,70 L55,55 Z" fill="#000000" />
+              <div className="absolute top-3 right-3">
+                <svg viewBox="0 0 24 24" width="24" height="24" className="opacity-20">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
+                  <path d="M7 8h10M7 12h10M7 16h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold mb-4">Generic Automation</h3>
