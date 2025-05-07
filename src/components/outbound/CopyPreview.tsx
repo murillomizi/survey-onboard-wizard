@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download } from "lucide-react";
 import { motion } from "framer-motion";
@@ -140,8 +139,8 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                         className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
                         onClick={() => copyToClipboard(generatedContent.email)}
                       >
-                        <Copy size={14} className="mr-1" />
-                        Copiar tudo
+                        <Send size={14} className="mr-1" />
+                        Disparar
                       </Button>
                     </div>
                   </div>
