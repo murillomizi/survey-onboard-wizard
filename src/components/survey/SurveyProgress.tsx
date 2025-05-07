@@ -25,18 +25,18 @@ const SurveyProgress = ({ currentStep, totalSteps, onBack }: SurveyProgressProps
               className="h-8 w-8 p-0 hover:bg-gray-100"
               title="Voltar para a pergunta anterior"
             >
-              <ArrowLeft size={16} className="text-gray-500" />
+              <ArrowLeft size={16} className="text-minimal-black" />
             </Button>
           )}
-          <div className="text-sm font-medium text-gray-600">
+          <div className="text-sm font-medium text-minimal-black">
             Passo {currentStep + 1} de {totalSteps}
           </div>
         </div>
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-minimal-gray-500">
           {Math.round(progressPercentage)}% concluído
         </div>
       </div>
-      <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
+      <Progress value={progressPercentage} className="h-1.5 bg-minimal-gray-100" />
     </div>
   );
 };
