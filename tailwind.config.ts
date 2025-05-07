@@ -75,6 +75,22 @@ export default {
 					secondary: '#a855f7',
 					accent: '#f0f4ff',
 					muted: '#f1f5f9'
+				},
+				// Adicionando novas cores minimalistas
+				minimal: {
+					black: '#000000',
+					white: '#FFFFFF',
+					gray: {
+						100: '#F8F8F8',
+						200: '#EEEEEE',
+						300: '#DDDDDD',
+						400: '#CCCCCC',
+						500: '#AAAAAA',
+						600: '#888888',
+						700: '#555555',
+						800: '#333333',
+						900: '#111111'
+					}
 				}
 			},
 			borderRadius: {
