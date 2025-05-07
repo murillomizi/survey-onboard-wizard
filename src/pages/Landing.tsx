@@ -135,7 +135,7 @@ const Landing = () => {
             <Logo size="lg" withText={false} />
           </motion.div>
           <motion.h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight" variants={fadeIn} custom={1}>
-            AI that actually understands your prospects.
+            AI that actually personalize your approach.
           </motion.h1>
           <motion.p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto" variants={fadeIn} custom={2}>
             Hyper-personalized cold outreach at scale. Get more replies, book more meetings.
