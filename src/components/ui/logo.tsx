@@ -16,9 +16,9 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
   };
 
   return (
-    <Link to="/" className={`flex items-center gap-2 ${className}`}>
+    <Link to="/" className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
-        {/* Logo minimalista combinando MZ e AI */}
+        {/* Logo icon similar to lemlist style */}
         <div className="relative flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -26,34 +26,25 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
             className={`${sizeClasses[size]} w-auto transition-all duration-300 hover:scale-105`}
             aria-label="Mizi Logo"
           >
-            {/* Background circle */}
-            <circle cx="16" cy="16" r="15" fill="#000000" />
+            {/* Background square with rounded corners */}
+            <rect x="2" y="2" width="28" height="28" rx="6" fill="#2563EB" />
             
-            {/* Abstract M design */}
+            {/* Stylized M letter */}
             <path
-              d="M8,10 L8,22 L10,22 L10,14 L13,19 L16,14 L16,22 L18,22 L18,10 L16,10 L13,16 L10,10 Z"
-              fill="#ffffff"
+              d="M9,8 L9,24 L12,24 L12,14 L16,20 L20,14 L20,24 L23,24 L23,8 L20,8 L16,16 L12,8 Z"
+              fill="#FFFFFF"
+              stroke="#FFFFFF"
+              strokeWidth="0.5"
             />
             
-            {/* Connect M and Z with AI element */}
-            <circle cx="19" cy="16" r="1.5" fill="none" stroke="#ffffff" strokeWidth="1" />
-            
-            {/* Abstract Z design */}
-            <path
-              d="M20,10 L26,10 L26,12 L22,20 L26,20 L26,22 L20,22 L20,20 L24,12 L20,12 Z"
-              fill="#ffffff"
-            />
-            
-            {/* Small connecting dots representing AI/data/intelligence */}
-            <circle cx="13" cy="16" r="0.8" fill="#ffffff" />
-            <circle cx="19" cy="14" r="0.7" fill="#ffffff" />
-            <circle cx="19" cy="18" r="0.7" fill="#ffffff" />
+            {/* Dot representing the connection point/AI element */}
+            <circle cx="16" cy="19" r="1.5" fill="#FFFFFF" />
           </svg>
         </div>
       </div>
       {withText && (
-        <span className="font-bold text-xl">
-          Mizi
+        <span className="font-bold text-xl tracking-tight">
+          mizi<span className="text-blue-600">.ai</span>
         </span>
       )}
     </Link>
