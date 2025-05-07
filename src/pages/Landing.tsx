@@ -83,59 +83,59 @@ const Landing = () => {
   // Dados da tabela comparativa - com colunas "Qualidade" e "ROI" removidas
   const comparisonData = {
     categories: [
-      "Personalização", 
-      "Escalabilidade", 
-      "Velocidade", 
-      "Custo-benefício",
-      "Aprendizado contínuo"
+      "Personalization", 
+      "Scalability", 
+      "Speed", 
+      "Cost-effectiveness",
+      "Continuous learning"
     ],
     solutions: [
       {
         name: "Mizi AI",
-        description: "Nossa plataforma de IA especializada em outreach",
+        description: "Our specialized AI platform for outreach",
         ratings: [5, 5, 5, 5, 5],
         benefits: [
-          "Personalização profunda baseada em contexto empresarial real",
-          "Capacidade de processar grandes volumes mantendo alta qualidade",
-          "Análise automática do ICP e personalização relevante",
-          "Mensagens que referenciam desafios específicos do prospect",
-          "Aprendizado contínuo com seu feedback e resultados"
+          "Deep personalization based on real business context",
+          "Ability to process large volumes while maintaining high quality",
+          "Automatic ICP analysis and relevant personalization",
+          "Messages that reference specific prospect challenges",
+          "Continuous learning with your feedback and results"
         ],
         highlight: true
       },
       {
-        name: "LLMs Genéricos",
-        description: "ChatGPT e similares para outreach",
+        name: "Generic LLMs",
+        description: "ChatGPT and similar tools for outreach",
         ratings: [3, 4, 5, 4, 3],
         benefits: [
-          "Personalização superficial sem contexto de negócios",
-          "Requer prompt engineering avançado",
-          "Saída inconsistente dependendo do prompt",
-          "Sem otimização específica para vendas B2B"
+          "Superficial personalization without business context",
+          "Requires advanced prompt engineering",
+          "Inconsistent output depending on prompt",
+          "No specific optimization for B2B sales"
         ],
         highlight: false
       },
       {
-        name: "Prospecção Manual",
-        description: "SDRs pesquisando e escrevendo manualmente",
+        name: "Manual Prospecting",
+        description: "SDRs manually researching and writing",
         ratings: [5, 1, 1, 1, 2],
         benefits: [
-          "Alta personalização, mas extremamente demorado",
-          "Impossível escalar sem aumentar equipe",
-          "Qualidade varia conforme o profissional",
-          "Custo elevado por contato personalizado"
+          "High personalization, but extremely time-consuming",
+          "Impossible to scale without increasing team size",
+          "Quality varies according to the professional",
+          "High cost per personalized contact"
         ],
         highlight: false
       },
       {
-        name: "Plataformas Tradicionais",
-        description: "Ferramentas de automação de outreach",
+        name: "Traditional Platforms",
+        description: "Outreach automation tools",
         ratings: [1, 5, 5, 3, 1],
         benefits: [
-          "Automação sem personalização real",
-          "Escalabilidade alta com templates genéricos",
-          "Taxa de resposta tipicamente baixa (1-2%)",
-          "Sem inteligência contextual sobre o prospect"
+          "Automation without real personalization",
+          "High scalability with generic templates",
+          "Typically low response rate (1-2%)",
+          "No contextual intelligence about the prospect"
         ],
         highlight: false
       }
@@ -155,11 +155,11 @@ const Landing = () => {
   
   const getRatingText = (rating) => {
     switch(rating) {
-      case 1: return "Fraco";
-      case 2: return "Básico";
-      case 3: return "Médio"; 
-      case 4: return "Bom";
-      case 5: return "Excelente";
+      case 1: return "Weak";
+      case 2: return "Basic";
+      case 3: return "Average"; 
+      case 4: return "Good";
+      case 5: return "Excellent";
       default: return "";
     }
   };
@@ -410,7 +410,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Tabela comparativa - Com colunas removidas */}
+      {/* Comparison table - With columns removed */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-28 bg-minimal-white" 
         initial="hidden" 
@@ -428,7 +428,7 @@ const Landing = () => {
             </p>
           </div>
           
-          {/* Tabela de comparação de recursos em desktop - Com colunas removidas */}
+          {/* Comparison table for desktop - With columns removed */}
           <div className="hidden lg:block overflow-x-auto">
             <Table className="w-full border-collapse">
               <TableHeader>
@@ -468,7 +468,7 @@ const Landing = () => {
             </Table>
           </div>
           
-          {/* Tabela de comparação responsiva para mobile - Exibição em cards - Com colunas removidas */}
+          {/* Responsive comparison table for mobile - Card display - With columns removed */}
           <div className="lg:hidden space-y-8">
             {comparisonData.solutions.map((solution, idx) => (
               <div 
