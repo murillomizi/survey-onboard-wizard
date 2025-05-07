@@ -1,67 +1,24 @@
 
 import * as React from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface ChatInputProps extends React.HTMLAttributes<HTMLDivElement> {
-  placeholder?: string;
-  onSend: (message: string) => void;
-  disabled?: boolean;
-  initialValue?: string;
-}
+interface ChatInputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement>{}
 
-export function ChatInput({
-  className,
-  placeholder = "Digite sua mensagem...",
-  onSend,
-  disabled = false,
-  initialValue = "",
-  ...props
-}: ChatInputProps) {
-  const [value, setValue] = React.useState(initialValue);
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-
-  const handleSend = () => {
-    if (!value.trim() || disabled) return;
-    onSend(value);
-    setValue("");
-    textareaRef.current?.focus();
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  return (
-    <div
-      className={cn("flex items-center space-x-2", className)}
+const ChatInput = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
+  ({ className, ...props }, ref) => (
+    <Textarea
+      autoComplete="off"
+      ref={ref}
+      name="message"
+      className={cn(
+        "max-h-12 px-4 py-3 bg-background text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-md flex items-center h-16 resize-none",
+        className,
+      )}
       {...props}
-    >
-      <Textarea
-        ref={textareaRef}
-        placeholder={placeholder}
-        className="max-h-12 px-4 py-3 bg-minimal-white text-sm placeholder:text-minimal-gray-500 rounded-full border border-minimal-gray-200 focus-visible:border-minimal-gray-300 resize-none flex-1"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
-        rows={1}
-      />
-      <Button
-        size="icon"
-        className="rounded-full w-10 h-10 bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 flex-shrink-0"
-        disabled={!value.trim() || disabled}
-        onClick={handleSend}
-        type="button"
-      >
-        <Send className="h-4 w-4" />
-        <span className="sr-only">Enviar mensagem</span>
-      </Button>
-    </div>
-  );
-}
+    />
+  ),
+);
+ChatInput.displayName = "ChatInput";
+
+export { ChatInput };
