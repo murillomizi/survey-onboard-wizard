@@ -1,9 +1,9 @@
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowRight, LogIn, UserPlus, Check, Package, Rocket, TrendingUp, Star, Shield } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, LogIn, UserPlus, Check, Package, Rocket, TrendingUp, Star, Shield, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Logo from "@/components/ui/logo";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { 
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "@/components/ui/sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -32,6 +34,145 @@ const fadeIn = {
       ease: "easeOut"
     }
   })
+};
+
+// Login form component
+const LoginForm = () => {
+  const { signIn, user } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error("Por favor, preencha todos os campos");
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast.error(error.message || "Erro ao fazer login");
+        return;
+      }
+      
+      toast.success("Login realizado com sucesso");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erro no login:", error);
+      toast.error("Erro ao realizar login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Check for existing session
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  if (showLoginForm) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden"
+        >
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Login</h2>
+              <button 
+                onClick={() => setShowLoginForm(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-1">
+                  Email
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium mb-1">
+                  Senha
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+              
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => toast.info("Funcionalidade em desenvolvimento")}
+                  className="text-sm text-gray-600 hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+              
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Entrando...
+                  </>
+                ) : (
+                  "Entrar"
+                )}
+              </Button>
+            </form>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <Button 
+      size="sm" 
+      variant="outline" 
+      className="border-minimal-gray-300 hover:bg-minimal-gray-100"
+      onClick={() => setShowLoginForm(true)}
+    >
+      <LogIn className="h-3.5 w-3.5 mr-1.5" />
+      <span>Login</span> 
+    </Button>
+  );
 };
 
 const Landing = () => {
@@ -232,12 +373,7 @@ const Landing = () => {
       <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
         <Logo size="md" />
         <div className="flex items-center gap-4">
-          <Button size="sm" variant="outline" asChild className="border-minimal-gray-300 hover:bg-minimal-gray-100">
-            <Link to="/" className="flex items-center gap-1.5">
-              <LogIn className="h-3.5 w-3.5" />
-              <span>Sign In</span> 
-            </Link>
-          </Button>
+          <LoginForm />
           <Button size="sm" asChild className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800">
             <Link to="/" className="flex items-center gap-1.5">
               <UserPlus className="h-3.5 w-3.5" />
