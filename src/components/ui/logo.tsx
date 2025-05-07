@@ -27,7 +27,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
             aria-label="Mizi Logo"
           >
             {/* Background square with rounded corners */}
-            <rect x="2" y="2" width="28" height="28" rx="6" fill="#2563EB" />
+            <rect x="2" y="2" width="28" height="28" rx="6" fill="#000000" />
             
             {/* Stylized M letter */}
             <path
@@ -44,7 +44,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
       </div>
       {withText && (
         <span className="font-bold text-xl tracking-tight">
-          mizi<span className="text-blue-600">.ai</span>
+          mizi
         </span>
       )}
     </Link>
