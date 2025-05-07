@@ -37,10 +37,10 @@ const ChatMessage = ({ content, type, isTyping = false }: ChatMessageProps) => {
       
       <div
         className={cn(
-          "max-w-[90%] rounded-[18px] px-4 py-3",
+          "max-w-[90%] rounded-[18px] px-4 py-3 text-left",
           type === "user" 
-            ? "bg-minimal-black text-minimal-white text-right" 
-            : "bg-minimal-white border border-minimal-gray-200 text-minimal-black shadow-sm text-left",
+            ? "bg-minimal-black text-minimal-white" 
+            : "bg-minimal-white border border-minimal-gray-200 text-minimal-black shadow-sm",
           isTyping && "min-w-[60px]"
         )}
       >

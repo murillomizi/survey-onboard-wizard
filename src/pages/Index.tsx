@@ -1,8 +1,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import ChatbotSurvey from "@/components/ChatbotSurvey";
 import Logo from "@/components/ui/logo";
-import ExpandableSurveyChat from "@/components/survey/ExpandableSurveyChat";
 
 const Index = () => {
   return (
@@ -41,7 +41,12 @@ const Index = () => {
         }}
         className="w-full max-w-[800px]"
       >
-        <ExpandableSurveyChat />
+        <motion.div 
+          className="transform transition-all duration-500 hover:shadow-lg hover:scale-[1.01] rounded-xl overflow-hidden"
+          whileHover={{ boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)" }}
+        >
+          <ChatbotSurvey />
+        </motion.div>
       </motion.div>
     </div>
   );
