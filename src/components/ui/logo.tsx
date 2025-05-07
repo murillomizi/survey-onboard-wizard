@@ -50,7 +50,7 @@ const Logo = ({ withText = true, size = "md", className = "" }: LogoProps) => {
       </div>
       {withText && (
         <span className="font-bold text-xl">
-          Mizi.app
+          Mizi
         </span>
       )}
     </Link>
