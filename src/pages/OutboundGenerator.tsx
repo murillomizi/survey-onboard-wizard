@@ -8,7 +8,7 @@ import CopyPreview from "@/components/outbound/CopyPreview";
 const OutboundGenerator = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      content: "Olá! Eu sou seu assistente para criação de cópias de outbound. Como posso ajudar hoje? Você pode me dar detalhes sobre seu público-alvo, produto ou serviço e objetivo da mensagem.",
+      content: "Olá! Sou seu assistente para criação de cópias de outbound. Como posso ajudar hoje?\n\nConte-me sobre seu produto ou serviço, público-alvo e principal objetivo da sua mensagem para que eu possa criar um copy personalizado.",
       role: "assistant"
     }
   ]);
@@ -16,8 +16,8 @@ const OutboundGenerator = () => {
   const [contentType, setContentType] = useState<ContentType>("email");
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState({
-    email: "Assunto: Aumentando resultados com nossa solução\n\nOlá {nome},\n\nEspero que esteja tudo bem com você.\n\nEncontrei seu perfil e acredito que nossa solução pode ajudar a {empresa} a superar os desafios atuais de mercado.\n\nNossos clientes têm obtido uma média de 27% de aumento em resultados após implementarem nossa plataforma.\n\nPodemos agendar uma breve demonstração de 15 minutos para mostrar como funciona?\n\nAtenciosamente,\n{seu nome}\n{sua empresa}",
-    linkedin: "Olá {nome}! \n\nAcompanho o trabalho da {empresa} e fiquei impressionado com os resultados que vocês têm alcançado no mercado. \n\nTrabalho com uma solução que tem ajudado empresas similares a aumentarem suas conversões em 32%. \n\nSeria interessante conversarmos sobre como poderíamos aplicar isso ao seu contexto? \n\nAguardo seu retorno!"
+    email: "Assunto: Aumente seus resultados com nossa solução inovadora\n\nOlá {nome},\n\nEspero que esteja tudo bem.\n\nEstou entrando em contato porque notei que a {empresa} tem se destacado no setor de {setor}, e acredito que nossa solução pode ajudar a potencializar ainda mais seus resultados.\n\nNossos clientes têm obtido:\n• 32% de aumento em conversões\n• Redução de 27% nos custos operacionais\n• ROI positivo em menos de 60 dias\n\nGostaria de compartilhar como aplicamos nossa metodologia para empresas similares à {empresa}. Podemos agendar 15 minutos para uma demonstração personalizada na próxima semana?\n\nAtenciosamente,\n{seu nome}\n{sua empresa}\n{seu contato}",
+    linkedin: "Olá {nome}! \n\nTenho acompanhado o trabalho da {empresa} e fiquei realmente impressionado com os resultados que vocês têm alcançado no mercado de {setor}.\n\nTrabalho com uma solução que tem ajudado empresas como a {empresa concorrente} a aumentarem suas conversões em 32% e reduzirem custos operacionais em quase um terço.\n\nSeria interessante conversarmos sobre como poderíamos aplicar essa abordagem ao contexto específico da {empresa}?\n\nPosso compartilhar alguns casos práticos em uma conversa rápida de 15 minutos.\n\nAguardo seu retorno!"
   });
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +69,7 @@ Nosso software permite:
 • Aumento de 28% na produtividade da equipe
 • Economia de até 22% em custos operacionais
 
-Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Podemos mostrar como nossa solução se aplicaria especificamente ao contexto da {empresa}.
+Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Posso mostrar como nossa solução se aplicaria especificamente ao contexto da {empresa}.
 
 Atenciosamente,
 {seu nome}
@@ -117,7 +117,7 @@ Recentemente, ajudamos a {empresa similar} a superar desafios muito parecidos co
 
 Seria possível uma breve conversa para mostrar como poderíamos aplicar essa metodologia ao contexto específico da {empresa}?`;
       } else {
-        botResponse = "Baseado no que você compartilhou, preparei algumas sugestões de copy para outbound. Você pode personalizá-las conforme sua necessidade específica.";
+        botResponse = "Baseado no que você compartilhou, preparei algumas sugestões de copy personalizadas para outbound. Você pode editá-las conforme sua necessidade específica.";
         newContent.email = `Assunto: Oportunidade para ampliar resultados na {empresa}
 
 Olá {nome},
@@ -173,7 +173,7 @@ Podemos agendar uma conversa rápida na próxima semana?`;
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-minimal-gray-100">
       <ChatSidebar 
         messages={messages}
         input={input}
