@@ -1,23 +1,17 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Send } from "lucide-react";
-import ChatMessage from "./ChatMessage";
-import ChatOptions from "./ChatOptions";
 import { surveySteps } from "./survey/SurveySteps";
 import { Message } from "./survey/types";
 import { useSurveyData } from "./survey/useSurveyData";
-import SliderInput from "./survey/SliderInput";
-import CSVFileUpload from "./survey/CSVFileUpload";
 import SurveyProgress from "./survey/SurveyProgress";
 import SurveySummary from "./survey/SurveySummary";
+import ChatContainer from "./survey/ChatContainer";
+import ChatFooter from "./survey/ChatFooter";
 
 const ChatbotSurvey = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentInput, setCurrentInput] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [showOptions, setShowOptions] = useState<{
@@ -26,7 +20,6 @@ const ChatbotSurvey = () => {
   } | null>(null);
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
-  const chatEndRef = useRef<HTMLDivElement>(null);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
   
   const {
@@ -36,10 +29,6 @@ const ChatbotSurvey = () => {
     hasSubmitted,
     handleSubmit
   } = useSurveyData();
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
     setMessages((prev) => [
@@ -62,8 +51,8 @@ const ChatbotSurvey = () => {
     }
   }, []);
 
-  const handleSendMessage = () => {
-    if (!currentInput.trim() && !showSlider) return;
+  const handleSendMessage = (message: string) => {
+    if (!message.trim() && !showSlider) return;
 
     setShowOptions(null);
     setShowSlider(false);
@@ -72,11 +61,11 @@ const ChatbotSurvey = () => {
     const currentStepData = surveySteps[currentStep];
     
     if (currentStepData.field === "websiteUrl") {
-      addMessage(currentInput, "user");
-      updateSurveyData("websiteUrl", currentInput);
+      addMessage(message, "user");
+      updateSurveyData("websiteUrl", message);
     } else if (currentStepData.field === "userEmail") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(currentInput)) {
+      if (!emailRegex.test(message)) {
         toast({
           title: "E-mail inválido",
           description: "Por favor, insira um e-mail válido.",
@@ -85,11 +74,9 @@ const ChatbotSurvey = () => {
         setIsWaitingForResponse(false);
         return;
       }
-      addMessage(currentInput, "user");
-      updateSurveyData("userEmail", currentInput);
+      addMessage(message, "user");
+      updateSurveyData("userEmail", message);
     }
-
-    setCurrentInput("");
 
     setTimeout(() => {
       setIsWaitingForResponse(false);
@@ -229,7 +216,6 @@ const ChatbotSurvey = () => {
     
     setShowOptions(null);
     setShowSlider(false);
-    setCurrentInput("");
     
     const prevStepData = surveySteps[previousStep];
     if (prevStepData.options) {
@@ -257,98 +243,29 @@ const ChatbotSurvey = () => {
         onBack={handleBack} 
       />
       
-      <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-6 scrollbar-hide max-w-[600px] mx-auto w-full">
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            content={message.content}
-            type={message.type}
-          />
-        ))}
-        
-        {isWaitingForResponse && (
-          <ChatMessage content="" type="bot" isTyping={true} />
-        )}
-        
-        {showOptions && (
-          <div className="mb-4">
-            <ChatOptions
-              options={showOptions.options}
-              onSelect={handleOptionSelect}
-            />
-          </div>
-        )}
-        
-        {showSlider && (
-          <SliderInput
-            value={sliderValue}
-            onChange={handleSliderChange}
-            onComplete={handleSliderComplete}
-          />
-        )}
-        
-        {currentStep === 7 && (
-          <CSVFileUpload onFileSelect={handleFileChange} />
-        )}
-        
-        <div ref={chatEndRef} />
-      </div>
+      <ChatContainer 
+        messages={messages}
+        isWaitingForResponse={isWaitingForResponse}
+        showOptions={showOptions}
+        showSlider={showSlider}
+        sliderValue={sliderValue}
+        currentStep={currentStep}
+        onOptionSelect={handleOptionSelect}
+        onSliderChange={handleSliderChange}
+        onSliderComplete={handleSliderComplete}
+        onFileChange={handleFileChange}
+      />
       
-      <div className="p-4 border-t border-minimal-gray-200 bg-white rounded-b-xl">
-        <div className="flex items-center gap-2 max-w-[600px] mx-auto">
-          {currentStep === 6 && (
-            <div className="relative flex-1">
-              <Input
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Digite seu e-mail..."
-                className="w-full bg-minimal-gray-50 border-minimal-gray-200 text-minimal-black rounded-full pr-12 focus:border-minimal-black focus:ring-1 focus:ring-minimal-gray-100 transition-all duration-200"
-              />
-              <Button
-                onClick={handleSendMessage}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 transition-all duration-200 p-0"
-              >
-                <Send size={14} />
-              </Button>
-            </div>
-          )}
-          
-          {currentStep < 6 && showOptions === null && !showSlider && (
-            <>
-              <div className="relative flex-1">
-                <Input
-                  value={currentInput}
-                  onChange={(e) => setCurrentInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  placeholder="Digite sua resposta..."
-                  className="w-full bg-minimal-gray-50 border-minimal-gray-200 text-minimal-black rounded-full pr-12 focus:border-minimal-black focus:ring-1 focus:ring-minimal-gray-100 transition-all duration-200"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800 transition-all duration-200 p-0"
-                >
-                  <Send size={14} />
-                </Button>
-              </div>
-            </>
-          )}
-          
-          {currentStep === surveySteps.length - 1 && (
-            <Button
-              onClick={onSubmitSurvey}
-              disabled={isSubmitting || hasSubmitted}
-              className={`w-full text-minimal-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 ${
-                hasSubmitted 
-                  ? "bg-minimal-gray-400" 
-                  : "bg-minimal-black hover:bg-minimal-gray-800"
-              }`}
-            >
-              {isSubmitting ? 'Salvando...' : hasSubmitted ? 'Enviado' : 'Continuar'}
-            </Button>
-          )}
-        </div>
-      </div>
+      <ChatFooter 
+        currentStep={currentStep}
+        totalSteps={surveySteps.length}
+        onSendMessage={handleSendMessage}
+        onSubmitSurvey={onSubmitSurvey}
+        isSubmitting={isSubmitting}
+        hasSubmitted={hasSubmitted}
+        showOptions={!!showOptions}
+        showSlider={showSlider}
+      />
     </div>
   );
 };
