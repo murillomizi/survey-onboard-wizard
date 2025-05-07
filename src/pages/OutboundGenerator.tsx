@@ -15,14 +15,6 @@ const OutboundGenerator = () => {
   const [input, setInput] = useState("");
   const [contentType, setContentType] = useState<ContentType>("email");
   const [isLoading, setIsLoading] = useState(false);
-  const [settings, setSettings] = useState({
-    canal: "linkedin",
-    funnelStage: "topo",
-    websiteUrl: "",
-    tamanho: 350,
-    tomVoz: "neutro",
-    gatilhos: "sem-gatilho"
-  });
   const [generatedContent, setGeneratedContent] = useState({
     email: "Assunto: Aumente seus resultados com nossa solução inovadora\n\nOlá {nome},\n\nEspero que esteja tudo bem.\n\nEstou entrando em contato porque notei que a {empresa} tem se destacado no setor de {setor}, e acredito que nossa solução pode ajudar a potencializar ainda mais seus resultados.\n\nNossos clientes têm obtido:\n• 32% de aumento em conversões\n• Redução de 27% nos custos operacionais\n• ROI positivo em menos de 60 dias\n\nGostaria de compartilhar como aplicamos nossa metodologia para empresas similares à {empresa}. Podemos agendar 15 minutos para uma demonstração personalizada na próxima semana?\n\nAtenciosamente,\n{seu nome}\n{sua empresa}\n{seu contato}",
     linkedin: "Olá {nome}! \n\nTenho acompanhado o trabalho da {empresa} e fiquei realmente impressionado com os resultados que vocês têm alcançado no mercado de {setor}.\n\nTrabalho com uma solução que tem ajudado empresas como a {empresa concorrente} a aumentarem suas conversões em 32% e reduzirem custos operacionais em quase um terço.\n\nSeria interessante conversarmos sobre como poderíamos aplicar essa abordagem ao contexto específico da {empresa}?\n\nPosso compartilhar alguns casos práticos em uma conversa rápida de 15 minutos.\n\nAguardo seu retorno!"
@@ -180,30 +172,15 @@ Podemos agendar uma conversa rápida na próxima semana?`;
     setContentType(value as ContentType);
   };
 
-  const handleSettingsChange = (field: string, value: any) => {
-    setSettings(prev => ({ ...prev, [field]: value }));
-    
-    // Notificar o usuário sobre a mudança
-    toast({
-      title: "Configuração atualizada",
-      description: `A configuração ${field} foi atualizada para ${value}.`,
-    });
-    
-    // Aqui você poderia regenerar o conteúdo baseado nas novas configurações
-    // ou enviar uma solicitação para a API para obter um novo conteúdo
-  };
-
   return (
     <div className="flex h-screen bg-minimal-gray-100">
       <ChatSidebar 
         messages={messages}
         input={input}
         isLoading={isLoading}
-        settings={settings}
         onInputChange={handleInputChange}
         onSendMessage={handleSendMessage}
         onKeyDown={handleKeyDown}
-        onSettingsChange={handleSettingsChange}
         chatEndRef={chatEndRef}
       />
       

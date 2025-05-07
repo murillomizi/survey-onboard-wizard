@@ -11,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import EditOptionsModal from "./EditOptionsModal";
 
 type Message = {
   content: string;
@@ -23,18 +22,9 @@ interface ChatSidebarProps {
   messages: Message[];
   input: string;
   isLoading: boolean;
-  settings: {
-    canal: string;
-    funnelStage: string;
-    websiteUrl: string;
-    tamanho: number;
-    tomVoz: string;
-    gatilhos: string;
-  };
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
-  onSettingsChange: (field: string, value: any) => void;
   chatEndRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -42,15 +32,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   messages,
   input,
   isLoading,
-  settings,
   onInputChange,
   onSendMessage,
   onKeyDown,
-  onSettingsChange,
   chatEndRef,
 }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
-
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
@@ -67,10 +53,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
-            <DropdownMenuItem 
-              className="text-xs hover:bg-minimal-gray-700"
-              onClick={() => setIsEditModalOpen(true)}
-            >
+            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
               Editar modelo
             </DropdownMenuItem>
             <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
@@ -134,14 +117,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </div>
         </div>
       </div>
-      
-      {/* Modal de edição */}
-      <EditOptionsModal
-        open={isEditModalOpen}
-        onOpenChange={setIsEditModalOpen}
-        currentSettings={settings}
-        onSettingsChange={onSettingsChange}
-      />
     </div>
   );
 };
