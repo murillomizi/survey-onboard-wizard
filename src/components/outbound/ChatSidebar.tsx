@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Send, MessageCircle, Edit, Lightbulb, Paperclip } from "lucide-react";
+import { Send, Edit, Lightbulb, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -131,43 +131,40 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          <div className="flex items-center justify-between mt-3 px-1 text-xs text-minimal-gray-400">
-            <div className="flex items-center gap-2">
-              <MessageCircle size={14} />
-              <span>Dê detalhes para melhores resultados</span>
+          {/* Controls row with improved layout */}
+          <div className="flex items-center justify-between mt-3 px-1">
+            {/* Attachment Button on the left */}
+            <div>
+              <input 
+                type="file" 
+                id="file-upload" 
+                className="hidden" 
+                onChange={handleFileInputChange} 
+              />
+              <label htmlFor="file-upload">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+                  asChild
+                >
+                  <span>
+                    <Paperclip size={14} />
+                    <span className="text-xs">Anexar</span>
+                  </span>
+                </Button>
+              </label>
             </div>
             
+            {/* ML Switch on the right */}
             <div className="flex items-center gap-2">
-              <span className={isMachineLearningEnabled ? "text-purple-400" : "text-minimal-gray-500"}>ML</span>
+              <span className={isMachineLearningEnabled ? "text-purple-400 text-xs" : "text-minimal-gray-500 text-xs"}>ML</span>
               <Switch 
                 checked={isMachineLearningEnabled}
                 onCheckedChange={setIsMachineLearningEnabled}
                 className="h-4 w-7 data-[state=checked]:bg-purple-500"
               />
             </div>
-          </div>
-          
-          {/* Attachment Button */}
-          <div className="flex justify-start mt-2 px-1">
-            <input 
-              type="file" 
-              id="file-upload" 
-              className="hidden" 
-              onChange={handleFileInputChange} 
-            />
-            <label htmlFor="file-upload">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
-                asChild
-              >
-                <span>
-                  <Paperclip size={14} />
-                  <span className="text-xs">Anexar</span>
-                </span>
-              </Button>
-            </label>
           </div>
         </div>
       </div>
