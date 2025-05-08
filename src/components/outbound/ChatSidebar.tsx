@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Send, MessageCircle, Edit, Lightbulb, Paperclip, Users, Database } from "lucide-react";
+import { Send, MessageCircle, Edit, Lightbulb, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -20,12 +20,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import EditOptionsModal from "./EditOptionsModal";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Message = {
   content: string;
@@ -55,20 +49,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMachineLearningEnabled, setIsMachineLearningEnabled] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
-  const [isPersonaPopoverOpen, setIsPersonaPopoverOpen] = useState(false);
-  const [selectedPersonaSource, setSelectedPersonaSource] = useState<string | null>(null);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       console.log("File selected:", e.target.files[0].name);
-      setSelectedPersonaSource(`Dataset: ${e.target.files[0].name}`);
       // Here you would handle the file upload
     }
-  };
-
-  const handlePersonaSelection = (source: string) => {
-    setSelectedPersonaSource(source);
-    setIsPersonaPopoverOpen(false);
   };
 
   return (
@@ -126,75 +112,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         </div>
         
         <div className="p-4 border-t border-minimal-gray-700 bg-minimal-gray-900/50">
-          {/* Persona Selector */}
-          <div className="mb-3">
-            <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="w-full h-8 justify-start text-xs bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white hover:bg-minimal-gray-700 hover:text-minimal-white"
-                >
-                  <Users size={14} className="mr-2 text-purple-400" />
-                  {selectedPersonaSource || "Selecionar persona para campanha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent 
-                className="w-72 p-3 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white"
-                align="start"
-              >
-                <Tabs defaultValue="dataset" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-minimal-gray-900">
-                    <TabsTrigger value="dataset" className="text-xs">Dataset</TabsTrigger>
-                    <TabsTrigger value="enrichment" className="text-xs">Enrichment</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="dataset" className="mt-2 space-y-2">
-                    <p className="text-xs text-minimal-gray-400 mb-2">Upload um arquivo CSV ou JSON com seus dados de contato</p>
-                    <input 
-                      type="file" 
-                      id="dataset-upload" 
-                      className="hidden" 
-                      accept=".csv,.json" 
-                      onChange={handleFileInputChange} 
-                    />
-                    <label htmlFor="dataset-upload">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-xs flex items-center gap-2 bg-minimal-gray-700"
-                        asChild
-                      >
-                        <span>
-                          <Database size={12} />
-                          Fazer upload de dataset
-                        </span>
-                      </Button>
-                    </label>
-                  </TabsContent>
-                  <TabsContent value="enrichment" className="mt-2 space-y-2">
-                    <p className="text-xs text-minimal-gray-400 mb-2">Conecte com uma ferramenta de sales enrichment</p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full text-xs flex items-center gap-2 bg-minimal-gray-700"
-                      onClick={() => handlePersonaSelection("Apollo.io")}
-                    >
-                      Apollo.io
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full text-xs flex items-center gap-2 bg-minimal-gray-700"
-                      onClick={() => handlePersonaSelection("ZoomInfo")}
-                    >
-                      ZoomInfo
-                    </Button>
-                  </TabsContent>
-                </Tabs>
-              </PopoverContent>
-            </Popover>
-          </div>
-
           <div className="relative">
             <ChatInput 
               value={input}

@@ -1,11 +1,16 @@
 import React, { useState } from "react";
-import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download } from "lucide-react";
+import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download, Users, Database } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type ContentType = "email" | "linkedin";
 
@@ -24,6 +29,8 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   onContentTypeChange,
 }) => {
   const [showRecommendations, setShowRecommendations] = useState(true);
+  const [isPersonaPopoverOpen, setIsPersonaPopoverOpen] = useState(false);
+  const [selectedPersonaSource, setSelectedPersonaSource] = useState<string | null>(null);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -31,6 +38,19 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       title: "Conteúdo copiado!",
       description: "O texto foi copiado para a área de transferência."
     });
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      console.log("File selected:", e.target.files[0].name);
+      setSelectedPersonaSource(`Dataset: ${e.target.files[0].name}`);
+      // Here you would handle the file upload
+    }
+  };
+
+  const handlePersonaSelection = (source: string) => {
+    setSelectedPersonaSource(source);
+    setIsPersonaPopoverOpen(false);
   };
 
   // Download content as a text file
@@ -88,11 +108,70 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
         className="mx-auto max-w-3xl"
       >
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-minimal-black">Copy de Outbound</h1>
-          <div className="hidden sm:flex items-center gap-1 text-xs text-minimal-gray-500">
-            <span className="inline-block w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-            Personalizado para sua marca
-          </div>
+          <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="h-9 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 hover:text-minimal-gray-900 shadow-sm"
+              >
+                <Users size={16} className="mr-2 text-purple-500" />
+                {selectedPersonaSource || "Selecionar persona para campanha"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent 
+              className="w-72 p-3 bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 shadow-md"
+              align="start"
+            >
+              <Tabs defaultValue="dataset" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 bg-minimal-gray-100 mb-3">
+                  <TabsTrigger value="dataset" className="text-xs">Dataset</TabsTrigger>
+                  <TabsTrigger value="enrichment" className="text-xs">Enrichment</TabsTrigger>
+                </TabsList>
+                <TabsContent value="dataset" className="mt-2 space-y-2">
+                  <p className="text-xs text-minimal-gray-600 mb-2">Upload um arquivo CSV ou JSON com seus dados de contato</p>
+                  <input 
+                    type="file" 
+                    id="preview-dataset-upload" 
+                    className="hidden" 
+                    accept=".csv,.json" 
+                    onChange={handleFileInputChange} 
+                  />
+                  <label htmlFor="preview-dataset-upload">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full text-xs flex items-center gap-2 bg-minimal-gray-100"
+                      asChild
+                    >
+                      <span>
+                        <Database size={12} />
+                        Fazer upload de dataset
+                      </span>
+                    </Button>
+                  </label>
+                </TabsContent>
+                <TabsContent value="enrichment" className="mt-2 space-y-2">
+                  <p className="text-xs text-minimal-gray-600 mb-2">Conecte com uma ferramenta de sales enrichment</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full text-xs flex items-center gap-2 bg-minimal-gray-100"
+                    onClick={() => handlePersonaSelection("Apollo.io")}
+                  >
+                    Apollo.io
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full text-xs flex items-center gap-2 bg-minimal-gray-100"
+                    onClick={() => handlePersonaSelection("ZoomInfo")}
+                  >
+                    ZoomInfo
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </PopoverContent>
+          </Popover>
         </div>
         
         <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden">
