@@ -6,12 +6,7 @@ import ChatSidebar from "@/components/outbound/ChatSidebar";
 import CopyPreview from "@/components/outbound/CopyPreview";
 
 const OutboundGenerator = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      content: "Olá! Sou seu assistente para criação de cópias de outbound. Como posso ajudar hoje?\n\nConte-me sobre seu produto ou serviço, público-alvo e principal objetivo da sua mensagem para que eu possa criar um copy personalizado.",
-      role: "assistant"
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [contentType, setContentType] = useState<ContentType>("email");
   const [isLoading, setIsLoading] = useState(false);
