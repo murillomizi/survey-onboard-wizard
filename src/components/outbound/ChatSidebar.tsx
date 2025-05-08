@@ -1,16 +1,25 @@
 
-import React from "react";
-import { Send, MessageCircle, Edit } from "lucide-react";
+import React, { useState } from "react";
+import { Send, MessageCircle, Edit, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
 import Logo from "@/components/ui/logo";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import EditOptionsModal from "./EditOptionsModal";
 
 type Message = {
   content: string;
@@ -37,6 +46,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onKeyDown,
   chatEndRef,
 }) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isMachineLearningEnabled, setIsMachineLearningEnabled] = useState(false);
+
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
@@ -53,7 +65,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
-            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
+            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700" onClick={() => setIsEditModalOpen(true)}>
               Editar modelo
             </DropdownMenuItem>
             <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
@@ -64,6 +76,26 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      
+      {/* Machine Learning Toggle */}
+      <div className="px-4 py-3 border-b border-minimal-gray-700 bg-minimal-gray-900/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Lightbulb size={16} className={isMachineLearningEnabled ? "text-purple-400" : "text-minimal-gray-500"} />
+            <span className="text-sm">Machine Learning</span>
+          </div>
+          <Switch 
+            checked={isMachineLearningEnabled}
+            onCheckedChange={setIsMachineLearningEnabled}
+            className="data-[state=checked]:bg-purple-500"
+          />
+        </div>
+        <p className="text-xs mt-1 text-minimal-gray-400">
+          {isMachineLearningEnabled 
+            ? "Personalizado para sua marca" 
+            : "Inativo - Ative para personalização avançada"}
+        </p>
       </div>
       
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -117,6 +149,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      <EditOptionsModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </div>
   );
 };
