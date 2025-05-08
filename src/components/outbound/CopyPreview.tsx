@@ -267,8 +267,8 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                     className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
                     onClick={() => copyToClipboard(generatedContent.linkedin)}
                   >
-                    <Copy size={14} className="mr-1" />
-                    Copiar
+                    <Send size={14} className="mr-1" />
+                    Disparar
                   </Button>
                 </div>
               </div>
