@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download, Users, Database } from "lucide-react";
+import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download, Users, Database, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,12 +22,14 @@ interface CopyPreviewProps {
     linkedin: string;
   };
   onContentTypeChange: (value: string) => void;
+  onEditClick: () => void;
 }
 
 const CopyPreview: React.FC<CopyPreviewProps> = ({
   contentType,
   generatedContent,
   onContentTypeChange,
+  onEditClick,
 }) => {
   const [showRecommendations, setShowRecommendations] = useState(true);
   const [isPersonaPopoverOpen, setIsPersonaPopoverOpen] = useState(false);
@@ -173,6 +175,16 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               </Tabs>
             </PopoverContent>
           </Popover>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onEditClick}
+            className="flex items-center gap-2 bg-minimal-white border-minimal-gray-300 hover:bg-minimal-gray-100"
+          >
+            <Pencil size={14} />
+            Editar copy
+          </Button>
         </div>
         
         <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden">
@@ -330,13 +342,9 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             <Button 
               variant="outline" 
               className="flex items-center gap-2 hover:bg-minimal-gray-200 transition-all border-minimal-gray-300"
-              onClick={() => {
-                toast({
-                  title: "Copy personalizado!",
-                  description: "Converse com o assistente para personalizar mais o conteúdo."
-                });
-              }}
+              onClick={onEditClick}
             >
+              <Pencil size={16} />
               Personalizar
             </Button>
             
