@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Mail, Linkedin } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
