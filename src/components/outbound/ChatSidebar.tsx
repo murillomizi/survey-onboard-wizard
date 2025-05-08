@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Send, MessageCircle, Edit, Lightbulb } from "lucide-react";
+import { Send, MessageCircle, Edit, Lightbulb, PaperClip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -48,6 +48,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMachineLearningEnabled, setIsMachineLearningEnabled] = useState(false);
+  const [isFileInputOpen, setIsFileInputOpen] = useState(false);
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      console.log("File selected:", e.target.files[0].name);
+      // Here you would handle the file upload
+    }
+  };
 
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
@@ -137,6 +145,29 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 className="h-4 w-7 data-[state=checked]:bg-purple-500"
               />
             </div>
+          </div>
+          
+          {/* Attachment Button */}
+          <div className="flex justify-start mt-2 px-1">
+            <input 
+              type="file" 
+              id="file-upload" 
+              className="hidden" 
+              onChange={handleFileInputChange} 
+            />
+            <label htmlFor="file-upload">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+                asChild
+              >
+                <span>
+                  <PaperClip size={14} />
+                  <span className="text-xs">Anexar</span>
+                </span>
+              </Button>
+            </label>
           </div>
         </div>
       </div>
