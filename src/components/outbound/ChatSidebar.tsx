@@ -78,26 +78,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         </DropdownMenu>
       </div>
       
-      {/* Machine Learning Toggle */}
-      <div className="px-4 py-3 border-b border-minimal-gray-700 bg-minimal-gray-900/50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Lightbulb size={16} className={isMachineLearningEnabled ? "text-purple-400" : "text-minimal-gray-500"} />
-            <span className="text-sm">Machine Learning</span>
-          </div>
-          <Switch 
-            checked={isMachineLearningEnabled}
-            onCheckedChange={setIsMachineLearningEnabled}
-            className="data-[state=checked]:bg-purple-500"
-          />
-        </div>
-        <p className="text-xs mt-1 text-minimal-gray-400">
-          {isMachineLearningEnabled 
-            ? "Personalizado para sua marca" 
-            : "Inativo - Ative para personalização avançada"}
-        </p>
-      </div>
-      
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message, index) => (
@@ -143,9 +123,20 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          <div className="mt-3 flex items-center gap-2 px-1">
-            <MessageCircle size={14} className="text-minimal-gray-400" />
-            <p className="text-xs text-minimal-gray-400">Dê detalhes sobre seu produto e público-alvo para melhores resultados</p>
+          <div className="flex items-center justify-between mt-3 px-1 text-xs text-minimal-gray-400">
+            <div className="flex items-center gap-2">
+              <MessageCircle size={14} />
+              <span>Dê detalhes para melhores resultados</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className={isMachineLearningEnabled ? "text-purple-400" : "text-minimal-gray-500"}>ML</span>
+              <Switch 
+                checked={isMachineLearningEnabled}
+                onCheckedChange={setIsMachineLearningEnabled}
+                className="h-4 w-7 data-[state=checked]:bg-purple-500"
+              />
+            </div>
           </div>
         </div>
       </div>
