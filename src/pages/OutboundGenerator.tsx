@@ -168,7 +168,7 @@ Podemos agendar uma conversa rápida na próxima semana?`;
   };
 
   return (
-    <div className="flex h-screen bg-minimal-gray-100">
+    <div className="flex h-screen bg-white">
       <ChatSidebar 
         messages={messages}
         input={input}
