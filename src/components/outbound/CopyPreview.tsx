@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Copy, Mail, Send, Linkedin, LightbulbOff, Lightbulb, Download, Users, Database } from "lucide-react";
 import { motion } from "framer-motion";
@@ -190,9 +191,9 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             </Tabs>
           </div>
           
-          <CardContent className="flex-1 p-0">
+          <CardContent className="p-0">
             {contentType === "email" ? (
-              <div className="border border-minimal-gray-200 rounded-lg shadow-inner overflow-hidden min-h-[400px] bg-white m-6">
+              <div className="border border-minimal-gray-200 rounded-lg shadow-inner overflow-y-auto max-h-[500px] bg-white m-6">
                 {/* Email Header */}
                 <div className="bg-minimal-gray-100 p-4 border-b border-minimal-gray-200">
                   <div className="flex justify-between items-center mb-3">
@@ -239,7 +240,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="bg-white border border-minimal-gray-200 rounded-lg p-6 min-h-[400px] relative m-6 shadow-inner">
+              <div className="bg-white border border-minimal-gray-200 rounded-lg p-6 overflow-y-auto max-h-[500px] relative m-6 shadow-inner">
                 <div className="absolute top-3 left-3 flex items-center gap-2">
                   <div className="bg-minimal-black text-white p-1 rounded-full">
                     <Linkedin size={16} />
