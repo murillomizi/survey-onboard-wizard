@@ -117,7 +117,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               value={input}
               onChange={onInputChange}
               onKeyDown={onKeyDown}
-              placeholder="Descreva seu produto ou serviço..."
+              placeholder="Ask Mizi..."
               disabled={isLoading}
               className="pr-10 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700 rounded-xl"
             />
