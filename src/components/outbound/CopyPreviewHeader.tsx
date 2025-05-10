@@ -33,7 +33,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
             className="h-9 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 hover:text-minimal-gray-900 shadow-sm"
           >
             <Users size={16} className="mr-2 text-purple-500" />
-            {selectedPersonaSource || "Selecionar persona para campanha"}
+            {selectedPersonaSource || "Persona"}
           </Button>
         </PopoverTrigger>
         <PopoverContent 
