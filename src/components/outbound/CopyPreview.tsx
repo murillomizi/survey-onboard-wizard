@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin } from "lucide-react";
+import { Mail, Linkedin, Send, Share2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -68,6 +68,27 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     toast({
       title: "Copy atualizado",
       description: `O conteúdo do ${contentType === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
+    });
+  };
+
+  const handleDispatch = () => {
+    const content = contentType === "email" 
+      ? `Assunto: ${emailSubject}\n\n${emailBody}`
+      : linkedinContent;
+      
+    // Copiar para a área de transferência
+    navigator.clipboard.writeText(content);
+    
+    toast({
+      title: "Conteúdo copiado!",
+      description: `O ${contentType === "email" ? "email" : "LinkedIn"} foi copiado para a área de transferência.`
+    });
+  };
+
+  const handleShare = () => {
+    toast({
+      title: "Compartilhar",
+      description: "Funcionalidade de compartilhamento será implementada em breve."
     });
   };
 
@@ -150,12 +171,22 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             )}
           </CardContent>
 
-          <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-end">
+          <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-center gap-4">
             <Button 
-              className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
-              onClick={handleSaveChanges}
+              className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6"
+              onClick={handleDispatch}
             >
-              Salvar Copy
+              <Send size={16} />
+              Disparar
+            </Button>
+            
+            <Button 
+              variant="outline"
+              className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all px-6"
+              onClick={handleShare}
+            >
+              <Share2 size={16} />
+              Compartilhar
             </Button>
           </div>
         </Card>
