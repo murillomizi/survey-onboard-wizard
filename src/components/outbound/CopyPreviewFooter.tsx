@@ -13,11 +13,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface CopyPreviewFooterProps {
-  onEditClick: () => void;
-}
+const CopyPreviewFooter: React.FC = () => {
+  // Função para lidar com a seleção de opções
+  const handleOptionSelect = (option: string) => {
+    console.log(`Opção selecionada: ${option}`);
+    // Aqui você poderia implementar a lógica para abrir um modal específico 
+    // baseado na opção selecionada ou enviar para um callback
+    
+    toast({
+      title: "Opção selecionada",
+      description: `Você selecionou: ${option}`
+    });
+  };
 
-const CopyPreviewFooter: React.FC<CopyPreviewFooterProps> = ({ onEditClick }) => {
   return (
     <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-between">
       <DropdownMenu>
@@ -86,13 +94,6 @@ const CopyPreviewFooter: React.FC<CopyPreviewFooterProps> = ({ onEditClick }) =>
       </Button>
     </div>
   );
-};
-
-// Função para lidar com a seleção de opções
-const handleOptionSelect = (option: string) => {
-  console.log(`Opção selecionada: ${option}`);
-  // Aqui você poderia implementar a lógica para abrir um modal específico 
-  // baseado na opção selecionada ou enviar para um callback
 };
 
 export default CopyPreviewFooter;

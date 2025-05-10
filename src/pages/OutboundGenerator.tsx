@@ -4,14 +4,12 @@ import { toast } from "@/components/ui/use-toast";
 import { Message, ContentType } from "@/types/outbound";
 import ChatSidebar from "@/components/outbound/ChatSidebar";
 import CopyPreview from "@/components/outbound/CopyPreview";
-import CopyEditor from "@/components/outbound/CopyEditor";
 
 const OutboundGenerator = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [contentType, setContentType] = useState<ContentType>("email");
   const [isLoading, setIsLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [generatedContent, setGeneratedContent] = useState({
     email: "Assunto: Aumente seus resultados com nossa solução inovadora\n\nOlá {nome},\n\nEspero que esteja tudo bem.\n\nEstou entrando em contato porque notei que a {empresa} tem se destacado no setor de {setor}, e acredito que nossa solução pode ajudar a potencializar ainda mais seus resultados.\n\nNossos clientes têm obtido:\n• 32% de aumento em conversões\n• Redução de 27% nos custos operacionais\n• ROI positivo em menos de 60 dias\n\nGostaria de compartilhar como aplicamos nossa metodologia para empresas similares à {empresa}. Podemos agendar 15 minutos para uma demonstração personalizada na próxima semana?\n\nAtenciosamente,\n{seu nome}\n{sua empresa}\n{seu contato}",
     linkedin: "Olá {nome}! \n\nTenho acompanhado o trabalho da {empresa} e fiquei realmente impressionado com os resultados que vocês têm alcançado no mercado de {setor}.\n\nTrabalho com uma solução que tem ajudado empresas como a {empresa concorrente} a aumentarem suas conversões em 32% e reduzirem custos operacionais em quase um terço.\n\nSeria interessante conversarmos sobre como poderíamos aplicar essa abordagem ao contexto específico da {empresa}?\n\nPosso compartilhar alguns casos práticos em uma conversa rápida de 15 minutos.\n\nAguardo seu retorno!"
@@ -169,16 +167,6 @@ Podemos agendar uma conversa rápida na próxima semana?`;
     setContentType(value as ContentType);
   };
 
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-    if (!isEditing) {
-      toast({
-        title: "Modo de edição ativado",
-        description: "Você pode editar diretamente o conteúdo do copy."
-      });
-    }
-  };
-
   const handleContentUpdate = (type: ContentType, newContent: string) => {
     setGeneratedContent(prev => ({
       ...prev,
@@ -204,22 +192,12 @@ Podemos agendar uma conversa rápida na próxima semana?`;
       />
       
       <div className="ml-80 flex-1 h-full overflow-hidden">
-        {isEditing ? (
-          <CopyEditor
-            contentType={contentType}
-            generatedContent={generatedContent}
-            onContentTypeChange={handleContentTypeChange}
-            onContentUpdate={handleContentUpdate}
-            onCloseEditor={() => setIsEditing(false)}
-          />
-        ) : (
-          <CopyPreview 
-            contentType={contentType}
-            generatedContent={generatedContent}
-            onContentTypeChange={handleContentTypeChange}
-            onEditClick={toggleEditMode}
-          />
-        )}
+        <CopyPreview 
+          contentType={contentType}
+          generatedContent={generatedContent}
+          onContentTypeChange={handleContentTypeChange}
+          onContentUpdate={handleContentUpdate}
+        />
       </div>
     </div>
   );

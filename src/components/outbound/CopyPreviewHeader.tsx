@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Pencil, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -10,7 +10,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CopyPreviewHeaderProps {
-  onEditClick: () => void;
   selectedPersonaSource: string | null;
   isPersonaPopoverOpen: boolean;
   setIsPersonaPopoverOpen: (isOpen: boolean) => void;
@@ -19,7 +18,6 @@ interface CopyPreviewHeaderProps {
 }
 
 const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
-  onEditClick,
   selectedPersonaSource,
   isPersonaPopoverOpen,
   setIsPersonaPopoverOpen,
@@ -93,15 +91,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
         </PopoverContent>
       </Popover>
       
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={onEditClick}
-        className="flex items-center gap-2 bg-minimal-white border-minimal-gray-300 hover:bg-minimal-gray-100"
-      >
-        <Pencil size={14} />
-        Editar copy
-      </Button>
+      {/* O botão de editar copy foi removido */}
     </div>
   );
 };
