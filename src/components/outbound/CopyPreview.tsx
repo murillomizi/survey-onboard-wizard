@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin, AlertTriangle, Save, BoldIcon, ItalicIcon, ListIcon, UnderlineIcon, Type, Variable } from "lucide-react";
+import { Mail, Linkedin, AlertTriangle, Save, BoldIcon, ItalicIcon, ListIcon, UnderlineIcon } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +12,6 @@ import CopyPreviewFooter from "./CopyPreviewFooter";
 import OutboundTips from "./OutboundTips";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -29,16 +28,6 @@ interface CopyPreviewProps {
   onContentTypeChange: (value: string) => void;
   onContentUpdate: (type: ContentType, content: string) => void;
 }
-
-const variableOptions = [
-  { label: "Nome", value: "{nome}" },
-  { label: "Empresa", value: "{empresa}" },
-  { label: "Setor", value: "{setor}" },
-  { label: "Empresa Concorrente", value: "{empresa concorrente}" },
-  { label: "Seu Nome", value: "{seu nome}" },
-  { label: "Sua Empresa", value: "{sua empresa}" },
-  { label: "Seu Contato", value: "{seu contato}" },
-];
 
 const CopyPreview: React.FC<CopyPreviewProps> = ({
   contentType,
@@ -112,42 +101,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       title: "Copy atualizado",
       description: `O conteúdo do ${contentType === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
     });
-  };
-
-  const insertVariable = (variable: string) => {
-    if (contentType === "email") {
-      const textarea = document.getElementById("email-body") as HTMLTextAreaElement;
-      if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        const before = text.substring(0, start);
-        const after = text.substring(end, text.length);
-        setEmailBody(before + variable + after);
-        // Set cursor position after variable
-        setTimeout(() => {
-          textarea.focus();
-          textarea.selectionStart = start + variable.length;
-          textarea.selectionEnd = start + variable.length;
-        }, 10);
-      }
-    } else {
-      const textarea = document.getElementById("linkedin-content") as HTMLTextAreaElement;
-      if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        const before = text.substring(0, start);
-        const after = text.substring(end, text.length);
-        setLinkedinContent(before + variable + after);
-        // Set cursor position after variable
-        setTimeout(() => {
-          textarea.focus();
-          textarea.selectionStart = start + variable.length;
-          textarea.selectionEnd = start + variable.length;
-        }, 10);
-      }
-    }
   };
 
   const applyFormattingToSelection = (formatting: string) => {
@@ -241,7 +194,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
           
           {/* Toolbar de formatação */}
           <div className="border-b border-minimal-gray-200 bg-minimal-gray-50 p-2 flex items-center gap-1 flex-wrap">
-            <div className="flex items-center mr-2">
+            <div className="flex items-center">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -314,24 +267,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                 </Tooltip>
               </TooltipProvider>
             </div>
-            
-            <div className="h-6 w-px bg-minimal-gray-300 mx-2" />
-            
-            <div className="flex-1 flex items-center gap-1 overflow-x-auto pb-1 flex-wrap">
-              <span className="text-xs text-minimal-gray-600 mr-1 flex items-center">
-                <Variable size={12} className="mr-1" /> Variáveis:
-              </span>
-              {variableOptions.map((variable) => (
-                <Badge 
-                  key={variable.value} 
-                  variant="outline"
-                  className="bg-minimal-white cursor-pointer hover:bg-minimal-gray-100"
-                  onClick={() => insertVariable(variable.value)}
-                >
-                  {variable.label}
-                </Badge>
-              ))}
-            </div>
           </div>
           
           <CardContent className="p-0">
@@ -388,7 +323,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             <div className="flex items-center">
               <AlertTriangle size={16} className="text-amber-500 mr-2" />
               <span className="text-xs text-minimal-gray-600">
-                Variáveis serão substituídas pelos dados do contato durante o envio
+                Exemplo usado: Maria Silva da TechSolutions
               </span>
             </div>
             
