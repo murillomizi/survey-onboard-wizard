@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Users } from "lucide-react";
+import { Users, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -91,7 +91,14 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
         </PopoverContent>
       </Popover>
       
-      {/* O botão de editar copy foi removido */}
+      {/* Botão Sua Empresa */}
+      <Button
+        variant="outline"
+        className="h-9 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 hover:text-minimal-gray-900 shadow-sm"
+      >
+        <Building2 size={16} className="mr-2 text-purple-500" />
+        Sua Empresa
+      </Button>
     </div>
   );
 };
