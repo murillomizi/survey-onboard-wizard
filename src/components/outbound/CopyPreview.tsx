@@ -1,23 +1,14 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin, AlertTriangle, Save, BoldIcon, ItalicIcon, ListIcon, UnderlineIcon } from "lucide-react";
+import { Mail, Linkedin } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentType } from "@/types/outbound";
 import CopyPreviewHeader from "./CopyPreviewHeader";
-import AIRecommendations from "./AIRecommendations";
-import CopyPreviewFooter from "./CopyPreviewFooter";
-import OutboundTips from "./OutboundTips";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface CopyPreviewProps {
   contentType: ContentType;
@@ -35,8 +26,8 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   onContentTypeChange,
   onContentUpdate,
 }) => {
-  const [isPersonaPopoverOpen, setIsPersonaPopoverOpen] = useState(false);
   const [selectedPersonaSource, setSelectedPersonaSource] = useState<string | null>(null);
+  const [isPersonaPopoverOpen, setIsPersonaPopoverOpen] = useState(false);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [linkedinContent, setLinkedinContent] = useState("");
@@ -53,40 +44,17 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     setLinkedinContent(generatedContent.linkedin);
   }, [generatedContent]);
 
+  const handlePersonaSelection = (source: string) => {
+    setSelectedPersonaSource(source);
+    setIsPersonaPopoverOpen(false);
+  };
+
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       console.log("File selected:", e.target.files[0].name);
       setSelectedPersonaSource(`Dataset: ${e.target.files[0].name}`);
       // Here you would handle the file upload
     }
-  };
-
-  const handlePersonaSelection = (source: string) => {
-    setSelectedPersonaSource(source);
-    setIsPersonaPopoverOpen(false);
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: "Conteúdo copiado!",
-      description: "O texto foi copiado para a área de transferência."
-    });
-  };
-
-  const downloadContent = (text: string, fileName: string) => {
-    const element = document.createElement("a");
-    const file = new Blob([text], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = fileName;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    
-    toast({
-      title: "Conteúdo baixado!",
-      description: `O arquivo ${fileName} foi baixado com sucesso.`
-    });
   };
 
   const handleSaveChanges = () => {
@@ -101,63 +69,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       title: "Copy atualizado",
       description: `O conteúdo do ${contentType === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
     });
-  };
-
-  const applyFormattingToSelection = (formatting: string) => {
-    const textarea = contentType === "email" 
-      ? document.getElementById("email-body") as HTMLTextAreaElement
-      : document.getElementById("linkedin-content") as HTMLTextAreaElement;
-    
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      
-      if (start === end) {
-        toast({
-          title: "Nenhum texto selecionado",
-          description: "Selecione um texto para aplicar a formatação.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const text = textarea.value;
-      const selectedText = text.substring(start, end);
-      let formattedText = "";
-      
-      switch(formatting) {
-        case "bold":
-          formattedText = `**${selectedText}**`;
-          break;
-        case "italic":
-          formattedText = `_${selectedText}_`;
-          break;
-        case "underline":
-          formattedText = `__${selectedText}__`;
-          break;
-        case "list":
-          formattedText = `\n• ${selectedText}`;
-          break;
-        default:
-          formattedText = selectedText;
-      }
-      
-      const before = text.substring(0, start);
-      const after = text.substring(end, text.length);
-      
-      if (contentType === "email") {
-        setEmailBody(before + formattedText + after);
-      } else {
-        setLinkedinContent(before + formattedText + after);
-      }
-      
-      // Set cursor position after formatted text
-      setTimeout(() => {
-        textarea.focus();
-        textarea.selectionStart = start + formattedText.length;
-        textarea.selectionEnd = start + formattedText.length;
-      }, 10);
-    }
   };
 
   return (
@@ -190,83 +101,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-          </div>
-          
-          {/* Toolbar de formatação */}
-          <div className="border-b border-minimal-gray-200 bg-minimal-gray-50 p-2 flex items-center gap-1 flex-wrap">
-            <div className="flex items-center">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => applyFormattingToSelection("bold")}
-                      className="h-8 w-8 p-0"
-                    >
-                      <BoldIcon size={14} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Negrito</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => applyFormattingToSelection("italic")}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ItalicIcon size={14} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Itálico</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => applyFormattingToSelection("underline")}
-                      className="h-8 w-8 p-0"
-                    >
-                      <UnderlineIcon size={14} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Sublinhado</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => applyFormattingToSelection("list")}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ListIcon size={14} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Adicionar item de lista</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
           </div>
           
           <CardContent className="p-0">
@@ -316,28 +150,15 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             )}
           </CardContent>
 
-          {/* AI Recommendations Section */}
-          <AIRecommendations contentType={contentType} />
-          
-          <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-between">
-            <div className="flex items-center">
-              <AlertTriangle size={16} className="text-amber-500 mr-2" />
-              <span className="text-xs text-minimal-gray-600">
-                Exemplo usado: Maria Silva da TechSolutions
-              </span>
-            </div>
-            
+          <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-end">
             <Button 
               className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
               onClick={handleSaveChanges}
             >
-              <Save size={16} />
               Salvar Copy
             </Button>
           </div>
         </Card>
-
-        <OutboundTips />
       </motion.div>
     </div>
   );
