@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Pencil, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 
@@ -11,14 +11,9 @@ interface CopyPreviewFooterProps {
 const CopyPreviewFooter: React.FC<CopyPreviewFooterProps> = ({ onEditClick }) => {
   return (
     <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-between">
-      <Button 
-        variant="outline" 
-        className="flex items-center gap-2 hover:bg-minimal-gray-200 transition-all border-minimal-gray-300"
-        onClick={onEditClick}
-      >
-        <Pencil size={16} />
+      <div className="flex items-center gap-2 px-4 py-2 border border-minimal-gray-300 rounded-md text-minimal-gray-600 bg-minimal-white">
         Personalizar
-      </Button>
+      </div>
       
       <Button 
         className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
