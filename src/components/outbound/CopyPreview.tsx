@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin, Send, Share2 } from "lucide-react";
+import { Mail, Linkedin, Send, Share2, Plus, ChevronRight } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,13 @@ import { ContentType } from "@/types/outbound";
 import CopyPreviewHeader from "./CopyPreviewHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 interface CopyPreviewProps {
   contentType: ContentType;
@@ -31,7 +38,15 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [linkedinContent, setLinkedinContent] = useState("");
-
+  const [followUps, setFollowUps] = useState<{
+    email: { subject: string; body: string }[];
+    linkedin: string[];
+  }>({
+    email: [],
+    linkedin: []
+  });
+  const [activeFollowUpIndex, setActiveFollowUpIndex] = useState<number | null>(null);
+  
   // Extrair assunto e corpo do email ao carregar ou alterar o conteúdo
   React.useEffect(() => {
     // Para email
@@ -58,30 +73,65 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   };
 
   const handleSaveChanges = () => {
-    if (contentType === "email") {
-      const updatedEmailContent = `Assunto: ${emailSubject}\n\n${emailBody}`;
-      onContentUpdate("email", updatedEmailContent);
+    // Se estamos editando um follow-up
+    if (activeFollowUpIndex !== null) {
+      const newFollowUps = {...followUps};
+      
+      if (contentType === "email") {
+        newFollowUps.email[activeFollowUpIndex] = {
+          subject: emailSubject,
+          body: emailBody
+        };
+      } else {
+        newFollowUps.linkedin[activeFollowUpIndex] = linkedinContent;
+      }
+      
+      setFollowUps(newFollowUps);
+      toast({
+        title: "Follow-up atualizado",
+        description: `O follow-up #${activeFollowUpIndex + 1} foi atualizado com sucesso.`
+      });
     } else {
-      onContentUpdate("linkedin", linkedinContent);
+      // Se estamos editando o conteúdo principal
+      if (contentType === "email") {
+        const updatedEmailContent = `Assunto: ${emailSubject}\n\n${emailBody}`;
+        onContentUpdate("email", updatedEmailContent);
+      } else {
+        onContentUpdate("linkedin", linkedinContent);
+      }
+      
+      toast({
+        title: "Copy atualizado",
+        description: `O conteúdo do ${contentType === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
+      });
     }
-    
-    toast({
-      title: "Copy atualizado",
-      description: `O conteúdo do ${contentType === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
-    });
   };
 
   const handleDispatch = () => {
-    const content = contentType === "email" 
-      ? `Assunto: ${emailSubject}\n\n${emailBody}`
-      : linkedinContent;
+    let contentToDispatch = "";
+    
+    // Determinar qual conteúdo está sendo despachado
+    if (activeFollowUpIndex !== null) {
+      if (contentType === "email") {
+        const followUp = followUps.email[activeFollowUpIndex];
+        contentToDispatch = `Assunto: ${followUp.subject}\n\n${followUp.body}`;
+      } else {
+        contentToDispatch = followUps.linkedin[activeFollowUpIndex];
+      }
+    } else {
+      contentToDispatch = contentType === "email" 
+        ? `Assunto: ${emailSubject}\n\n${emailBody}`
+        : linkedinContent;
+    }
       
     // Copiar para a área de transferência
-    navigator.clipboard.writeText(content);
+    navigator.clipboard.writeText(contentToDispatch);
     
     toast({
       title: "Conteúdo copiado!",
-      description: `O ${contentType === "email" ? "email" : "LinkedIn"} foi copiado para a área de transferência.`
+      description: activeFollowUpIndex !== null 
+        ? `O follow-up #${activeFollowUpIndex + 1} foi copiado para a área de transferência.`
+        : `O ${contentType === "email" ? "email" : "LinkedIn"} foi copiado para a área de transferência.`
     });
   };
 
@@ -90,6 +140,57 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       title: "Compartilhar",
       description: "Funcionalidade de compartilhamento será implementada em breve."
     });
+  };
+
+  const addFollowUp = () => {
+    const newFollowUps = {...followUps};
+    
+    if (contentType === "email") {
+      const newSubject = `RE: ${emailSubject}`;
+      const newBody = "Olá,\n\nApenas um follow-up sobre meu email anterior.\n\nAguardo seu retorno.\n\nAtenciosamente,\nCarlos Santos";
+      
+      newFollowUps.email.push({
+        subject: newSubject,
+        body: newBody
+      });
+    } else {
+      newFollowUps.linkedin.push("Olá,\n\nApenas um follow-up sobre minha mensagem anterior no LinkedIn. Seria ótimo conversar sobre como podemos colaborar.\n\nAguardo seu retorno.\n\nCarlos Santos");
+    }
+    
+    setFollowUps(newFollowUps);
+    
+    // Selecionar automaticamente o novo follow-up
+    const newIndex = contentType === "email" ? newFollowUps.email.length - 1 : newFollowUps.linkedin.length - 1;
+    handleSelectFollowUp(newIndex);
+    
+    toast({
+      title: "Follow-up criado",
+      description: `Um novo follow-up foi adicionado à cadência de ${contentType === "email" ? "email" : "LinkedIn"}.`
+    });
+  };
+
+  const handleSelectFollowUp = (index: number | null) => {
+    setActiveFollowUpIndex(index);
+    
+    if (index === null) {
+      // Voltar ao conteúdo principal
+      const subjectMatch = generatedContent.email.match(/Assunto: (.*?)(\n|$)/);
+      const subject = subjectMatch ? subjectMatch[1] : "";
+      const body = generatedContent.email.replace(/Assunto: (.*?)(\n|$)/, '').trim();
+      
+      setEmailSubject(subject);
+      setEmailBody(body);
+      setLinkedinContent(generatedContent.linkedin);
+    } else {
+      // Carregar o follow-up selecionado
+      if (contentType === "email") {
+        const { subject, body } = followUps.email[index];
+        setEmailSubject(subject);
+        setEmailBody(body);
+      } else {
+        setLinkedinContent(followUps.linkedin[index]);
+      }
+    }
   };
 
   return (
@@ -122,6 +223,54 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+          </div>
+          
+          {/* Follow-up selector */}
+          <div className="bg-minimal-gray-50 border-b border-minimal-gray-200 p-2 flex items-center justify-between">
+            <div className="flex items-center gap-1 overflow-x-auto">
+              <Button 
+                variant={activeFollowUpIndex === null ? "default" : "ghost"}
+                size="sm" 
+                className={`text-xs ${activeFollowUpIndex === null ? "bg-minimal-black text-white" : ""}`}
+                onClick={() => handleSelectFollowUp(null)}
+              >
+                Mensagem inicial
+              </Button>
+              
+              {contentType === "email" && followUps.email.map((_, index) => (
+                <Button
+                  key={`email-followup-${index}`}
+                  variant={activeFollowUpIndex === index ? "default" : "ghost"}
+                  size="sm"
+                  className={`text-xs ${activeFollowUpIndex === index ? "bg-minimal-black text-white" : ""}`}
+                  onClick={() => handleSelectFollowUp(index)}
+                >
+                  Follow-up #{index + 1}
+                </Button>
+              ))}
+              
+              {contentType === "linkedin" && followUps.linkedin.map((_, index) => (
+                <Button
+                  key={`linkedin-followup-${index}`}
+                  variant={activeFollowUpIndex === index ? "default" : "ghost"}
+                  size="sm"
+                  className={`text-xs ${activeFollowUpIndex === index ? "bg-minimal-black text-white" : ""}`}
+                  onClick={() => handleSelectFollowUp(index)}
+                >
+                  Follow-up #{index + 1}
+                </Button>
+              ))}
+            </div>
+            
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs flex items-center gap-1"
+              onClick={addFollowUp}
+            >
+              <Plus size={14} />
+              Follow-up
+            </Button>
           </div>
           
           <CardContent className="p-0">
@@ -171,23 +320,34 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             )}
           </CardContent>
 
-          <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-center gap-4">
-            <Button 
-              className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6"
-              onClick={handleDispatch}
-            >
-              <Send size={16} />
-              Disparar
-            </Button>
+          <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-between items-center">
+            <div className="flex items-center">
+              {(contentType === "email" && followUps.email.length > 0) || 
+               (contentType === "linkedin" && followUps.linkedin.length > 0) ? (
+                <Badge variant="outline" className="bg-minimal-white text-xs">
+                  {contentType === "email" ? followUps.email.length : followUps.linkedin.length} follow-ups na sequência
+                </Badge>
+              ) : null}
+            </div>
             
-            <Button 
-              variant="outline"
-              className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all px-6"
-              onClick={handleShare}
-            >
-              <Share2 size={16} />
-              Compartilhar
-            </Button>
+            <div className="flex gap-4">
+              <Button 
+                className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6"
+                onClick={handleDispatch}
+              >
+                <Send size={16} />
+                Disparar{activeFollowUpIndex !== null ? ` #${activeFollowUpIndex + 1}` : ""}
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all px-6"
+                onClick={handleShare}
+              >
+                <Share2 size={16} />
+                Compartilhar
+              </Button>
+            </div>
           </div>
         </Card>
       </motion.div>
