@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin, Send, Share2, Plus, ChevronRight } from "lucide-react";
+import { Mail, Linkedin, Send, Share2, Plus, ChevronRight, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -193,6 +192,32 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     }
   };
 
+  const handleDeleteFollowUp = (index: number) => {
+    const newFollowUps = {...followUps};
+    
+    if (contentType === "email") {
+      newFollowUps.email.splice(index, 1);
+    } else {
+      newFollowUps.linkedin.splice(index, 1);
+    }
+    
+    setFollowUps(newFollowUps);
+    
+    // If we're deleting the active follow-up, go back to the original message
+    if (activeFollowUpIndex === index) {
+      handleSelectFollowUp(null);
+    } 
+    // If we're deleting a follow-up with an index less than the active one, we need to adjust the active index
+    else if (activeFollowUpIndex !== null && activeFollowUpIndex > index) {
+      setActiveFollowUpIndex(activeFollowUpIndex - 1);
+    }
+    
+    toast({
+      title: "Follow-up removido",
+      description: `O follow-up #${index + 1} foi removido com sucesso.`
+    });
+  };
+
   return (
     <div className="flex-1 bg-gradient-to-br from-minimal-white to-minimal-gray-100 p-6 overflow-y-auto">
       <motion.div 
@@ -238,27 +263,45 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               </Button>
               
               {contentType === "email" && followUps.email.map((_, index) => (
-                <Button
-                  key={`email-followup-${index}`}
-                  variant={activeFollowUpIndex === index ? "default" : "ghost"}
-                  size="sm"
-                  className={`text-xs ${activeFollowUpIndex === index ? "bg-minimal-black text-white" : ""}`}
-                  onClick={() => handleSelectFollowUp(index)}
-                >
-                  Follow-up #{index + 1}
-                </Button>
+                <div key={`email-followup-${index}`} className="flex items-center">
+                  <Button
+                    variant={activeFollowUpIndex === index ? "default" : "ghost"}
+                    size="sm"
+                    className={`text-xs ${activeFollowUpIndex === index ? "bg-minimal-black text-white" : ""}`}
+                    onClick={() => handleSelectFollowUp(index)}
+                  >
+                    Follow-up #{index + 1}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-0 h-6 w-6 ml-1 hover:bg-red-100"
+                    onClick={() => handleDeleteFollowUp(index)}
+                  >
+                    <X size={14} className="text-red-500" />
+                  </Button>
+                </div>
               ))}
               
               {contentType === "linkedin" && followUps.linkedin.map((_, index) => (
-                <Button
-                  key={`linkedin-followup-${index}`}
-                  variant={activeFollowUpIndex === index ? "default" : "ghost"}
-                  size="sm"
-                  className={`text-xs ${activeFollowUpIndex === index ? "bg-minimal-black text-white" : ""}`}
-                  onClick={() => handleSelectFollowUp(index)}
-                >
-                  Follow-up #{index + 1}
-                </Button>
+                <div key={`linkedin-followup-${index}`} className="flex items-center">
+                  <Button
+                    variant={activeFollowUpIndex === index ? "default" : "ghost"}
+                    size="sm"
+                    className={`text-xs ${activeFollowUpIndex === index ? "bg-minimal-black text-white" : ""}`}
+                    onClick={() => handleSelectFollowUp(index)}
+                  >
+                    Follow-up #{index + 1}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-0 h-6 w-6 ml-1 hover:bg-red-100"
+                    onClick={() => handleDeleteFollowUp(index)}
+                  >
+                    <X size={14} className="text-red-500" />
+                  </Button>
+                </div>
               ))}
             </div>
             
