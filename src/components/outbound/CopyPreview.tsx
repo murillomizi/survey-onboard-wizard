@@ -1,7 +1,6 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin, Send, Share2, Plus, ChevronRight, X, ArrowLeft, ArrowRight, Briefcase, User, Building2 } from "lucide-react";
+import { Mail, Linkedin, Send, Share2, Plus, ChevronRight, X, ArrowLeft, ArrowRight, Briefcase, User, Building2, Filter } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,8 +12,18 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
 // Tipo para os prospects
@@ -24,16 +33,28 @@ interface Prospect {
   lastName: string;
   jobTitle: string;
   company: string;
+  industry: string;
+  companySize: string;
+  seniority: string;
+  location: string;
 }
 
-// Dados de prospects simulados
+// Dados de prospects simulados com campos adicionais para filtro
 const mockProspects: Prospect[] = [
-  { id: 1, firstName: "Maria", lastName: "Silva", jobTitle: "Diretora de Marketing", company: "TechSolutions" },
-  { id: 2, firstName: "João", lastName: "Santos", jobTitle: "CEO", company: "Inovação Digital" },
-  { id: 3, firstName: "Ana", lastName: "Oliveira", jobTitle: "Gerente de Vendas", company: "MegaVendas" },
-  { id: 4, firstName: "Carlos", lastName: "Ferreira", jobTitle: "CTO", company: "DataPro" },
-  { id: 5, firstName: "Juliana", lastName: "Almeida", jobTitle: "COO", company: "StartupNow" },
+  { id: 1, firstName: "Maria", lastName: "Silva", jobTitle: "Diretora de Marketing", company: "TechSolutions", industry: "Tecnologia", companySize: "51-200", seniority: "Diretor", location: "São Paulo" },
+  { id: 2, firstName: "João", lastName: "Santos", jobTitle: "CEO", company: "Inovação Digital", industry: "Software", companySize: "11-50", seniority: "C-Level", location: "Rio de Janeiro" },
+  { id: 3, firstName: "Ana", lastName: "Oliveira", jobTitle: "Gerente de Vendas", company: "MegaVendas", industry: "Varejo", companySize: "201-500", seniority: "Gerente", location: "Curitiba" },
+  { id: 4, firstName: "Carlos", lastName: "Ferreira", jobTitle: "CTO", company: "DataPro", industry: "Tecnologia", companySize: "51-200", seniority: "C-Level", location: "São Paulo" },
+  { id: 5, firstName: "Juliana", lastName: "Almeida", jobTitle: "COO", company: "StartupNow", industry: "Serviços", companySize: "11-50", seniority: "C-Level", location: "Belo Horizonte" },
+  { id: 6, firstName: "Roberto", lastName: "Souza", jobTitle: "Diretor Comercial", company: "VendaMais", industry: "Varejo", companySize: "201-500", seniority: "Diretor", location: "São Paulo" },
+  { id: 7, firstName: "Paula", lastName: "Costa", jobTitle: "VP de Operações", company: "LogTech", industry: "Logística", companySize: "501-1000", seniority: "VP", location: "Campinas" },
 ];
+
+// Opções para filtros
+const industryOptions = ["Tecnologia", "Software", "Varejo", "Serviços", "Logística"];
+const companySizeOptions = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
+const seniorityOptions = ["Analista", "Coordenador", "Gerente", "Diretor", "VP", "C-Level"];
+const locationOptions = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Campinas"];
 
 interface CopyPreviewProps {
   contentType: ContentType;
@@ -65,9 +86,15 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   });
   const [activeFollowUpIndex, setActiveFollowUpIndex] = useState<number | null>(null);
   const [currentProspectIndex, setCurrentProspectIndex] = useState<number>(0);
+  const [filters, setFilters] = useState({
+    industry: "",
+    companySize: "",
+    seniority: "",
+    location: "",
+  });
   
   // Current prospect
-  const currentProspect = mockProspects[currentProspectIndex];
+  const currentProspect = filteredProspects.length > 0 ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0] : mockProspects[0];
   
   // Extrair assunto e corpo do email ao carregar ou alterar o conteúdo
   React.useEffect(() => {
@@ -94,19 +121,63 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     }
   };
 
+  // Aplicar filtros
+  useEffect(() => {
+    let result = mockProspects;
+    
+    if (filters.industry) {
+      result = result.filter(p => p.industry === filters.industry);
+    }
+    
+    if (filters.companySize) {
+      result = result.filter(p => p.companySize === filters.companySize);
+    }
+    
+    if (filters.seniority) {
+      result = result.filter(p => p.seniority === filters.seniority);
+    }
+    
+    if (filters.location) {
+      result = result.filter(p => p.location === filters.location);
+    }
+    
+    setFilteredProspects(result);
+    
+    // Reset currentProspectIndex if necessary
+    if (currentProspectIndex >= result.length && result.length > 0) {
+      setCurrentProspectIndex(0);
+    }
+  }, [filters, currentProspectIndex]);
+
   const handlePreviousProspect = () => {
-    setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : mockProspects.length - 1));
+    setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : filteredProspects.length - 1));
     toast({
       title: "Prospect anterior",
-      description: `Visualizando ${mockProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : mockProspects.length - 1)].firstName} ${mockProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : mockProspects.length - 1)].lastName}`
+      description: `Visualizando ${filteredProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : filteredProspects.length - 1)].firstName} ${filteredProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : filteredProspects.length - 1)].lastName}`
     });
   };
 
   const handleNextProspect = () => {
-    setCurrentProspectIndex(prev => (prev < mockProspects.length - 1 ? prev + 1 : 0));
+    setCurrentProspectIndex(prev => (prev < filteredProspects.length - 1 ? prev + 1 : 0));
     toast({
       title: "Próximo prospect",
-      description: `Visualizando ${mockProspects[(currentProspectIndex < mockProspects.length - 1 ? currentProspectIndex + 1 : 0)].firstName} ${mockProspects[(currentProspectIndex < mockProspects.length - 1 ? currentProspectIndex + 1 : 0)].lastName}`
+      description: `Visualizando ${filteredProspects[(currentProspectIndex < filteredProspects.length - 1 ? currentProspectIndex + 1 : 0)].firstName} ${filteredProspects[(currentProspectIndex < filteredProspects.length - 1 ? currentProspectIndex + 1 : 0)].lastName}`
+    });
+  };
+
+  // Resetar filtros
+  const resetFilters = () => {
+    setFilters({
+      industry: "",
+      companySize: "",
+      seniority: "",
+      location: ""
+    });
+    setFilteredProspects(mockProspects);
+    setCurrentProspectIndex(0);
+    toast({
+      title: "Filtros resetados",
+      description: "Todos os prospects estão sendo exibidos"
     });
   };
 
@@ -289,6 +360,135 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             </Tabs>
           </div>
           
+          {/* Filters and Prospect Counter */}
+          <div className="p-4 bg-white border-b border-minimal-gray-200 flex flex-col gap-3">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <span className="text-sm font-medium text-minimal-gray-700">
+                  Prospects: {filteredProspects.length} de {mockProspects.length}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center gap-2 h-9 bg-minimal-white">
+                      <Filter size={16} />
+                      Filtrar Prospects
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-minimal-white" align="end">
+                    <DropdownMenuLabel>Filtrar por ICP</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    
+                    <div className="p-2">
+                      <p className="text-xs text-minimal-gray-500 mb-1">Indústria</p>
+                      <Select value={filters.industry} onValueChange={(value) => setFilters({...filters, industry: value})}>
+                        <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectValue placeholder="Selecione a indústria" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-minimal-white">
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          {industryOptions.map((industry) => (
+                            <SelectItem key={industry} value={industry} className="text-xs">{industry}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="p-2">
+                      <p className="text-xs text-minimal-gray-500 mb-1">Tamanho da Empresa</p>
+                      <Select value={filters.companySize} onValueChange={(value) => setFilters({...filters, companySize: value})}>
+                        <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectValue placeholder="Selecione o tamanho" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-minimal-white">
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          {companySizeOptions.map((size) => (
+                            <SelectItem key={size} value={size} className="text-xs">{size} funcionários</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="p-2">
+                      <p className="text-xs text-minimal-gray-500 mb-1">Senioridade</p>
+                      <Select value={filters.seniority} onValueChange={(value) => setFilters({...filters, seniority: value})}>
+                        <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectValue placeholder="Selecione a senioridade" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-minimal-white">
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          {seniorityOptions.map((seniority) => (
+                            <SelectItem key={seniority} value={seniority} className="text-xs">{seniority}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="p-2">
+                      <p className="text-xs text-minimal-gray-500 mb-1">Localização</p>
+                      <Select value={filters.location} onValueChange={(value) => setFilters({...filters, location: value})}>
+                        <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectValue placeholder="Selecione a localização" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-minimal-white">
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          {locationOptions.map((location) => (
+                            <SelectItem key={location} value={location} className="text-xs">{location}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      <Button variant="outline" size="sm" onClick={resetFilters} className="w-full text-xs h-8">
+                        Limpar filtros
+                      </Button>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                {Object.values(filters).some(value => value !== "") && (
+                  <Button variant="ghost" size="sm" onClick={resetFilters} className="h-9 px-2">
+                    <X size={16} className="text-minimal-gray-500" />
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            {/* Filter badges */}
+            {Object.values(filters).some(value => value !== "") && (
+              <div className="flex flex-wrap gap-2">
+                {filters.industry && (
+                  <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
+                    Indústria: {filters.industry}
+                    <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, industry: ""})} />
+                  </Badge>
+                )}
+                {filters.companySize && (
+                  <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
+                    Tamanho: {filters.companySize}
+                    <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, companySize: ""})} />
+                  </Badge>
+                )}
+                {filters.seniority && (
+                  <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
+                    Senioridade: {filters.seniority}
+                    <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, seniority: ""})} />
+                  </Badge>
+                )}
+                {filters.location && (
+                  <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
+                    Localização: {filters.location}
+                    <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, location: ""})} />
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
+          
           {/* Prospect Card */}
           <Card className="mx-4 mt-4 bg-white shadow-md border border-minimal-gray-200">
             <CardContent className="p-4">
@@ -316,17 +516,19 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                     variant="outline" 
                     size="sm" 
                     className="p-2 h-9 w-9"
+                    disabled={filteredProspects.length <= 1}
                   >
                     <ArrowLeft size={16} />
                   </Button>
                   <span className="flex items-center px-2 text-sm text-minimal-gray-600">
-                    {currentProspectIndex + 1} / {mockProspects.length}
+                    {filteredProspects.length > 0 ? `${currentProspectIndex + 1} / ${filteredProspects.length}` : "0 / 0"}
                   </span>
                   <Button 
                     onClick={handleNextProspect} 
                     variant="outline" 
                     size="sm" 
                     className="p-2 h-9 w-9"
+                    disabled={filteredProspects.length <= 1}
                   >
                     <ArrowRight size={16} />
                   </Button>
