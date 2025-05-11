@@ -22,7 +22,7 @@ const LinkedInPreview: React.FC<LinkedInPreviewProps> = ({
         </div>
         <span className="text-sm font-medium text-minimal-gray-700">Mensagem do LinkedIn</span>
       </div>
-      <div className="pt-10 text-left whitespace-pre-wrap text-minimal-gray-800">
+      <div className="pt-10 text-left whitespace-pre-wrap text-minimal-gray-800 font-semibold">
         {linkedinContent}
       </div>
       

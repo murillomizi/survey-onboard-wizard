@@ -68,7 +68,7 @@ const EmailPreview: React.FC<EmailPreviewProps> = ({
       
       {/* Email Body */}
       <div className="bg-white p-5 font-sans text-sm">
-        <div className="whitespace-pre-wrap leading-relaxed text-left text-minimal-gray-800">
+        <div className="whitespace-pre-wrap leading-relaxed text-left text-minimal-gray-800 font-semibold">
           {getEmailBody(emailContent)}
         </div>
       </div>
