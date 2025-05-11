@@ -100,7 +100,7 @@ Nosso software permite:
 • Aumento de 28% na produtividade da equipe
 • Economia de até 22% em custos operacionais
 
-Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Posso mostrar como nossa solução se aplicaria especificamente ao contexto da TechSolutions.
+Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Posso mostrar como nossa solução se aplicaria especificamente ao contexto da TechSolutions?
 
 Atenciosamente,
 Carlos Santos
@@ -246,7 +246,7 @@ Inova Digital`;
   };
 
   return (
-    <div className="flex h-full min-h-screen bg-minimal-white overflow-hidden font-sans">
+    <div className="flex h-full min-h-screen bg-white overflow-hidden font-sans">
       <ChatSidebar 
         messages={messages}
         input={input}
@@ -258,7 +258,7 @@ Inova Digital`;
       />
       
       <div className="ml-80 flex-1 h-full overflow-y-auto pb-6">
-        <div className="pt-4">
+        <div className="border-b border-gray-200">
           {filteredProspects.length > 0 && (
             <ProspectCard
               currentProspect={filteredProspects[currentProspectIndex]}
@@ -268,15 +268,15 @@ Inova Digital`;
               onNextProspect={handleNextProspect}
             />
           )}
-          
-          <ProspectFilters
-            filters={filters}
-            setFilters={setFilters}
-            filteredProspectsCount={filteredProspects.length}
-            totalProspectsCount={mockProspects.length}
-            resetFilters={resetFilters}
-          />
         </div>
+        
+        <ProspectFilters
+          filters={filters}
+          setFilters={setFilters}
+          filteredProspectsCount={filteredProspects.length}
+          totalProspectsCount={mockProspects.length}
+          resetFilters={resetFilters}
+        />
         
         <CopyPreview 
           contentType={contentType}
