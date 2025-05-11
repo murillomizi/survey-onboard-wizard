@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Send, Paperclip, History } from "lucide-react";
+import { Send, Paperclip, History, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -118,8 +118,18 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          {/* Controls row with attachment button only */}
-          <div className="flex items-center justify-end mt-3 px-1">
+          {/* Controls row with attachment and template buttons */}
+          <div className="flex items-center justify-between mt-3 px-1">
+            {/* Template Button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+            >
+              <FileText size={14} />
+              <span className="text-xs">Template</span>
+            </Button>
+            
             {/* Attachment Button */}
             <div>
               <input 
