@@ -21,7 +21,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
   onNextProspect
 }) => {
   return (
-    <Card className="mx-4 mt-4 bg-white shadow-md border border-minimal-gray-200">
+    <Card className="mx-4 mb-4 bg-white shadow-sm border border-minimal-gray-200">
       <CardContent className="p-4">
         <div className="flex justify-between items-center">
           <div className="flex-1">
@@ -46,7 +46,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
               onClick={onPreviousProspect} 
               variant="outline" 
               size="sm" 
-              className="p-2 h-9 w-9"
+              className="p-2 h-9 w-9 bg-minimal-white border-minimal-gray-200"
               disabled={totalProspects <= 1}
             >
               <ArrowLeft size={16} className="text-black" />
@@ -58,7 +58,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
               onClick={onNextProspect} 
               variant="outline" 
               size="sm" 
-              className="p-2 h-9 w-9"
+              className="p-2 h-9 w-9 bg-minimal-white border-minimal-gray-200"
               disabled={totalProspects <= 1}
             >
               <ArrowRight size={16} className="text-black" />
