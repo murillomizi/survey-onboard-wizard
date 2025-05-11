@@ -11,22 +11,22 @@ interface LogoProps {
 
 const Logo = ({ withText = true, size = "md", className = "", projectName = "mizi" }: LogoProps) => {
   const sizeClasses = {
-    sm: "h-8 w-auto",
-    md: "h-10 w-auto",
-    lg: "h-12 w-auto",
+    sm: "h-6 w-auto",
+    md: "h-8 w-auto",
+    lg: "h-10 w-auto",
   };
 
   return (
     <Link to="/" className={`flex items-center gap-3 ${className}`}>
-      <div className="relative flex items-center">
-        <img 
-          src="/lovable-uploads/efdfbdf5-05a6-4a15-aac7-d651561e8496.png" 
-          alt="Mizi Logo" 
-          className={`${sizeClasses[size]} transition-all duration-300 hover:scale-105`} 
-        />
+      <div className="flex items-center">
+        {/* Logo mark */}
+        <div className="relative">
+          <span className="text-black font-bold" style={{ fontSize: sizeClasses[size].replace('h-', '') }}>×</span>
+          <span className="text-black font-bold ml-0.5" style={{ fontSize: sizeClasses[size].replace('h-', '') }}>mizi</span>
+        </div>
       </div>
-      {withText && (
-        <span className="text-sm md:text-base font-semibold tracking-tight">
+      {withText && !projectName.toLowerCase().includes("mizi") && (
+        <span className="text-sm md:text-base font-semibold tracking-tight ml-1">
           {projectName}
         </span>
       )}
