@@ -1,11 +1,10 @@
 
 import React, { useState } from "react";
-import { Send, Edit, Lightbulb, Paperclip } from "lucide-react";
+import { Send, Edit, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
 import Logo from "@/components/ui/logo";
-import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +46,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   chatEndRef,
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isMachineLearningEnabled, setIsMachineLearningEnabled] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,13 +80,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
               <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700" onClick={() => setIsEditModalOpen(true)}>
-                Editar modelo
+                Edit model
               </DropdownMenuItem>
               <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-                Configurações
+                Settings
               </DropdownMenuItem>
               <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-                Começar nova conversa
+                Start new conversation
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -140,9 +138,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          {/* Controls row with improved layout */}
-          <div className="flex items-center justify-between mt-3 px-1">
-            {/* Attachment Button on the left */}
+          {/* Controls row with only the attachment button */}
+          <div className="flex items-center mt-3 px-1">
+            {/* Attachment Button */}
             <div>
               <input 
                 type="file" 
@@ -159,20 +157,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 >
                   <span>
                     <Paperclip size={14} />
-                    <span className="text-xs">Anexar</span>
+                    <span className="text-xs">Attach</span>
                   </span>
                 </Button>
               </label>
-            </div>
-            
-            {/* ML Switch on the right */}
-            <div className="flex items-center gap-2">
-              <span className={isMachineLearningEnabled ? "text-purple-400 text-xs" : "text-minimal-gray-500 text-xs"}>ML</span>
-              <Switch 
-                checked={isMachineLearningEnabled}
-                onCheckedChange={setIsMachineLearningEnabled}
-                className="h-4 w-7 data-[state=checked]:bg-purple-500"
-              />
             </div>
           </div>
         </div>
