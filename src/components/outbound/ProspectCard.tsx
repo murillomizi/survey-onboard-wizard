@@ -26,17 +26,17 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
         <div className="flex justify-between items-center">
           <div className="flex-1">
             <div className="flex items-center mb-2">
-              <User size={18} className="text-purple-500 mr-2" />
+              <User size={18} className="text-black mr-2" />
               <h3 className="text-lg font-semibold">{currentProspect.firstName} {currentProspect.lastName}</h3>
             </div>
             
             <div className="flex items-center mb-2">
-              <Briefcase size={16} className="text-blue-500 mr-2" />
+              <Briefcase size={16} className="text-black mr-2" />
               <p className="text-sm text-minimal-gray-600">{currentProspect.jobTitle}</p>
             </div>
             
             <div className="flex items-center">
-              <Building2 size={16} className="text-green-500 mr-2" />
+              <Building2 size={16} className="text-black mr-2" />
               <p className="text-sm text-minimal-gray-600">{currentProspect.company}</p>
             </div>
           </div>
@@ -49,7 +49,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
               className="p-2 h-9 w-9"
               disabled={totalProspects <= 1}
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} className="text-black" />
             </Button>
             <span className="flex items-center px-2 text-sm text-minimal-gray-600">
               {totalProspects > 0 ? `${currentProspectIndex + 1} / ${totalProspects}` : "0 / 0"}
@@ -61,7 +61,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
               className="p-2 h-9 w-9"
               disabled={totalProspects <= 1}
             >
-              <ArrowRight size={16} />
+              <ArrowRight size={16} className="text-black" />
             </Button>
           </div>
         </div>

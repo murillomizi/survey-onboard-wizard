@@ -107,13 +107,14 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
     // Removido o toast de navegação
   };
 
-  return <div className="flex flex-col items-center justify-between mb-8">
+  return (
+    <div className="flex flex-col items-center justify-between mb-8">
       <div className="connection-container w-full flex items-center justify-between relative mb-2">
         {/* Botão Persona */}
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="h-9 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 hover:text-minimal-gray-900 shadow-sm">
-              <Users size={16} className="mr-2 text-purple-500" />
+              <Users size={16} className="mr-2 text-black" />
               Persona
             </Button>
           </PopoverTrigger>
@@ -129,7 +130,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
                 <label htmlFor="preview-dataset-upload">
                   <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-100" asChild>
                     <span>
-                      <Users size={12} />
+                      <Users size={12} className="text-black" />
                       Fazer upload de dataset
                     </span>
                   </Button>
@@ -152,7 +153,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
         <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="h-9 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 hover:text-minimal-gray-900 shadow-sm">
-              <Building2 size={16} className="mr-2 text-purple-500" />
+              <Building2 size={16} className="mr-2 text-black" />
               Sua Empresa
               {companyWebsite && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({formatDisplayUrl(companyWebsite)})</span>}
             </Button>
@@ -166,7 +167,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
                   </label>
                   <div className="flex relative">
                     <div className="flex items-center px-3 bg-minimal-gray-100 border border-r-0 border-minimal-gray-300 rounded-l-md">
-                      <Link2 size={16} className={`${urlIsValid === true ? 'text-green-500' : urlIsValid === false ? 'text-red-500' : 'text-minimal-gray-500'}`} />
+                      <Link2 size={16} className={`${urlIsValid === true ? 'text-green-500' : urlIsValid === false ? 'text-red-500' : 'text-black'}`} />
                     </div>
                     <Input id="company-website" type="text" value={companyWebsite} onChange={handleUrlChange} placeholder="www.suaempresa.com" className={`rounded-l-none ${urlIsValid === true ? 'border-green-500 focus:border-green-500' : urlIsValid === false ? 'border-red-500 focus:border-red-500' : ''}`} />
                     {urlIsValid === true && <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
@@ -194,6 +195,8 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       <div className="copy-formation-text text-center mt-2 mb-5">
         
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default CopyPreviewHeader;

@@ -36,7 +36,7 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
           className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6"
           onClick={onDispatch}
         >
-          <Send size={16} />
+          <Send size={16} className="text-white" />
           Disparar{activeFollowUpIndex !== null ? ` #${activeFollowUpIndex + 1}` : ""}
         </Button>
         
@@ -45,7 +45,7 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
           className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all px-6"
           onClick={onShare}
         >
-          <Share2 size={16} />
+          <Share2 size={16} className="text-black" />
           Compartilhar
         </Button>
       </div>
