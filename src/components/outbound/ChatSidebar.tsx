@@ -44,6 +44,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+  const [templateTriggerRef, setTemplateTriggerRef] = useState<HTMLButtonElement | null>(null);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -135,6 +136,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <Button 
               variant="ghost" 
               size="sm" 
+              ref={setTemplateTriggerRef}
               className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
               onClick={() => setIsTemplateMenuOpen(true)}
             >
