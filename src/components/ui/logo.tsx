@@ -98,10 +98,6 @@ const Logo = ({
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className={`w-80 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
-            <div className={`px-3 py-2 border-b ${isOutboundPage ? "border-minimal-gray-700" : "border-minimal-gray-200"}`}>
-              <h4 className={`text-sm font-medium ${isOutboundPage ? "text-minimal-white" : "text-minimal-gray-900"}`}>Menu</h4>
-            </div>
-            
             {/* Dashboard Button */}
             <div className="p-2">
               <Link to="/dashboard">
@@ -139,7 +135,7 @@ const Logo = ({
             
             <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
             
-            {/* Project Actions - Moved Up */}
+            {/* Project Actions */}
             <div className="p-2">
               <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
                 <div className="flex items-center gap-2">
