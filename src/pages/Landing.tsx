@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, LogIn, UserPlus, Check, Package, Rocket, TrendingUp, Star, Shield, Loader } from "lucide-react";
+import { ArrowRight, LogIn, UserPlus, Check, Package, Rocket, TrendingUp, Star, Shield, Loader, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "@/components/ui/logo";
@@ -19,6 +19,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginDialog } from "@/components/ui/login-dialog";
+import { ChatInput } from "@/components/survey/ChatInput";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -42,6 +43,7 @@ const Landing = () => {
   const navigate = useNavigate();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [initialDialogTab, setInitialDialogTab] = useState<"login" | "register">("login");
+  const [chatMessage, setChatMessage] = useState("");
   
   // Check for existing session
   useEffect(() => {
@@ -60,6 +62,14 @@ const Landing = () => {
     setInitialDialogTab("register");
     setShowLoginDialog(true);
     console.log("Opening register dialog with register tab");
+  };
+
+  const handleSendChatMessage = () => {
+    if (chatMessage.trim()) {
+      toast.success("Message sent! This is a demo - in a real app, this would be processed by an LLM.");
+      setChatMessage("");
+      handleOpenRegisterDialog(); // Optional: Open register dialog after sending message
+    }
   };
   
   // Workflow steps para o processo - Reestilizado para minimalista
@@ -295,14 +305,28 @@ const Landing = () => {
           <motion.p className="text-lg md:text-xl text-minimal-gray-600 mb-12 max-w-2xl mx-auto" variants={fadeIn} custom={2}>
             Hyper-personalized cold outreach at scale. Get more replies, book more meetings.
           </motion.p>
-          <motion.div variants={fadeIn} custom={3}>
-            <Button 
-              size="lg" 
-              className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-900 text-base px-8 py-6 h-auto rounded-md"
-              onClick={handleOpenRegisterDialog}
-            >
-              Try Mizi Now <ArrowRight className="h-4 w-4" />
-            </Button>
+          <motion.div variants={fadeIn} custom={3} className="max-w-xl mx-auto">
+            {/* Chat Input replacing the Button */}
+            <div className="relative bg-minimal-black rounded-md shadow-lg p-0.5">
+              <Input
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                placeholder="Ask Mizi to create a prototype..."
+                className="w-full bg-minimal-black text-minimal-white border-0 pr-12 py-6 h-auto text-base focus:ring-0 focus:outline-none placeholder:text-minimal-gray-400"
+                onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+                <Button
+                  onClick={handleSendChatMessage}
+                  disabled={!chatMessage.trim()}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full bg-transparent hover:bg-minimal-gray-800 text-minimal-white"
+                >
+                  <Send size={16} />
+                </Button>
+              </div>
+            </div>
           </motion.div>
         </div>
       </motion.section>
