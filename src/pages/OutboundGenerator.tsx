@@ -189,7 +189,7 @@ Inova Digital`;
   };
 
   return (
-    <div className="flex h-screen bg-minimal-gray-100">
+    <div className="flex h-full min-h-screen bg-minimal-gray-100 overflow-hidden">
       <ChatSidebar 
         messages={messages}
         input={input}
@@ -200,7 +200,7 @@ Inova Digital`;
         chatEndRef={chatEndRef}
       />
       
-      <div className="ml-80 flex-1 h-full overflow-hidden">
+      <div className="ml-80 flex-1 h-full overflow-y-auto pb-6">
         <CopyPreview 
           contentType={contentType}
           generatedContent={generatedContent}
