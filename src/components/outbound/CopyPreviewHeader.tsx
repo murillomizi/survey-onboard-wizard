@@ -1,24 +1,10 @@
-
 import React, { useState } from "react";
-import { Users, Building2, ArrowLeftRight, Link2, Check, ChevronDown } from "lucide-react";
+import { Users, Building2, ArrowLeftRight, Link2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar } from "@/components/ui/avatar";
-
-interface Prospect {
-  id: string;
-  firstName: string;
-  lastName: string;
-  jobTitle: string;
-  company: string;
-  email?: string;
-  photo?: string;
-}
-
 interface CopyPreviewHeaderProps {
   selectedPersonaSource: string | null;
   isPersonaPopoverOpen: boolean;
@@ -26,7 +12,6 @@ interface CopyPreviewHeaderProps {
   handlePersonaSelection: (source: string) => void;
   handleFileInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
 const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   selectedPersonaSource,
   isPersonaPopoverOpen,
@@ -37,48 +22,6 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   const [companyWebsite, setCompanyWebsite] = useState<string>('');
   const [isCompanyPopoverOpen, setIsCompanyPopoverOpen] = useState(false);
   const [urlIsValid, setUrlIsValid] = useState<boolean | null>(null);
-  const [isProspectPopoverOpen, setIsProspectPopoverOpen] = useState(false);
-  const [selectedProspect, setSelectedProspect] = useState<Prospect | null>(null);
-
-  // Mock prospects data - in a real app this would be fetched from the database
-  const [prospects, setProspects] = useState<Prospect[]>([
-    { 
-      id: "1", 
-      firstName: "Maria", 
-      lastName: "Silva", 
-      jobTitle: "CTO", 
-      company: "TechSolutions" 
-    },
-    { 
-      id: "2", 
-      firstName: "João", 
-      lastName: "Santos", 
-      jobTitle: "CEO", 
-      company: "DataPro" 
-    },
-    { 
-      id: "3", 
-      firstName: "Ana", 
-      lastName: "Ferreira", 
-      jobTitle: "Marketing Director", 
-      company: "MediaGroup" 
-    },
-    { 
-      id: "4", 
-      firstName: "Pedro", 
-      lastName: "Costa", 
-      jobTitle: "Sales Manager", 
-      company: "SalesForce" 
-    },
-    { 
-      id: "5", 
-      firstName: "Carla", 
-      lastName: "Oliveira", 
-      jobTitle: "HR Director", 
-      company: "TalentHub" 
-    }
-  ]);
-  
   const validateUrl = (url: string): boolean => {
     if (!url) return false;
 
@@ -94,7 +37,6 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       return false;
     }
   };
-  
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCompanyWebsite(value);
@@ -104,12 +46,10 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       setUrlIsValid(null);
     }
   };
-  
   const formatDisplayUrl = (url: string): string => {
     // Remove protocol for display
     return url.replace(/^https?:\/\//i, '');
   };
-  
   const handleCompanyWebsiteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyWebsite || !validateUrl(companyWebsite)) {
@@ -126,76 +66,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       description: "As informações da empresa foram atualizadas com sucesso."
     });
   };
-
-  const handleSelectProspect = (prospect: Prospect) => {
-    setSelectedProspect(prospect);
-    setIsProspectPopoverOpen(false);
-    toast({
-      title: "Prospect selecionado",
-      description: `O copy será personalizado para ${prospect.firstName} ${prospect.lastName}.`
-    });
-  };
-
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-between mb-4">
-      {/* Prospect Card Section */}
-      <div className="w-full bg-white border border-minimal-gray-200 rounded-lg shadow-sm mb-6 p-4">
-        <h3 className="text-sm font-medium text-minimal-gray-700 mb-2">Prospect selecionado:</h3>
-        
-        <Popover open={isProspectPopoverOpen} onOpenChange={setIsProspectPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button 
-              variant="outline" 
-              className="w-full justify-between items-center border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 shadow-sm"
-            >
-              {selectedProspect ? (
-                <div className="flex items-center">
-                  <Avatar className="h-8 w-8 mr-2 bg-purple-100 text-purple-800">
-                    <span>{getInitials(selectedProspect.firstName, selectedProspect.lastName)}</span>
-                  </Avatar>
-                  <div className="text-left">
-                    <div className="font-medium">{`${selectedProspect.firstName} ${selectedProspect.lastName}`}</div>
-                    <div className="text-xs text-minimal-gray-500">{`${selectedProspect.jobTitle} at ${selectedProspect.company}`}</div>
-                  </div>
-                </div>
-              ) : (
-                <span>Selecione um prospect</span>
-              )}
-              <ChevronDown size={16} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0 bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 shadow-md max-w-sm">
-            <div className="p-2 border-b border-minimal-gray-200">
-              <Input placeholder="Buscar prospects..." className="text-sm" />
-            </div>
-            <ScrollArea className="h-72">
-              <div className="p-1">
-                {prospects.map((prospect) => (
-                  <Button 
-                    key={prospect.id} 
-                    variant="ghost" 
-                    className={`w-full justify-start mb-1 ${selectedProspect?.id === prospect.id ? 'bg-minimal-gray-100' : ''}`}
-                    onClick={() => handleSelectProspect(prospect)}
-                  >
-                    <Avatar className="h-8 w-8 mr-2 bg-purple-100 text-purple-800">
-                      <span>{getInitials(prospect.firstName, prospect.lastName)}</span>
-                    </Avatar>
-                    <div className="text-left">
-                      <div className="font-medium">{`${prospect.firstName} ${prospect.lastName}`}</div>
-                      <div className="text-xs text-minimal-gray-500">{`${prospect.jobTitle} at ${prospect.company}`}</div>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </ScrollArea>
-          </PopoverContent>
-        </Popover>
-      </div>
-
+  return <div className="flex flex-col items-center justify-between mb-8">
       <div className="connection-container w-full flex items-center justify-between relative mb-2">
         {/* Botão Persona */}
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
@@ -235,6 +106,10 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
             </Tabs>
           </PopoverContent>
         </Popover>
+        
+        {/* Connector Element between Persona and Sua Empresa */}
+        
+        
 
         {/* Botão Sua Empresa */}
         <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
@@ -282,8 +157,6 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       <div className="copy-formation-text text-center mt-2">
         
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default CopyPreviewHeader;
