@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Send, Edit, Lightbulb, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -62,8 +61,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       {/* Header with logo */}
       <div className="p-4 border-b border-minimal-gray-700 flex items-center justify-between">
         <div className="flex items-center">
-          <Logo size="md" className="text-minimal-white" />
-          <span className="ml-2 text-sm font-medium text-minimal-white">mizi-project-1</span>
+          <Logo withText={false} size="md" className="text-minimal-white" />
+          <span className="ml-2 text-sm font-medium text-minimal-white">mizi project 1</span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
