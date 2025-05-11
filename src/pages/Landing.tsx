@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, LogIn, UserPlus, Check, Package, Rocket, TrendingUp, Star, Shield, Loader, Send } from "lucide-react";
+import { ArrowRight, LogIn, UserPlus, Check, Package, Rocket, TrendingUp, Star, Shield, Loader, Send, Mail, Info, Copyright, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "@/components/ui/logo";
@@ -728,6 +727,136 @@ const Landing = () => {
           </div>
         </div>
       </motion.section>
+
+      {/* Footer Section */}
+      <motion.footer 
+        className="px-4 md:px-8 py-10 md:py-16 bg-minimal-black text-minimal-white" 
+        initial="hidden" 
+        animate="visible" 
+        variants={fadeIn} 
+        custom={8}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 pb-8 border-b border-minimal-gray-700">
+            {/* Company Information */}
+            <div>
+              <Logo size="md" />
+              <p className="text-minimal-gray-400 mt-4 text-sm">
+                Revolutionizing B2B outreach with AI-powered personalization at scale.
+              </p>
+              <div className="flex gap-4 mt-6">
+                <a href="#" className="hover:text-minimal-gray-300 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                </a>
+                <a href="#" className="hover:text-minimal-gray-300 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-minimal-white font-bold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-minimal-gray-400">
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">Home</a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">About Us</a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">Features</a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">Pricing</a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">Contact</a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="text-minimal-white font-bold mb-4">Legal</h4>
+              <ul className="space-y-2 text-minimal-gray-400">
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">
+                    <span className="flex items-center gap-2">
+                      <Info size={16} />
+                      <span>Terms of Service</span>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">
+                    <span className="flex items-center gap-2">
+                      <Shield size={16} />
+                      <span>Privacy Policy</span>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">
+                    <span className="flex items-center gap-2">
+                      <Copyright size={16} />
+                      <span>Copyright Notice</span>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-minimal-white transition-colors">
+                    <span className="flex items-center gap-2">
+                      <Settings size={16} />
+                      <span>Cookie Settings</span>
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="text-minimal-white font-bold mb-4">Contact Us</h4>
+              <ul className="space-y-4 text-minimal-gray-400">
+                <li className="flex items-start gap-2">
+                  <Mail size={18} className="mt-1 flex-shrink-0" />
+                  <span>contact@mizi.ai</span>
+                </li>
+                <li>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-minimal-gray-700 hover:bg-minimal-gray-800 hover:border-minimal-gray-600"
+                    onClick={handleOpenLoginDialog}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span>Send Message</span>
+                  </Button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="md:flex justify-between items-center text-minimal-gray-500 text-sm">
+            <div className="mb-4 md:mb-0 flex items-center">
+              <Copyright size={16} className="mr-2" />
+              <p>2025 Mizi AI. All rights reserved.</p>
+            </div>
+            
+            <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+              <a href="#" className="hover:text-minimal-white transition-colors">Security</a>
+              <a href="#" className="hover:text-minimal-white transition-colors">Accessibility</a>
+              <a href="#" className="hover:text-minimal-white transition-colors">Sitemap</a>
+            </div>
+          </div>
+        </div>
+      </motion.footer>
     </div>
   );
 };
