@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Linkedin, Send, Share2, Plus, ChevronRight, X, ArrowLeft, ArrowRight, Briefcase, User, Building2, Filter } from "lucide-react";
@@ -389,7 +390,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione a indústria" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
                           {industryOptions.map((industry) => (
                             <SelectItem key={industry} value={industry} className="text-xs">{industry}</SelectItem>
                           ))}
@@ -404,7 +405,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione o tamanho" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
                           {companySizeOptions.map((size) => (
                             <SelectItem key={size} value={size} className="text-xs">{size} funcionários</SelectItem>
                           ))}
@@ -419,7 +420,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione a senioridade" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
                           {seniorityOptions.map((seniority) => (
                             <SelectItem key={seniority} value={seniority} className="text-xs">{seniority}</SelectItem>
                           ))}
@@ -434,7 +435,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione a localização" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
                           {locationOptions.map((location) => (
                             <SelectItem key={location} value={location} className="text-xs">{location}</SelectItem>
                           ))}
