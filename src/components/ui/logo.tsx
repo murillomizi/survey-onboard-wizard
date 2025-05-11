@@ -1,12 +1,13 @@
 
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Database, Copy, Edit } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 interface LogoProps {
   withText?: boolean;
@@ -95,10 +97,48 @@ const Logo = ({
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className={`w-56 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
+          <DropdownMenuContent align="start" className={`w-80 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
             <div className={`px-3 py-2 border-b ${isOutboundPage ? "border-minimal-gray-700" : "border-minimal-gray-200"}`}>
               <h4 className={`text-sm font-medium ${isOutboundPage ? "text-minimal-white" : "text-minimal-gray-900"}`}>Projetos</h4>
             </div>
+            
+            {/* Dashboard Button */}
+            <div className="p-2">
+              <Link to="/dashboard">
+                <DropdownMenuItem className={`px-3 py-2.5 rounded-md ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+                  <div className="flex items-center gap-2">
+                    <Database size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
+                    <span>Dashboard</span>
+                  </div>
+                </DropdownMenuItem>
+              </Link>
+            </div>
+            
+            <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
+            
+            {/* Usage Limits */}
+            <div className={`p-3 ${isOutboundPage ? "border-minimal-gray-700 text-minimal-gray-300" : "border-minimal-gray-200 text-minimal-gray-600"}`}>
+              <h4 className={`text-xs font-medium mb-2 ${isOutboundPage ? "text-minimal-gray-300" : "text-minimal-gray-600"}`}>Limites de Uso</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span>Prospects utilizados:</span>
+                  <span className="font-medium">48 / 100</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: '48%' }}></div>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span>Requisições API:</span>
+                  <span className="font-medium">324 / 1000</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-green-600 h-1.5 rounded-full" style={{ width: '32.4%' }}></div>
+                </div>
+              </div>
+            </div>
+            
+            <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
+            
             <div className="p-2">
               <DropdownMenuItem className={`px-3 py-2.5 rounded-md ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
                 <div className="flex items-center gap-3">
@@ -127,9 +167,28 @@ const Logo = ({
                 </div>
               </DropdownMenuItem>
             </div>
-            <div className={`p-2 border-t ${isOutboundPage ? "border-minimal-gray-700" : "border-minimal-gray-200"}`}>
+            
+            <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
+            
+            <div className="p-2">
               <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
-                Criar Novo Projeto
+                <div className="flex items-center gap-2">
+                  <Edit size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
+                  <span>Renomear Projeto</span>
+                </div>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+                <div className="flex items-center gap-2">
+                  <Copy size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
+                  <span>Duplicar Projeto</span>
+                </div>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+                <div className="flex items-center gap-2">
+                  <span>Criar Novo Projeto</span>
+                </div>
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>
