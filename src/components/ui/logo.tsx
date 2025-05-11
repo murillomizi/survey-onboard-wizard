@@ -48,9 +48,6 @@ const Logo = ({ withText = true, size = "md", className = "", projectName = "miz
           <span className="text-sm font-medium tracking-tight">
             {projectName}
           </span>
-          <span className="text-xs ml-1 text-gray-400 font-normal cursor-pointer hover:text-gray-600">
-            ▼
-          </span>
         </div>
       )}
     </Link>
