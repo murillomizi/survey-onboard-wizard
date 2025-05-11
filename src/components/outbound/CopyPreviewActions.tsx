@@ -37,7 +37,7 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
           onClick={onDispatch}
         >
           <Send size={16} className="text-white" />
-          Disparar{activeFollowUpIndex !== null ? ` #${activeFollowUpIndex + 1}` : ""}
+          Enviar{activeFollowUpIndex !== null ? ` #${activeFollowUpIndex + 1}` : ""}
         </Button>
         
         <Button 
