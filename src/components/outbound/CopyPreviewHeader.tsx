@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Users, Building2, ArrowLeftRight, Link2 } from "lucide-react";
+import { Users, Building2, ArrowLeftRight, Link2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,9 +24,53 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
 }) => {
   const [companyWebsite, setCompanyWebsite] = useState<string>('');
   const [isCompanyPopoverOpen, setIsCompanyPopoverOpen] = useState(false);
+  const [urlIsValid, setUrlIsValid] = useState<boolean | null>(null);
+
+  const validateUrl = (url: string): boolean => {
+    if (!url) return false;
+    
+    // Add http:// if the URL doesn't have a protocol
+    let urlToTest = url;
+    if (!/^https?:\/\//i.test(urlToTest)) {
+      urlToTest = 'http://' + urlToTest;
+    }
+    
+    try {
+      new URL(urlToTest);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCompanyWebsite(value);
+    
+    if (value) {
+      setUrlIsValid(validateUrl(value));
+    } else {
+      setUrlIsValid(null);
+    }
+  };
+
+  const formatDisplayUrl = (url: string): string => {
+    // Remove protocol for display
+    return url.replace(/^https?:\/\//i, '');
+  };
 
   const handleCompanyWebsiteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!companyWebsite || !validateUrl(companyWebsite)) {
+      toast({
+        title: "URL inválida",
+        description: "Por favor, insira uma URL válida para o site da empresa.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsCompanyPopoverOpen(false);
     toast({
       title: "Site da empresa salvo",
@@ -91,7 +135,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
             <Button variant="outline" className="h-9 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 hover:bg-minimal-gray-100 hover:text-minimal-gray-900 shadow-sm">
               <Building2 size={16} className="mr-2 text-purple-500" />
               Sua Empresa
-              {companyWebsite && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({companyWebsite})</span>}
+              {companyWebsite && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({formatDisplayUrl(companyWebsite)})</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-72 p-3 bg-minimal-white border-minimal-gray-300 text-minimal-gray-800 shadow-md" align="end">
@@ -101,19 +145,29 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
                   <label htmlFor="company-website" className="block text-sm font-medium text-minimal-gray-700 mb-1">
                     Site da empresa
                   </label>
-                  <div className="flex">
+                  <div className="flex relative">
                     <div className="flex items-center px-3 bg-minimal-gray-100 border border-r-0 border-minimal-gray-300 rounded-l-md">
-                      <Link2 size={16} className="text-minimal-gray-500" />
+                      <Link2 size={16} className={`${urlIsValid === true ? 'text-green-500' : urlIsValid === false ? 'text-red-500' : 'text-minimal-gray-500'}`} />
                     </div>
                     <Input
                       id="company-website"
-                      type="url"
+                      type="text"
                       value={companyWebsite}
-                      onChange={(e) => setCompanyWebsite(e.target.value)}
+                      onChange={handleUrlChange}
                       placeholder="www.suaempresa.com"
-                      className="rounded-l-none"
+                      className={`rounded-l-none ${urlIsValid === true ? 'border-green-500 focus:border-green-500' : urlIsValid === false ? 'border-red-500 focus:border-red-500' : ''}`}
                     />
+                    {urlIsValid === true && (
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                        <Check size={16} className="text-green-500" />
+                      </div>
+                    )}
                   </div>
+                  {urlIsValid === false && (
+                    <p className="mt-1 text-xs text-red-500">
+                      Por favor, insira uma URL válida (ex: empresa.com)
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-minimal-gray-500">
                     Adicione o site da sua empresa para personalizar seu outbound
                   </p>
@@ -122,6 +176,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
                 <Button 
                   type="submit" 
                   className="w-full bg-minimal-black text-white hover:bg-minimal-gray-800"
+                  disabled={urlIsValid === false || urlIsValid === null}
                 >
                   Salvar informações
                 </Button>
