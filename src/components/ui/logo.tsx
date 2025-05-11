@@ -55,7 +55,7 @@ const Logo = ({
       {withText && (
         <div className="ml-2 flex items-center">
           <span className="font-semibold tracking-tight" style={{
-            fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.7)"
+            fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.55)"
           }}>
             {projectName}
           </span>
