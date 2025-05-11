@@ -61,7 +61,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
       <div className="p-4 border-b border-minimal-gray-700 flex items-center justify-between">
-        <Logo size="md" />
+        <div className="flex items-center">
+          <Logo size="md" className="text-minimal-white" />
+          <span className="ml-2 text-sm font-medium text-minimal-white">mizi-project-1</span>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
