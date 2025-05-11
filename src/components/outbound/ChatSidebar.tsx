@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditOptionsModal from "./EditOptionsModal";
 import TemplateConfigMenu from "./TemplateConfigMenu";
 import { toast } from "@/components/ui/use-toast";
