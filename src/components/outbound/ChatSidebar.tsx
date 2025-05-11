@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from "react";
-import { Send, Paperclip, History, FileText, Users, Building2 } from "lucide-react";
+import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -22,6 +22,13 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Check, Link2 } from "lucide-react";
 
@@ -139,7 +146,73 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with project name and History button */}
       <div className="p-3 border-b border-minimal-gray-700 flex items-center justify-between">
-        <span className="text-sm font-medium text-minimal-white">mizi-project-1</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="focus:outline-none" asChild>
+            <div className="flex items-center cursor-pointer">
+              <span className="text-sm font-medium text-minimal-white">mizi-project-1</span>
+              <ChevronDown size={12} className="ml-1 text-minimal-gray-400" />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-80 p-0 bg-minimal-gray-800 border-minimal-gray-700">
+            {/* Dashboard Button */}
+            <div className="p-2">
+              <DropdownMenuItem className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-700 text-minimal-white">
+                <div className="flex items-center gap-2">
+                  <Database size={16} className="text-minimal-white" />
+                  <span>Dashboard</span>
+                </div>
+              </DropdownMenuItem>
+            </div>
+            
+            <DropdownMenuSeparator className="bg-minimal-gray-700" />
+            
+            {/* Usage Limits */}
+            <div className="p-3 border-minimal-gray-700 text-minimal-gray-300">
+              <h4 className="text-xs font-medium mb-2 text-minimal-gray-300">Usage Limits</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span>Prospects used:</span>
+                  <span className="font-medium">48 / 100</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: '48%' }}></div>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span>API Requests:</span>
+                  <span className="font-medium">324 / 1000</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-green-600 h-1.5 rounded-full" style={{ width: '32.4%' }}></div>
+                </div>
+              </div>
+            </div>
+            
+            <DropdownMenuSeparator className="bg-minimal-gray-700" />
+            
+            {/* Project Actions */}
+            <div className="p-2">
+              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-minimal-white">
+                <div className="flex items-center gap-2">
+                  <Edit size={16} className="text-minimal-white" />
+                  <span>Rename Project</span>
+                </div>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-minimal-white">
+                <div className="flex items-center gap-2">
+                  <Copy size={16} className="text-minimal-white" />
+                  <span>Duplicate Project</span>
+                </div>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-minimal-white">
+                <div className="flex items-center gap-2">
+                  <span>Create New Project</span>
+                </div>
+              </DropdownMenuItem>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button 
           variant="ghost" 
           size="sm" 
