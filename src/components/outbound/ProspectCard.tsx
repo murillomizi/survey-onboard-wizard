@@ -21,22 +21,22 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
   onNextProspect
 }) => {
   return (
-    <Card className="mx-4 mt-4 bg-white shadow-md border border-minimal-gray-200">
+    <Card className="mx-4 mt-4 bg-white shadow-md border border-minimal-gray-200 font-sans">
       <CardContent className="p-4">
         <div className="flex justify-between items-center">
           <div className="flex-1">
             <div className="flex items-center mb-2">
-              <User size={18} className="text-purple-500 mr-2" />
-              <h3 className="text-lg font-semibold">{currentProspect.firstName} {currentProspect.lastName}</h3>
+              <User size={18} className="text-minimal-black mr-2" />
+              <h3 className="text-lg font-semibold text-minimal-black">{currentProspect.firstName} {currentProspect.lastName}</h3>
             </div>
             
             <div className="flex items-center mb-2">
-              <Briefcase size={16} className="text-blue-500 mr-2" />
+              <Briefcase size={16} className="text-minimal-black mr-2" />
               <p className="text-sm text-minimal-gray-600">{currentProspect.jobTitle}</p>
             </div>
             
             <div className="flex items-center">
-              <Building2 size={16} className="text-green-500 mr-2" />
+              <Building2 size={16} className="text-minimal-black mr-2" />
               <p className="text-sm text-minimal-gray-600">{currentProspect.company}</p>
             </div>
           </div>
@@ -46,7 +46,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
               onClick={onPreviousProspect} 
               variant="outline" 
               size="sm" 
-              className="p-2 h-9 w-9"
+              className="p-2 h-9 w-9 border-minimal-gray-300 text-minimal-black hover:bg-minimal-gray-100"
               disabled={totalProspects <= 1}
             >
               <ArrowLeft size={16} />
@@ -58,7 +58,7 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
               onClick={onNextProspect} 
               variant="outline" 
               size="sm" 
-              className="p-2 h-9 w-9"
+              className="p-2 h-9 w-9 border-minimal-gray-300 text-minimal-black hover:bg-minimal-gray-100"
               disabled={totalProspects <= 1}
             >
               <ArrowRight size={16} />
