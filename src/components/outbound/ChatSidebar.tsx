@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { Send, Edit, Paperclip } from "lucide-react";
+import { Send, Edit, Paperclip, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -75,7 +74,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 size="sm" 
                 className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
               >
-                <Edit size={16} />
+                <History size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
