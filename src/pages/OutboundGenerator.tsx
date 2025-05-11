@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Message, ContentType } from "@/types/outbound";
@@ -50,7 +49,8 @@ const OutboundGenerator = () => {
       
       // Simple logic to simulate response based on input
       if (input.toLowerCase().includes("software")) {
-        botResponse = "Entendi que você trabalha com software. Criei um copy personalizado para seu produto de software.";
+        botResponse = "I understand you work with software. I've created a personalized copy for your software product.";
+        // Keep the Portuguese content for the email and LinkedIn examples
         newContent.email = `Assunto: Transforme a eficiência da sua equipe com nossa solução de software
 
 Olá Maria,
@@ -84,7 +84,7 @@ Podemos agendar 15 minutos para uma conversa na próxima semana?
 Carlos Santos
 Inova Digital`;
       } else if (input.toLowerCase().includes("serviço") || input.toLowerCase().includes("servico")) {
-        botResponse = "Entendi que você oferece serviços. Criei um copy personalizado para sua oferta de serviços.";
+        botResponse = "I understand you offer services. I've created a personalized copy for your service offering.";
         newContent.email = `Assunto: Como podemos elevar os resultados da TechSolutions com nossos serviços
 
 Olá Maria,
@@ -118,7 +118,7 @@ Seria possível uma breve conversa para mostrar como poderíamos aplicar essa me
 Carlos Santos
 Inova Digital`;
       } else {
-        botResponse = "Baseado no que você compartilhou, preparei algumas sugestões de copy personalizadas para outbound. Você pode editá-las conforme sua necessidade específica.";
+        botResponse = "Based on what you shared, I've prepared some personalized outbound copy suggestions. You can edit them to match your specific needs.";
         newContent.email = `Assunto: Oportunidade para ampliar resultados na TechSolutions
 
 Olá Maria,
@@ -183,8 +183,8 @@ Inova Digital`;
     }));
     
     toast({
-      title: "Copy atualizado",
-      description: `O conteúdo do ${type === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
+      title: "Copy updated",
+      description: `The ${type === "email" ? "email" : "LinkedIn"} content has been successfully updated.`
     });
   };
 

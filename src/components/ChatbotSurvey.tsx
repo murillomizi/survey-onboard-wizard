@@ -67,8 +67,8 @@ const ChatbotSurvey = () => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(message)) {
         toast({
-          title: "E-mail inválido",
-          description: "Por favor, insira um e-mail válido.",
+          title: "Invalid email",
+          description: "Please enter a valid email address.",
           variant: "destructive"
         });
         setIsWaitingForResponse(false);
@@ -109,7 +109,7 @@ const ChatbotSurvey = () => {
   };
 
   const handleSliderComplete = () => {
-    addMessage(`${sliderValue} caracteres`, "user");
+    addMessage(`${sliderValue} characters`, "user");
     updateSurveyData("tamanho", sliderValue);
     setShowSlider(false);
     setIsWaitingForResponse(true);
@@ -124,8 +124,8 @@ const ChatbotSurvey = () => {
     const file = e.target.files?.[0] || null;
     if (file && file.type !== "text/csv") {
       toast({
-        title: "Formato inválido",
-        description: "Por favor, selecione um arquivo CSV.",
+        title: "Invalid format",
+        description: "Please select a CSV file.",
         variant: "destructive"
       });
       return;
@@ -142,7 +142,7 @@ const ChatbotSurvey = () => {
             );
             
             if (filteredData.length > 0) {
-              addMessage(`Arquivo processado com sucesso: ${filteredData.length} linhas carregadas`, "user");
+              addMessage(`File processed successfully: ${filteredData.length} rows loaded`, "user");
               updateSurveyData("csvData", filteredData);
               
               console.log('CSV data processed:', filteredData.length, 'rows');
@@ -154,8 +154,8 @@ const ChatbotSurvey = () => {
               }, 1000);
             } else {
               toast({
-                title: "Arquivo vazio",
-                description: "O arquivo CSV não contém dados válidos.",
+                title: "Empty file",
+                description: "The CSV file does not contain valid data.",
                 variant: "destructive"
               });
             }
@@ -166,8 +166,8 @@ const ChatbotSurvey = () => {
         error: (error) => {
           console.error('Error parsing CSV:', error);
           toast({
-            title: "Erro ao processar arquivo",
-            description: "Não foi possível ler o arquivo CSV. Verifique se o formato está correto.",
+            title: "Error processing file",
+            description: "Unable to read the CSV file. Please check if the format is correct.",
             variant: "destructive"
           });
         }
@@ -198,11 +198,11 @@ const ChatbotSurvey = () => {
         addMessage(summaryContent, "bot");
         
         setTimeout(() => {
-          addMessage("Tudo pronto para continuar?", "bot");
+          addMessage("All ready to continue?", "bot");
         }, 1000);
       }
     } else {
-      addMessage("Obrigado por completar a pesquisa! Clique em 'Continuar' para prosseguir.", "bot");
+      addMessage("Thank you for completing the survey! Click 'Continue' to proceed.", "bot");
     }
   };
 
@@ -231,7 +231,7 @@ const ChatbotSurvey = () => {
   const onSubmitSurvey = async () => {
     const success = await handleSubmit();
     if (success) {
-      addMessage("Ótimo! Sua base está sendo processada e em breve você receberá um e-mail em " + surveyData.userEmail + " com seus contatos personalizados.", "bot");
+      addMessage(`Great! Your database is being processed and soon you will receive an email at ${surveyData.userEmail} with your personalized contacts.`, "bot");
     }
   };
 

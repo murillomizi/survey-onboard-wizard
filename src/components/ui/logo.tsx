@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown, Database, Copy, Edit } from "lucide-react";
@@ -114,17 +113,17 @@ const Logo = ({
             
             {/* Usage Limits */}
             <div className={`p-3 ${isOutboundPage ? "border-minimal-gray-700 text-minimal-gray-300" : "border-minimal-gray-200 text-minimal-gray-600"}`}>
-              <h4 className={`text-xs font-medium mb-2 ${isOutboundPage ? "text-minimal-gray-300" : "text-minimal-gray-600"}`}>Limites de Uso</h4>
+              <h4 className={`text-xs font-medium mb-2 ${isOutboundPage ? "text-minimal-gray-300" : "text-minimal-gray-600"}`}>Usage Limits</h4>
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span>Prospects utilizados:</span>
+                  <span>Prospects used:</span>
                   <span className="font-medium">48 / 100</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5">
                   <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: '48%' }}></div>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span>Requisições API:</span>
+                  <span>API Requests:</span>
                   <span className="font-medium">324 / 1000</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -140,20 +139,20 @@ const Logo = ({
               <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
                 <div className="flex items-center gap-2">
                   <Edit size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
-                  <span>Renomear Projeto</span>
+                  <span>Rename Project</span>
                 </div>
               </DropdownMenuItem>
               
               <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
                 <div className="flex items-center gap-2">
                   <Copy size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
-                  <span>Duplicar Projeto</span>
+                  <span>Duplicate Project</span>
                 </div>
               </DropdownMenuItem>
               
               <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
                 <div className="flex items-center gap-2">
-                  <span>Criar Novo Projeto</span>
+                  <span>Create New Project</span>
                 </div>
               </DropdownMenuItem>
             </div>

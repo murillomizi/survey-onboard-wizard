@@ -33,13 +33,13 @@ interface CopyEditorProps {
 }
 
 const variableOptions = [
-  { label: "Nome", value: "{nome}" },
-  { label: "Empresa", value: "{empresa}" },
-  { label: "Setor", value: "{setor}" },
-  { label: "Empresa Concorrente", value: "{empresa concorrente}" },
-  { label: "Seu Nome", value: "{seu nome}" },
-  { label: "Sua Empresa", value: "{sua empresa}" },
-  { label: "Seu Contato", value: "{seu contato}" },
+  { label: "Name", value: "{nome}" },
+  { label: "Company", value: "{empresa}" },
+  { label: "Industry", value: "{setor}" },
+  { label: "Competitor", value: "{empresa concorrente}" },
+  { label: "Your Name", value: "{seu nome}" },
+  { label: "Your Company", value: "{sua empresa}" },
+  { label: "Your Contact", value: "{seu contato}" },
 ];
 
 const CopyEditor: React.FC<CopyEditorProps> = ({
@@ -177,7 +177,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <Type size={20} className="text-minimal-gray-700" />
-            Editor de Copy
+            Copy Editor
           </h2>
           
           <div className="flex gap-2">
@@ -188,7 +188,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
               className="flex items-center gap-1 bg-minimal-white border-minimal-gray-300"
             >
               <Save size={14} />
-              Salvar alterações
+              Save changes
             </Button>
             
             <Button
@@ -198,7 +198,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
               className="flex items-center gap-1"
             >
               <X size={14} />
-              Cancelar
+              Cancel
             </Button>
           </div>
         </div>
@@ -209,7 +209,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
               <TabsList className="grid grid-cols-2 rounded-lg bg-minimal-gray-200/70 p-1">
                 <TabsTrigger value="email" className="rounded-md flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <Mail size={16} />
-                  Email Profissional
+                  Professional Email
                 </TabsTrigger>
                 <TabsTrigger value="linkedin" className="rounded-md flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <Linkedin size={16} />
@@ -235,7 +235,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Negrito</p>
+                    <p>Bold</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -253,7 +253,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Itálico</p>
+                    <p>Italic</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -271,7 +271,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Sublinhado</p>
+                    <p>Underline</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -289,7 +289,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Adicionar item de lista</p>
+                    <p>Add list item</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -299,7 +299,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
             
             <div className="flex-1 flex items-center gap-1 overflow-x-auto pb-1 flex-wrap">
               <span className="text-xs text-minimal-gray-600 mr-1 flex items-center">
-                <Variable size={12} className="mr-1" /> Variáveis:
+                <Variable size={12} className="mr-1" /> Variables:
               </span>
               {variableOptions.map((variable) => (
                 <Badge 
@@ -319,27 +319,27 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
               <div className="border-minimal-gray-200 overflow-y-auto max-h-[500px] bg-white p-4">
                 <div className="mb-4">
                   <label htmlFor="email-subject" className="text-sm font-medium text-minimal-gray-700 block mb-1">
-                    Assunto do Email
+                    Email Subject
                   </label>
                   <Input
                     id="email-subject"
                     value={emailSubject}
                     onChange={(e) => setEmailSubject(e.target.value)}
                     className="border-minimal-gray-200 focus:ring-minimal-gray-300 focus:border-minimal-gray-400"
-                    placeholder="Digite o assunto do email..."
+                    placeholder="Type your email subject..."
                   />
                 </div>
                 
                 <div>
                   <label htmlFor="email-body" className="text-sm font-medium text-minimal-gray-700 block mb-1">
-                    Corpo do Email
+                    Email Body
                   </label>
                   <textarea
                     id="email-body"
                     value={emailBody}
                     onChange={(e) => setEmailBody(e.target.value)}
                     className="w-full h-[350px] border rounded-md p-3 text-minimal-gray-800 border-minimal-gray-200 focus:ring-minimal-gray-300 focus:border-minimal-gray-400 focus:outline-none resize-none font-mono"
-                    placeholder="Digite o corpo do email..."
+                    placeholder="Type your email body..."
                   />
                 </div>
               </div>
@@ -347,14 +347,14 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
               <div className="border-minimal-gray-200 overflow-y-auto max-h-[500px] bg-white p-4">
                 <div>
                   <label htmlFor="linkedin-content" className="text-sm font-medium text-minimal-gray-700 block mb-1">
-                    Mensagem do LinkedIn
+                    LinkedIn Message
                   </label>
                   <textarea
                     id="linkedin-content"
                     value={linkedinContent}
                     onChange={(e) => setLinkedinContent(e.target.value)}
                     className="w-full h-[350px] border rounded-md p-3 text-minimal-gray-800 border-minimal-gray-200 focus:ring-minimal-gray-300 focus:border-minimal-gray-400 focus:outline-none resize-none font-mono"
-                    placeholder="Digite a mensagem do LinkedIn..."
+                    placeholder="Type your LinkedIn message..."
                   />
                 </div>
               </div>
@@ -365,7 +365,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
             <div className="flex items-center">
               <AlertTriangle size={16} className="text-amber-500 mr-2" />
               <span className="text-xs text-minimal-gray-600">
-                Variáveis serão substituídas pelos dados do contato durante o envio
+                Variables will be replaced with contact data during sending
               </span>
             </div>
             
@@ -391,14 +391,14 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
                   document.body.removeChild(element);
                   
                   toast({
-                    title: "Conteúdo baixado!",
-                    description: `O arquivo ${fileName} foi baixado com sucesso.`
+                    title: "Content downloaded!",
+                    description: `The file ${fileName} has been successfully downloaded.`
                   });
                 }}
                 className="bg-minimal-white hover:bg-minimal-gray-100 text-xs flex items-center gap-1"
               >
                 <Download size={14} />
-                Baixar
+                Download
               </Button>
               
               <Button
@@ -406,19 +406,19 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
                 className="bg-minimal-black hover:bg-minimal-gray-900 text-minimal-white flex items-center gap-1"
               >
                 <Save size={14} />
-                Salvar alterações
+                Save changes
               </Button>
             </div>
           </div>
         </Card>
         
         <div className="mt-4 p-3 bg-minimal-gray-50 border border-minimal-gray-200 rounded-lg text-xs text-minimal-gray-600">
-          <div className="font-medium text-minimal-gray-700 mb-1">Dicas de formatação:</div>
+          <div className="font-medium text-minimal-gray-700 mb-1">Formatting Tips:</div>
           <ul className="list-disc pl-4 space-y-0.5">
-            <li><strong>**texto**</strong> - para texto em negrito</li>
-            <li><em>_texto_</em> - para texto em itálico</li>
-            <li><span className="underline">__texto__</span> - para texto sublinhado</li>
-            <li><span>• item</span> - para criar listas com marcadores</li>
+            <li><strong>**text**</strong> - for bold text</li>
+            <li><em>_text_</em> - for italic text</li>
+            <li><span className="underline">__text__</span> - for underlined text</li>
+            <li><span>• item</span> - to create bulleted lists</li>
           </ul>
         </div>
       </motion.div>

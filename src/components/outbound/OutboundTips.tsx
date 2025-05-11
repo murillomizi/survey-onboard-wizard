@@ -11,13 +11,13 @@ const OutboundTips: React.FC = () => {
           <path d="M12 16v-4" />
           <path d="M12 8h.01" />
         </svg>
-        Dicas para mensagens de outbound
+        Tips for outbound messages
       </div>
       <ul className="list-disc pl-5 space-y-1 text-minimal-gray-600">
-        <li>Personalize sempre com o nome do destinatário</li>
-        <li>Mantenha o assunto direto e com valor agregado</li>
-        <li>Foque em benefícios, não em características</li>
-        <li>Termine com um pedido de ação claro (CTA)</li>
+        <li>Always personalize with recipient's name</li>
+        <li>Keep the subject direct with added value</li>
+        <li>Focus on benefits, not features</li>
+        <li>End with a clear call to action (CTA)</li>
       </ul>
     </div>
   );
