@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Linkedin } from "lucide-react";
@@ -82,19 +81,19 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   useEffect(() => {
     let result = mockProspects;
     
-    if (filters.industry) {
+    if (filters.industry && filters.industry !== "all") {
       result = result.filter(p => p.industry === filters.industry);
     }
     
-    if (filters.companySize) {
+    if (filters.companySize && filters.companySize !== "all") {
       result = result.filter(p => p.companySize === filters.companySize);
     }
     
-    if (filters.seniority) {
+    if (filters.seniority && filters.seniority !== "all") {
       result = result.filter(p => p.seniority === filters.seniority);
     }
     
-    if (filters.location) {
+    if (filters.location && filters.location !== "all") {
       result = result.filter(p => p.location === filters.location);
     }
     
@@ -124,10 +123,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     });
     setFilteredProspects(mockProspects);
     setCurrentProspectIndex(0);
-    toast({
-      title: "Filtros resetados",
-      description: "Todos os prospects estão sendo exibidos"
-    });
   };
 
   const handleSaveChanges = () => {
@@ -145,10 +140,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       }
       
       setFollowUps(newFollowUps);
-      toast({
-        title: "Follow-up atualizado",
-        description: `O follow-up #${activeFollowUpIndex + 1} foi atualizado com sucesso.`
-      });
     } else {
       // Se estamos editando o conteúdo principal
       if (contentType === "email") {
@@ -157,11 +148,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       } else {
         onContentUpdate("linkedin", linkedinContent);
       }
-      
-      toast({
-        title: "Copy atualizado",
-        description: `O conteúdo do ${contentType === "email" ? "email" : "LinkedIn"} foi atualizado com sucesso.`
-      });
     }
   };
 

@@ -76,7 +76,7 @@ const ProspectFilters: React.FC<ProspectFiltersProps> = ({
                     <SelectValue placeholder="Selecione a indústria" />
                   </SelectTrigger>
                   <SelectContent className="bg-minimal-white">
-                    <SelectItem value="" className="text-xs">Todos</SelectItem>
+                    <SelectItem value="all" className="text-xs">Todos</SelectItem>
                     {industryOptions.map((industry) => (
                       <SelectItem key={industry} value={industry} className="text-xs">{industry}</SelectItem>
                     ))}
@@ -91,7 +91,7 @@ const ProspectFilters: React.FC<ProspectFiltersProps> = ({
                     <SelectValue placeholder="Selecione o tamanho" />
                   </SelectTrigger>
                   <SelectContent className="bg-minimal-white">
-                    <SelectItem value="" className="text-xs">Todos</SelectItem>
+                    <SelectItem value="all" className="text-xs">Todos</SelectItem>
                     {companySizeOptions.map((size) => (
                       <SelectItem key={size} value={size} className="text-xs">{size} funcionários</SelectItem>
                     ))}
@@ -106,7 +106,7 @@ const ProspectFilters: React.FC<ProspectFiltersProps> = ({
                     <SelectValue placeholder="Selecione a senioridade" />
                   </SelectTrigger>
                   <SelectContent className="bg-minimal-white">
-                    <SelectItem value="" className="text-xs">Todos</SelectItem>
+                    <SelectItem value="all" className="text-xs">Todos</SelectItem>
                     {seniorityOptions.map((seniority) => (
                       <SelectItem key={seniority} value={seniority} className="text-xs">{seniority}</SelectItem>
                     ))}
@@ -121,7 +121,7 @@ const ProspectFilters: React.FC<ProspectFiltersProps> = ({
                     <SelectValue placeholder="Selecione a localização" />
                   </SelectTrigger>
                   <SelectContent className="bg-minimal-white">
-                    <SelectItem value="" className="text-xs">Todos</SelectItem>
+                    <SelectItem value="all" className="text-xs">Todos</SelectItem>
                     {locationOptions.map((location) => (
                       <SelectItem key={location} value={location} className="text-xs">{location}</SelectItem>
                     ))}
@@ -149,25 +149,25 @@ const ProspectFilters: React.FC<ProspectFiltersProps> = ({
       {/* Filter badges */}
       {Object.values(filters).some(value => value !== "") && (
         <div className="flex flex-wrap gap-2">
-          {filters.industry && (
+          {filters.industry && filters.industry !== "all" && (
             <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
               Indústria: {filters.industry}
               <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, industry: ""})} />
             </Badge>
           )}
-          {filters.companySize && (
+          {filters.companySize && filters.companySize !== "all" && (
             <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
               Tamanho: {filters.companySize}
               <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, companySize: ""})} />
             </Badge>
           )}
-          {filters.seniority && (
+          {filters.seniority && filters.seniority !== "all" && (
             <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
               Senioridade: {filters.seniority}
               <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, seniority: ""})} />
             </Badge>
           )}
-          {filters.location && (
+          {filters.location && filters.location !== "all" && (
             <Badge variant="outline" className="bg-minimal-white text-xs flex gap-1 items-center">
               Localização: {filters.location}
               <X size={12} className="cursor-pointer" onClick={() => setFilters({...filters, location: ""})} />
