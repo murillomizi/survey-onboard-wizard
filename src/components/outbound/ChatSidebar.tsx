@@ -15,6 +15,11 @@ import {
 import EditOptionsModal from "./EditOptionsModal";
 import TemplateConfigMenu from "./TemplateConfigMenu";
 import { toast } from "@/components/ui/use-toast";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
 
 type Message = {
   content: string;
@@ -44,7 +49,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
-  const [templateTriggerRef, setTemplateTriggerRef] = useState<HTMLButtonElement | null>(null);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -133,16 +137,22 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           {/* Controls row with attachment and template buttons */}
           <div className="flex items-center justify-between mt-3 px-1">
             {/* Template Button */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              ref={setTemplateTriggerRef}
-              className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
-              onClick={() => setIsTemplateMenuOpen(true)}
-            >
-              <FileText size={14} />
-              <span className="text-xs">Template</span>
-            </Button>
+            <Popover open={isTemplateMenuOpen} onOpenChange={setIsTemplateMenuOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+                >
+                  <FileText size={14} />
+                  <span className="text-xs">Template</span>
+                </Button>
+              </PopoverTrigger>
+              <TemplateConfigMenu 
+                onApplyTemplate={handleApplyTemplate}
+                onClose={() => setIsTemplateMenuOpen(false)}
+              />
+            </Popover>
             
             {/* Attachment Button */}
             <div>
@@ -174,13 +184,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       <EditOptionsModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-      />
-
-      {/* Template Config Menu */}
-      <TemplateConfigMenu
-        isOpen={isTemplateMenuOpen}
-        onClose={() => setIsTemplateMenuOpen(false)}
-        onApplyTemplate={handleApplyTemplate}
       />
     </div>
   );
