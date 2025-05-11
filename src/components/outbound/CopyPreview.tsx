@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ContentType, FilterOptions, FollowUps } from "@/types/outbound";
-import CopyPreviewHeader from "./CopyPreviewHeader";
 import ProspectFilters from "./ProspectFilters";
 import ProspectCard from "./ProspectCard";
 import FollowUpSelector from "./FollowUpSelector";
@@ -300,28 +299,17 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-minimal-white to-minimal-gray-100 overflow-y-auto">
+    <div className="flex-1 bg-gradient-to-br from-minimal-white to-minimal-gray-100 overflow-y-auto pt-0">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mx-auto max-w-3xl"
+        className="max-w-3xl mx-auto"
       >
-        {/* Minimalist header aligned with sidebar */}
-        <div className="py-3 px-6">
-          <CopyPreviewHeader 
-            selectedPersonaSource={selectedPersonaSource}
-            isPersonaPopoverOpen={isPersonaPopoverOpen}
-            setIsPersonaPopoverOpen={setIsPersonaPopoverOpen}
-            handlePersonaSelection={handlePersonaSelection}
-            handleFileInputChange={handleFileInputChange}
-          />
-        </div>
+        {/* Removido o header com os botões de Persona e Sua Empresa */}
         
-        <Separator className="bg-minimal-gray-200" />
-        
-        <div className="p-6">
-          <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden mt-2">
+        <div className="p-3">
+          <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden">
             <div className="p-4 bg-gradient-to-r from-minimal-gray-100 to-minimal-white border-b border-minimal-gray-300 flex justify-between items-center">
               <Tabs defaultValue="email" value={contentType} onValueChange={onContentTypeChange} className="w-full">
                 <TabsList className="grid grid-cols-2 rounded-lg bg-minimal-gray-200/70 p-1">
