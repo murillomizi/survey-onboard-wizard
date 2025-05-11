@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Send, Edit, Paperclip, History } from "lucide-react";
+import { Send, Paperclip, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -118,19 +118,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          {/* Controls row with edit and attachment buttons */}
-          <div className="flex items-center justify-between mt-3 px-1">
-            {/* Edit Button */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
-              onClick={() => setIsEditModalOpen(true)}
-            >
-              <Edit size={14} />
-              <span className="text-xs">Edit</span>
-            </Button>
-            
+          {/* Controls row with attachment button only */}
+          <div className="flex items-center justify-end mt-3 px-1">
             {/* Attachment Button */}
             <div>
               <input 
