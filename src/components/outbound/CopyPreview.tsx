@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Linkedin, Send, Share2, Plus, ChevronRight, X, ArrowLeft, ArrowRight, Briefcase, User, Building2, Filter } from "lucide-react";
@@ -268,10 +267,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     const newIndex = contentType === "email" ? newFollowUps.email.length - 1 : newFollowUps.linkedin.length - 1;
     handleSelectFollowUp(newIndex);
     
-    toast({
-      title: "Follow-up criado",
-      description: `Um novo follow-up foi adicionado à cadência de ${contentType === "email" ? "email" : "LinkedIn"}.`
-    });
+    // Removido o toast de notificação de follow-up criado
   };
 
   const handleSelectFollowUp = (index: number | null) => {
