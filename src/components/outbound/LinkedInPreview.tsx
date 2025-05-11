@@ -30,20 +30,20 @@ const LinkedInPreview: React.FC<LinkedInPreviewProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
+          className="bg-minimal-white hover:bg-minimal-gray-100 text-xs flex items-center gap-1"
           onClick={() => downloadContent(linkedinContent, "linkedin_outbound.txt")}
         >
-          <Download size={14} className="mr-1" />
-          Baixar
+          <Download size={14} />
+          <span className="hidden sm:inline">Baixar</span>
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="bg-minimal-white hover:bg-minimal-gray-100 text-xs"
+          className="bg-minimal-white hover:bg-minimal-gray-100 text-xs flex items-center gap-1"
           onClick={() => copyToClipboard(linkedinContent)}
         >
-          <Send size={14} className="mr-1" />
-          Disparar
+          <Send size={14} />
+          <span className="hidden sm:inline">Disparar</span>
         </Button>
       </div>
     </div>

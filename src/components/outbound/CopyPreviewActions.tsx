@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Send, Share2 } from "lucide-react";
+import { Send, Share2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
@@ -12,6 +12,7 @@ interface CopyPreviewActionsProps {
   activeFollowUpIndex: number | null;
   onDispatch: () => void;
   onShare: () => void;
+  onDownload: () => void;
 }
 
 const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
@@ -19,7 +20,8 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
   followUpsCount,
   activeFollowUpIndex,
   onDispatch,
-  onShare
+  onShare,
+  onDownload
 }) => {
   return (
     <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-between items-center">
@@ -31,7 +33,7 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
         )}
       </div>
       
-      <div className="flex gap-4">
+      <div className="flex gap-3">
         <Button 
           className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6"
           onClick={onDispatch}
@@ -42,7 +44,16 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
         
         <Button 
           variant="outline"
-          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all px-6"
+          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
+          onClick={onDownload}
+        >
+          <Download size={16} className="text-black" />
+          Baixar
+        </Button>
+        
+        <Button 
+          variant="outline"
+          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
           onClick={onShare}
         >
           <Share2 size={16} className="text-black" />
