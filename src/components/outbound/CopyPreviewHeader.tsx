@@ -99,18 +99,12 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
 
   const handlePreviousProspect = () => {
     setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : mockProspects.length - 1));
-    toast({
-      title: "Prospect anterior",
-      description: `Visualizando ${mockProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : mockProspects.length - 1)].firstName} ${mockProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : mockProspects.length - 1)].lastName}`
-    });
+    // Removido o toast de navegação
   };
 
   const handleNextProspect = () => {
     setCurrentProspectIndex(prev => (prev < mockProspects.length - 1 ? prev + 1 : 0));
-    toast({
-      title: "Próximo prospect",
-      description: `Visualizando ${mockProspects[(currentProspectIndex < mockProspects.length - 1 ? currentProspectIndex + 1 : 0)].firstName} ${mockProspects[(currentProspectIndex < mockProspects.length - 1 ? currentProspectIndex + 1 : 0)].lastName}`
-    });
+    // Removido o toast de navegação
   };
 
   return <div className="flex flex-col items-center justify-between mb-8">

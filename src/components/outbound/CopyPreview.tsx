@@ -153,18 +153,12 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
 
   const handlePreviousProspect = () => {
     setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : filteredProspects.length - 1));
-    toast({
-      title: "Prospect anterior",
-      description: `Visualizando ${filteredProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : filteredProspects.length - 1)].firstName} ${filteredProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : filteredProspects.length - 1)].lastName}`
-    });
+    // Removido o toast de navegação
   };
 
   const handleNextProspect = () => {
     setCurrentProspectIndex(prev => (prev < filteredProspects.length - 1 ? prev + 1 : 0));
-    toast({
-      title: "Próximo prospect",
-      description: `Visualizando ${filteredProspects[(currentProspectIndex < filteredProspects.length - 1 ? currentProspectIndex + 1 : 0)].firstName} ${filteredProspects[(currentProspectIndex < filteredProspects.length - 1 ? currentProspectIndex + 1 : 0)].lastName}`
-    });
+    // Removido o toast de navegação
   };
 
   // Resetar filtros
@@ -390,7 +384,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione a indústria" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
                           {industryOptions.map((industry) => (
                             <SelectItem key={industry} value={industry} className="text-xs">{industry}</SelectItem>
                           ))}
@@ -405,7 +399,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione o tamanho" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
                           {companySizeOptions.map((size) => (
                             <SelectItem key={size} value={size} className="text-xs">{size} funcionários</SelectItem>
                           ))}
@@ -420,7 +414,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione a senioridade" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
                           {seniorityOptions.map((seniority) => (
                             <SelectItem key={seniority} value={seniority} className="text-xs">{seniority}</SelectItem>
                           ))}
@@ -435,7 +429,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                           <SelectValue placeholder="Selecione a localização" />
                         </SelectTrigger>
                         <SelectContent className="bg-minimal-white">
-                          <SelectItem value="none" className="text-xs">Todos</SelectItem>
+                          <SelectItem value="" className="text-xs">Todos</SelectItem>
                           {locationOptions.map((location) => (
                             <SelectItem key={location} value={location} className="text-xs">{location}</SelectItem>
                           ))}
