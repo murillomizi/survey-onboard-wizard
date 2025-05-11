@@ -13,6 +13,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import EditOptionsModal from "./EditOptionsModal";
+import TemplateConfigMenu from "./TemplateConfigMenu";
+import { toast } from "@/components/ui/use-toast";
 
 type Message = {
   content: string;
@@ -41,12 +43,21 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
+  const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       console.log("File selected:", e.target.files[0].name);
       // Here you would handle the file upload
     }
+  };
+  
+  const handleApplyTemplate = (templateConfig: any) => {
+    console.log("Template config applied:", templateConfig);
+    toast({
+      title: "Template aplicado!",
+      description: "As configurações do template foram aplicadas com sucesso."
+    });
   };
 
   return (
@@ -125,6 +136,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               variant="ghost" 
               size="sm" 
               className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+              onClick={() => setIsTemplateMenuOpen(true)}
             >
               <FileText size={14} />
               <span className="text-xs">Template</span>
@@ -160,6 +172,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       <EditOptionsModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
+      />
+
+      {/* Template Config Menu */}
+      <TemplateConfigMenu
+        isOpen={isTemplateMenuOpen}
+        onClose={() => setIsTemplateMenuOpen(false)}
+        onApplyTemplate={handleApplyTemplate}
       />
     </div>
   );
