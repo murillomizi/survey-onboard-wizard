@@ -185,40 +185,40 @@ const Landing = () => {
   const pricingPlans = [
     {
       name: "MVP",
-      description: "Ideal para times de vendas em crescimento",
-      price: "Consulte nosso time",
+      description: "Ideal for growing sales teams",
+      price: "Contact our team",
       duration: "",
       icon: Rocket,
       features: [
-        "Até 500 prospectos",
-        "Personalização avançada",
-        "Templates personalizados",
-        "Suporte prioritário por e-mail",
-        "Painel de análise",
-        "Colaboração em equipe"
+        "Up to 500 prospects",
+        "Advanced personalization",
+        "Custom templates",
+        "Priority email support",
+        "Analytics dashboard",
+        "Team collaboration"
       ],
-      highlightedFeature: "Escolha mais popular",
-      cta: "Fale com Vendas",
+      highlightedFeature: "Most popular choice",
+      cta: "Talk to Sales",
       popular: true,
       color: "bg-minimal-black text-minimal-white"
     },
     {
       name: "Scale",
-      description: "Personalização de nível empresarial",
-      price: "Consulte nosso time",
+      description: "Enterprise-level personalization",
+      price: "Contact our team",
       duration: "",
       icon: TrendingUp,
       features: [
-        "Prospectos ilimitados",
-        "Personalização elite",
-        "Integração personalizada",
-        "Gerente de conta dedicado",
-        "Analytics avançado",
-        "Acesso à API",
-        "Opções de white-label"
+        "Unlimited prospects",
+        "Elite personalization",
+        "Custom integration",
+        "Dedicated account manager",
+        "Advanced analytics",
+        "API access",
+        "White-label options"
       ],
-      highlightedFeature: "Solução definitiva",
-      cta: "Contatar Vendas",
+      highlightedFeature: "Ultimate solution",
+      cta: "Contact Sales",
       popular: false,
       color: "bg-minimal-gray-100"
     }
@@ -635,10 +635,10 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-              Escolha Seu Plano Mizi
+              Choose Your Mizi Plan
             </h2>
             <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              Opções flexíveis para atender às suas necessidades de outreach
+              Flexible options to meet your outreach needs
             </p>
           </div>
           
@@ -669,7 +669,7 @@ const Landing = () => {
                       
                       {plan.popular && (
                         <Badge className="mx-auto mb-6 bg-minimal-white text-minimal-black hover:bg-minimal-gray-100">
-                          Mais Popular
+                          Most Popular
                         </Badge>
                       )}
                       
@@ -701,10 +701,10 @@ const Landing = () => {
           
           <div className="text-center mt-12 pt-8 border-t border-minimal-gray-200">
             <p className="text-minimal-gray-600 mb-6">
-              Para conhecer nossos planos e preços, entre em contato com nosso time de vendas.
+              To learn more about our plans and pricing, contact our sales team.
             </p>
             <Button variant="outline" size="lg" className="border-minimal-gray-300" onClick={handleOpenLoginDialog}>
-              <Shield className="h-4 w-4 mr-2" /> Falar com Time de Vendas
+              <Shield className="h-4 w-4 mr-2" /> Talk to Sales Team
             </Button>
           </div>
         </div>
