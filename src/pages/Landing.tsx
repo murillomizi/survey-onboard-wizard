@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -311,7 +312,7 @@ const Landing = () => {
               <Input
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                placeholder="Ask Mizi to create a prototype..."
+                placeholder="Ask Mizi to create a campaign..."
                 className="w-full bg-minimal-black text-minimal-white border-0 pr-12 py-6 h-auto text-base focus:ring-0 focus:outline-none placeholder:text-minimal-gray-400 rounded-full"
                 onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
               />
