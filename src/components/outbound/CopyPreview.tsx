@@ -92,6 +92,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     seniority: "",
     location: "",
   });
+  const [filteredProspects, setFilteredProspects] = useState<Prospect[]>(mockProspects);
   
   // Current prospect
   const currentProspect = filteredProspects.length > 0 ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0] : mockProspects[0];
