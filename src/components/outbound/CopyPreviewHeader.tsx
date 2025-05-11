@@ -1,10 +1,31 @@
+
 import React, { useState } from "react";
-import { Users, Building2, ArrowLeftRight, Link2, Check } from "lucide-react";
+import { Users, Building2, ArrowLeftRight, Link2, Check, ArrowLeft, ArrowRight, Briefcase, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+
+// Tipo para os prospects
+interface Prospect {
+  id: number;
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  company: string;
+}
+
+// Dados de prospects simulados
+const mockProspects: Prospect[] = [
+  { id: 1, firstName: "Maria", lastName: "Silva", jobTitle: "Diretora de Marketing", company: "TechSolutions" },
+  { id: 2, firstName: "João", lastName: "Santos", jobTitle: "CEO", company: "Inovação Digital" },
+  { id: 3, firstName: "Ana", lastName: "Oliveira", jobTitle: "Gerente de Vendas", company: "MegaVendas" },
+  { id: 4, firstName: "Carlos", lastName: "Ferreira", jobTitle: "CTO", company: "DataPro" },
+  { id: 5, firstName: "Juliana", lastName: "Almeida", jobTitle: "COO", company: "StartupNow" },
+];
+
 interface CopyPreviewHeaderProps {
   selectedPersonaSource: string | null;
   isPersonaPopoverOpen: boolean;
@@ -12,6 +33,7 @@ interface CopyPreviewHeaderProps {
   handlePersonaSelection: (source: string) => void;
   handleFileInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
 const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   selectedPersonaSource,
   isPersonaPopoverOpen,
@@ -22,6 +44,11 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   const [companyWebsite, setCompanyWebsite] = useState<string>('');
   const [isCompanyPopoverOpen, setIsCompanyPopoverOpen] = useState(false);
   const [urlIsValid, setUrlIsValid] = useState<boolean | null>(null);
+  const [currentProspectIndex, setCurrentProspectIndex] = useState<number>(0);
+  
+  // Current prospect
+  const currentProspect = mockProspects[currentProspectIndex];
+
   const validateUrl = (url: string): boolean => {
     if (!url) return false;
 
@@ -37,6 +64,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       return false;
     }
   };
+  
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCompanyWebsite(value);
@@ -46,10 +74,12 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       setUrlIsValid(null);
     }
   };
+  
   const formatDisplayUrl = (url: string): string => {
     // Remove protocol for display
     return url.replace(/^https?:\/\//i, '');
   };
+  
   const handleCompanyWebsiteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyWebsite || !validateUrl(companyWebsite)) {
@@ -66,7 +96,70 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       description: "As informações da empresa foram atualizadas com sucesso."
     });
   };
+
+  const handlePreviousProspect = () => {
+    setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : mockProspects.length - 1));
+    toast({
+      title: "Prospect anterior",
+      description: `Visualizando ${mockProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : mockProspects.length - 1)].firstName} ${mockProspects[(currentProspectIndex > 0 ? currentProspectIndex - 1 : mockProspects.length - 1)].lastName}`
+    });
+  };
+
+  const handleNextProspect = () => {
+    setCurrentProspectIndex(prev => (prev < mockProspects.length - 1 ? prev + 1 : 0));
+    toast({
+      title: "Próximo prospect",
+      description: `Visualizando ${mockProspects[(currentProspectIndex < mockProspects.length - 1 ? currentProspectIndex + 1 : 0)].firstName} ${mockProspects[(currentProspectIndex < mockProspects.length - 1 ? currentProspectIndex + 1 : 0)].lastName}`
+    });
+  };
+
   return <div className="flex flex-col items-center justify-between mb-8">
+      {/* Prospect Card */}
+      <Card className="w-full mb-5 bg-white shadow-md border border-minimal-gray-200">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-center">
+            <div className="flex-1">
+              <div className="flex items-center mb-2">
+                <User size={18} className="text-purple-500 mr-2" />
+                <h3 className="text-lg font-semibold">{currentProspect.firstName} {currentProspect.lastName}</h3>
+              </div>
+              
+              <div className="flex items-center mb-2">
+                <Briefcase size={16} className="text-blue-500 mr-2" />
+                <p className="text-sm text-minimal-gray-600">{currentProspect.jobTitle}</p>
+              </div>
+              
+              <div className="flex items-center">
+                <Building2 size={16} className="text-green-500 mr-2" />
+                <p className="text-sm text-minimal-gray-600">{currentProspect.company}</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={handlePreviousProspect} 
+                variant="outline" 
+                size="sm" 
+                className="p-2 h-9 w-9"
+              >
+                <ArrowLeft size={16} />
+              </Button>
+              <span className="flex items-center px-2 text-sm text-minimal-gray-600">
+                {currentProspectIndex + 1} / {mockProspects.length}
+              </span>
+              <Button 
+                onClick={handleNextProspect} 
+                variant="outline" 
+                size="sm" 
+                className="p-2 h-9 w-9"
+              >
+                <ArrowRight size={16} />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="connection-container w-full flex items-center justify-between relative mb-2">
         {/* Botão Persona */}
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
@@ -107,10 +200,6 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
           </PopoverContent>
         </Popover>
         
-        {/* Connector Element between Persona and Sua Empresa */}
-        
-        
-
         {/* Botão Sua Empresa */}
         <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
           <PopoverTrigger asChild>
