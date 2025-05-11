@@ -1,66 +1,51 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
-
 interface LogoProps {
   withText?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
   projectName?: string;
 }
-
-const Logo = ({ withText = true, size = "md", className = "", projectName = "mizi" }: LogoProps) => {
+const Logo = ({
+  withText = true,
+  size = "md",
+  className = "",
+  projectName = "mizi"
+}: LogoProps) => {
   const sizeClasses = {
     sm: {
-      fontSize: "1.25rem", // text-xl
+      fontSize: "1.25rem",
+      // text-xl
       logoSize: 20,
       spacing: "gap-0.5" // Further reduced gap
     },
     md: {
-      fontSize: "1.5rem", // text-2xl
+      fontSize: "1.5rem",
+      // text-2xl
       logoSize: 24,
       spacing: "gap-1" // Further reduced gap
     },
     lg: {
-      fontSize: "1.875rem", // text-3xl
+      fontSize: "1.875rem",
+      // text-3xl
       logoSize: 32,
       spacing: "gap-1.5" // Further reduced gap
-    },
+    }
   };
-
-  return (
-    <Link to="/" className={`flex items-center ${className}`}>
+  return <Link to="/" className={`flex items-center ${className}`}>
       <div className="flex items-center">
         <div className={`flex items-center ${sizeClasses[size].spacing}`}>
-          <svg 
-            width={sizeClasses[size].logoSize}
-            height={sizeClasses[size].logoSize}
-            viewBox="0 0 200 200" 
-            fill="none" 
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-current"
-          >
-            <path
-              d="M165.712 34.288C172.945 41.522 173.511 52.568 167.088 60.555L114.823 124.784L167.088 189.014C173.511 197.001 172.945 208.047 165.712 215.28C158.478 222.514 147.432 223.08 139.445 216.657L80.664 169.527L21.884 216.657C13.897 223.08 2.851 222.514 -4.383 215.28C-11.616 208.047 -12.183 197.001 -5.759 189.014L46.504 124.784L-5.759 60.555C-12.183 52.568 -11.616 41.522 -4.383 34.288C2.851 27.055 13.897 26.489 21.884 32.912L80.664 80.042L139.445 32.912C147.432 26.489 158.478 27.055 165.712 34.288Z"
-              fill="currentColor"
-              transform="scale(0.8) translate(20, 10)"
-            />
+          <svg width={sizeClasses[size].logoSize} height={sizeClasses[size].logoSize} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-current">
+            <path d="M165.712 34.288C172.945 41.522 173.511 52.568 167.088 60.555L114.823 124.784L167.088 189.014C173.511 197.001 172.945 208.047 165.712 215.28C158.478 222.514 147.432 223.08 139.445 216.657L80.664 169.527L21.884 216.657C13.897 223.08 2.851 222.514 -4.383 215.28C-11.616 208.047 -12.183 197.001 -5.759 189.014L46.504 124.784L-5.759 60.555C-12.183 52.568 -11.616 41.522 -4.383 34.288C2.851 27.055 13.897 26.489 21.884 32.912L80.664 80.042L139.445 32.912C147.432 26.489 158.478 27.055 165.712 34.288Z" fill="currentColor" transform="scale(0.8) translate(20, 10)" />
           </svg>
-          <span 
-            className="font-bold leading-none text-current" 
-            style={{ fontSize: sizeClasses[size].fontSize }}
-          >
-            mizi
-          </span>
+          
         </div>
       </div>
-      {withText && !projectName.toLowerCase().includes("mizi") && (
-        <span className="ml-3 font-semibold tracking-tight" style={{ fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.85)" }}>
+      {withText && !projectName.toLowerCase().includes("mizi") && <span className="ml-3 font-semibold tracking-tight" style={{
+      fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.85)"
+    }}>
           {projectName}
-        </span>
-      )}
-    </Link>
-  );
+        </span>}
+    </Link>;
 };
-
 export default Logo;
