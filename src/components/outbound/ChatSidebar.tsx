@@ -1,15 +1,10 @@
+
 import React, { useState } from "react";
 import { Send, Edit, Paperclip, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
 import Logo from "@/components/ui/logo";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -67,28 +62,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         />
         
         <div className="ml-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
-              >
-                <History size={16} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
-              <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700" onClick={() => setIsEditModalOpen(true)}>
-                Edit model
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-                Start new conversation
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
+            onClick={() => console.log("History clicked")}
+          >
+            <History size={16} />
+          </Button>
         </div>
       </div>
       
@@ -139,7 +120,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
           {/* Controls row with edit and attachment buttons */}
           <div className="flex items-center justify-between mt-3 px-1">
-            {/* Edit Button (replaced ML button) */}
+            {/* Edit Button */}
             <Button 
               variant="ghost" 
               size="sm" 
