@@ -59,33 +59,38 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
-      <div className="p-4 border-b border-minimal-gray-700 flex items-center justify-between">
-        <div className="flex items-center">
-          <Logo withText={false} size="md" className="text-minimal-white" />
-          <span className="ml-2 text-sm font-medium text-minimal-white">mizi project 1</span>
+      <div className="p-4 border-b border-minimal-gray-700 flex items-center">
+        <Logo 
+          withText={true} 
+          size="md" 
+          className="text-minimal-white" 
+          projectName="miziapp"
+        />
+        
+        <div className="ml-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
+              >
+                <Edit size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
+              <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700" onClick={() => setIsEditModalOpen(true)}>
+                Editar modelo
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
+                Configurações
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
+                Começar nova conversa
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
-            >
-              <Edit size={16} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
-            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700" onClick={() => setIsEditModalOpen(true)}>
-              Editar modelo
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-              Configurações
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-              Começar nova conversa
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -97,7 +102,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               className="animate-fade-in"
             >
               {message.role === "assistant" && (
-                <ChatBubbleAvatar fallback="M" className="bg-gradient-to-br from-gray-700 to-gray-900" />
+                <ChatBubbleAvatar fallback="M" className="bg-gradient-to-br from-purple-600 to-orange-500" />
               )}
               <ChatBubbleMessage 
                 variant={message.role === "user" ? "sent" : "received"}
