@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { X } from "lucide-react";
 
 interface LogoProps {
   withText?: boolean;
@@ -13,28 +14,30 @@ const Logo = ({ withText = true, size = "md", className = "", projectName = "miz
   const sizeClasses = {
     sm: {
       fontSize: "1.25rem", // text-xl
-      spacing: "gap-1"
+      xSize: 16,
+      spacing: "gap-1.5"
     },
     md: {
       fontSize: "1.5rem", // text-2xl
-      spacing: "gap-1.5"
+      xSize: 20,
+      spacing: "gap-2"
     },
     lg: {
       fontSize: "1.875rem", // text-3xl
-      spacing: "gap-2"
+      xSize: 24,
+      spacing: "gap-2.5"
     },
   };
 
   return (
     <Link to="/" className={`flex items-center ${className}`}>
       <div className="flex items-center">
-        <div className={`flex items-baseline ${sizeClasses[size].spacing}`}>
-          <span 
-            className="font-bold text-black leading-none" 
-            style={{ fontSize: sizeClasses[size].fontSize }}
-          >
-            ×
-          </span>
+        <div className={`flex items-center ${sizeClasses[size].spacing}`}>
+          <X
+            size={sizeClasses[size].xSize}
+            className="text-black font-bold"
+            strokeWidth={3}
+          />
           <span 
             className="font-bold text-black leading-none" 
             style={{ fontSize: sizeClasses[size].fontSize }}
