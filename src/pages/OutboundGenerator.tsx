@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Message, ContentType } from "@/types/outbound";
@@ -259,14 +258,6 @@ Inova Digital`;
       />
       
       <div className="ml-80 flex-1 h-full overflow-y-auto pb-6">
-        <ProspectFilters
-          filters={filters}
-          setFilters={setFilters}
-          filteredProspectsCount={filteredProspects.length}
-          totalProspectsCount={mockProspects.length}
-          resetFilters={resetFilters}
-        />
-        
         <CopyPreview 
           contentType={contentType}
           generatedContent={generatedContent}
