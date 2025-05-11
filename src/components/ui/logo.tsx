@@ -20,6 +20,7 @@ const Logo = ({
 }: LogoProps) => {
   const location = useLocation();
   const isOutboundPage = location.pathname === "/outbound";
+  const isLandingPage = location.pathname === "/landing";
   
   const sizeClasses = {
     sm: {
@@ -43,6 +44,9 @@ const Logo = ({
   const logoColor = isOutboundPage ? "#FFFFFF" : "#000000";
   const textColor = isOutboundPage ? "text-minimal-white" : "text-minimal-black";
 
+  // Set font size multiplier based on current route
+  const fontSizeMultiplier = isLandingPage ? "0.75" : "0.55";
+
   return (
     <Link to="/" className={`flex items-center ${className}`}>
       <div className="flex items-center">
@@ -62,7 +66,7 @@ const Logo = ({
       {withText && (
         <div className="ml-2 flex items-center">
           <span className={`font-semibold tracking-tight ${textColor}`} style={{
-            fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.55)"
+            fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
           }}>
             {projectName}
           </span>
