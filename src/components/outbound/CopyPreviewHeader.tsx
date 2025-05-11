@@ -114,52 +114,6 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   };
 
   return <div className="flex flex-col items-center justify-between mb-8">
-      {/* Prospect Card */}
-      <Card className="w-full mb-5 bg-white shadow-md border border-minimal-gray-200">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center">
-            <div className="flex-1">
-              <div className="flex items-center mb-2">
-                <User size={18} className="text-purple-500 mr-2" />
-                <h3 className="text-lg font-semibold">{currentProspect.firstName} {currentProspect.lastName}</h3>
-              </div>
-              
-              <div className="flex items-center mb-2">
-                <Briefcase size={16} className="text-blue-500 mr-2" />
-                <p className="text-sm text-minimal-gray-600">{currentProspect.jobTitle}</p>
-              </div>
-              
-              <div className="flex items-center">
-                <Building2 size={16} className="text-green-500 mr-2" />
-                <p className="text-sm text-minimal-gray-600">{currentProspect.company}</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button 
-                onClick={handlePreviousProspect} 
-                variant="outline" 
-                size="sm" 
-                className="p-2 h-9 w-9"
-              >
-                <ArrowLeft size={16} />
-              </Button>
-              <span className="flex items-center px-2 text-sm text-minimal-gray-600">
-                {currentProspectIndex + 1} / {mockProspects.length}
-              </span>
-              <Button 
-                onClick={handleNextProspect} 
-                variant="outline" 
-                size="sm" 
-                className="p-2 h-9 w-9"
-              >
-                <ArrowRight size={16} />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="connection-container w-full flex items-center justify-between relative mb-2">
         {/* Botão Persona */}
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
@@ -243,7 +197,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       </div>
 
       {/* Visual Result Text */}
-      <div className="copy-formation-text text-center mt-2">
+      <div className="copy-formation-text text-center mt-2 mb-5">
         
       </div>
     </div>;
