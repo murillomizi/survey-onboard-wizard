@@ -300,22 +300,15 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-minimal-white to-minimal-gray-100 p-6 overflow-y-auto">
+    <div className="flex-1 bg-gradient-to-br from-minimal-white to-minimal-gray-100 overflow-y-auto">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-3xl"
       >
-        {/* Header Mizi estilizado */}
-        <div className="bg-white p-6 mb-4 rounded-xl shadow-md">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-minimal-black">Mizi Outbound</h1>
-            <div className="text-sm text-minimal-gray-500">
-              Personalize seu outbound para resultados melhores
-            </div>
-          </div>
-          
+        {/* Minimalist header aligned with sidebar */}
+        <div className="py-3 px-6">
           <CopyPreviewHeader 
             selectedPersonaSource={selectedPersonaSource}
             isPersonaPopoverOpen={isPersonaPopoverOpen}
@@ -325,75 +318,77 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
           />
         </div>
         
-        <Separator className="my-6 bg-minimal-gray-300/50" />
+        <Separator className="bg-minimal-gray-200" />
         
-        <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden mt-2">
-          <div className="p-4 bg-gradient-to-r from-minimal-gray-100 to-minimal-white border-b border-minimal-gray-300 flex justify-between items-center">
-            <Tabs defaultValue="email" value={contentType} onValueChange={onContentTypeChange} className="w-full">
-              <TabsList className="grid grid-cols-2 rounded-lg bg-minimal-gray-200/70 p-1">
-                <TabsTrigger value="email" className="rounded-md flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <Mail size={16} />
-                  Email Profissional
-                </TabsTrigger>
-                <TabsTrigger value="linkedin" className="rounded-md flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <Linkedin size={16} />
-                  LinkedIn
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          {/* Filtros de Prospects */}
-          <ProspectFilters 
-            filters={filters}
-            setFilters={setFilters}
-            filteredProspectsCount={filteredProspects.length}
-            totalProspectsCount={mockProspects.length}
-            resetFilters={resetFilters}
-          />
-          
-          {/* Cartão de Prospect */}
-          <ProspectCard 
-            currentProspect={currentProspect}
-            currentProspectIndex={currentProspectIndex}
-            totalProspects={filteredProspects.length}
-            onPreviousProspect={handlePreviousProspect}
-            onNextProspect={handleNextProspect}
-          />
-          
-          {/* Seletor de Follow-ups */}
-          <FollowUpSelector 
-            contentType={contentType}
-            followUps={followUps}
-            activeFollowUpIndex={activeFollowUpIndex}
-            onSelectFollowUp={handleSelectFollowUp}
-            onDeleteFollowUp={handleDeleteFollowUp}
-            onAddFollowUp={addFollowUp}
-          />
-          
-          <CardContent className="p-0">
-            {/* Editor de Conteúdo */}
-            <ContentEditor 
-              contentType={contentType}
-              emailSubject={emailSubject}
-              emailBody={emailBody}
-              linkedinContent={linkedinContent}
-              onEmailSubjectChange={handleEmailSubjectChange}
-              onEmailBodyChange={handleEmailBodyChange}
-              onLinkedinContentChange={handleLinkedinContentChange}
+        <div className="p-6">
+          <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden mt-2">
+            <div className="p-4 bg-gradient-to-r from-minimal-gray-100 to-minimal-white border-b border-minimal-gray-300 flex justify-between items-center">
+              <Tabs defaultValue="email" value={contentType} onValueChange={onContentTypeChange} className="w-full">
+                <TabsList className="grid grid-cols-2 rounded-lg bg-minimal-gray-200/70 p-1">
+                  <TabsTrigger value="email" className="rounded-md flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <Mail size={16} />
+                    Email Profissional
+                  </TabsTrigger>
+                  <TabsTrigger value="linkedin" className="rounded-md flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <Linkedin size={16} />
+                    LinkedIn
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            
+            {/* Filtros de Prospects */}
+            <ProspectFilters 
+              filters={filters}
+              setFilters={setFilters}
+              filteredProspectsCount={filteredProspects.length}
+              totalProspectsCount={mockProspects.length}
+              resetFilters={resetFilters}
             />
-          </CardContent>
+            
+            {/* Cartão de Prospect */}
+            <ProspectCard 
+              currentProspect={currentProspect}
+              currentProspectIndex={currentProspectIndex}
+              totalProspects={filteredProspects.length}
+              onPreviousProspect={handlePreviousProspect}
+              onNextProspect={handleNextProspect}
+            />
+            
+            {/* Seletor de Follow-ups */}
+            <FollowUpSelector 
+              contentType={contentType}
+              followUps={followUps}
+              activeFollowUpIndex={activeFollowUpIndex}
+              onSelectFollowUp={handleSelectFollowUp}
+              onDeleteFollowUp={handleDeleteFollowUp}
+              onAddFollowUp={addFollowUp}
+            />
+            
+            <CardContent className="p-0">
+              {/* Editor de Conteúdo */}
+              <ContentEditor 
+                contentType={contentType}
+                emailSubject={emailSubject}
+                emailBody={emailBody}
+                linkedinContent={linkedinContent}
+                onEmailSubjectChange={handleEmailSubjectChange}
+                onEmailBodyChange={handleEmailBodyChange}
+                onLinkedinContentChange={handleLinkedinContentChange}
+              />
+            </CardContent>
 
-          {/* Ações do Preview */}
-          <CopyPreviewActions 
-            contentType={contentType}
-            followUpsCount={contentType === "email" ? followUps.email.length : followUps.linkedin.length}
-            activeFollowUpIndex={activeFollowUpIndex}
-            onDispatch={handleDispatch}
-            onShare={handleShare}
-            onDownload={handleDownload}
-          />
-        </Card>
+            {/* Ações do Preview */}
+            <CopyPreviewActions 
+              contentType={contentType}
+              followUpsCount={contentType === "email" ? followUps.email.length : followUps.linkedin.length}
+              activeFollowUpIndex={activeFollowUpIndex}
+              onDispatch={handleDispatch}
+              onShare={handleShare}
+              onDownload={handleDownload}
+            />
+          </Card>
+        </div>
       </motion.div>
     </div>
   );

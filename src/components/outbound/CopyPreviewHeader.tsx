@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Users, Building2, ArrowLeftRight, Link2, Check } from "lucide-react";
+import { Users, Building2, Link2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -75,11 +75,11 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center gap-4">
       {/* Botão Persona */}
       <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm flex-1 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
+          <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
             <Users size={18} className="mr-2 text-minimal-black" />
             <span className="font-medium">Persona</span>
             {selectedPersonaSource && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({selectedPersonaSource})</span>}
@@ -119,7 +119,7 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
       {/* Botão Sua Empresa */}
       <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm flex-1 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
+          <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
             <Building2 size={18} className="mr-2 text-minimal-black" />
             <span className="font-medium">Sua Empresa</span>
             {companyWebsite && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({formatDisplayUrl(companyWebsite)})</span>}

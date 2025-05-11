@@ -59,7 +59,7 @@ const OutboundGenerator = () => {
         chatEndRef={chatEndRef}
       />
       
-      <div className="ml-80 flex-1 h-full overflow-y-auto pb-6">
+      <div className="ml-80 flex-1 h-full overflow-y-auto">
         <CopyPreview 
           contentType={contentType}
           generatedContent={generatedContent}
