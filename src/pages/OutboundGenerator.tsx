@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Message, ContentType } from "@/types/outbound";
@@ -258,18 +259,6 @@ Inova Digital`;
       />
       
       <div className="ml-80 flex-1 h-full overflow-y-auto pb-6">
-        <div className="border-b border-gray-200">
-          {filteredProspects.length > 0 && (
-            <ProspectCard
-              currentProspect={filteredProspects[currentProspectIndex]}
-              currentProspectIndex={currentProspectIndex}
-              totalProspects={filteredProspects.length}
-              onPreviousProspect={handlePreviousProspect}
-              onNextProspect={handleNextProspect}
-            />
-          )}
-        </div>
-        
         <ProspectFilters
           filters={filters}
           setFilters={setFilters}
