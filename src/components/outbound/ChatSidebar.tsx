@@ -118,41 +118,50 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           <div ref={chatEndRef} />
         </div>
         
-        <div className="p-4 border-t border-minimal-gray-700">
-          <div className="bg-minimal-gray-900 rounded-lg flex items-center p-1">
-            <input 
-              type="file" 
-              id="file-upload" 
-              className="hidden" 
-              onChange={handleFileInputChange} 
-            />
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <Button 
-                size="icon" 
-                variant="ghost"
-                className="h-8 w-8 bg-transparent hover:bg-minimal-gray-800 text-minimal-gray-400 hover:text-minimal-white transition-colors rounded-md"
-              >
-                <Paperclip size={16} />
-              </Button>
-            </label>
-            
+        <div className="p-4 border-t border-minimal-gray-700 bg-minimal-gray-900/50">
+          <div className="relative">
             <ChatInput 
               value={input}
               onChange={onInputChange}
               onKeyDown={onKeyDown}
               placeholder="Ask Mizi..."
               disabled={isLoading}
-              className="flex-1 px-3 py-2 bg-transparent text-minimal-white border-0 focus-visible:ring-0 focus-visible:outline-none placeholder:text-minimal-gray-400 rounded-md resize-none h-9"
+              className="pr-10 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700 rounded-xl"
             />
-            
             <Button 
               size="icon" 
-              className="h-8 w-8 bg-transparent hover:bg-minimal-gray-800 text-minimal-white transition-colors rounded-md"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent hover:bg-minimal-gray-700 text-minimal-white transition-colors"
               onClick={onSendMessage} 
               disabled={isLoading || !input.trim()}
             >
-              <Send size={16} />
+              <Send size={18} />
             </Button>
+          </div>
+
+          {/* Controls row with only the attachment button */}
+          <div className="flex items-center mt-3 px-1">
+            {/* Attachment Button */}
+            <div>
+              <input 
+                type="file" 
+                id="file-upload" 
+                className="hidden" 
+                onChange={handleFileInputChange} 
+              />
+              <label htmlFor="file-upload">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+                  asChild
+                >
+                  <span>
+                    <Paperclip size={14} />
+                    <span className="text-xs">Attach</span>
+                  </span>
+                </Button>
+              </label>
+            </div>
           </div>
         </div>
       </div>
