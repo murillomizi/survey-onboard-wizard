@@ -4,6 +4,7 @@ import { Send, Paperclip, History, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
+import { ChatMessageList } from "@/components/ui/chat-message-list";
 import Logo from "@/components/ui/logo";
 import {
   Dialog,
@@ -68,7 +69,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
-      <div className="p-4 border-b border-minimal-gray-700 flex items-center">
+      <div className="p-3 border-b border-minimal-gray-700 flex items-center">
         <Logo 
           withText={true} 
           size="md" 
@@ -81,7 +82,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 w-8 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
+            className="h-7 w-7 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
             onClick={() => console.log("History clicked")}
           >
             <History size={16} />
@@ -90,7 +91,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </div>
       
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Use ChatMessageList for better scroll handling */}
+        <ChatMessageList className="flex-1 pb-1 pt-2">
           {messages.map((message, index) => (
             <ChatBubble 
               key={index}
@@ -112,9 +114,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </ChatBubble>
           ))}
           <div ref={chatEndRef} />
-        </div>
+        </ChatMessageList>
         
-        <div className="p-4 border-t border-minimal-gray-700 bg-minimal-gray-900/50">
+        <div className="p-3 border-t border-minimal-gray-700 bg-minimal-gray-900/50">
           <div className="relative">
             <ChatInput 
               value={input}
@@ -134,24 +136,26 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          {/* Controls row with attachment and template buttons */}
-          <div className="flex items-center justify-between mt-3 px-1">
+          {/* Controls row with attachment and template buttons - more compact */}
+          <div className="flex items-center justify-between mt-2 px-1">
             {/* Template Button */}
             <Popover open={isTemplateMenuOpen} onOpenChange={setIsTemplateMenuOpen}>
               <PopoverTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+                  className="h-6 px-2 py-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
                 >
                   <FileText size={14} />
                   <span className="text-xs">Template</span>
                 </Button>
               </PopoverTrigger>
-              <TemplateConfigMenu 
-                onApplyTemplate={handleApplyTemplate}
-                onClose={() => setIsTemplateMenuOpen(false)}
-              />
+              <PopoverContent side="top" align="start" sideOffset={5} className="p-0 w-72">
+                <TemplateConfigMenu 
+                  onApplyTemplate={handleApplyTemplate}
+                  onClose={() => setIsTemplateMenuOpen(false)}
+                />
+              </PopoverContent>
             </Popover>
             
             {/* Attachment Button */}
@@ -166,7 +170,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+                  className="h-6 px-2 py-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
                   asChild
                 >
                   <span>
