@@ -120,47 +120,38 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         
         <div className="p-4 border-t border-minimal-gray-700 bg-minimal-gray-900/50">
           <div className="relative">
+            <input 
+              type="file" 
+              id="file-upload" 
+              className="hidden" 
+              onChange={handleFileInputChange} 
+            />
             <ChatInput 
               value={input}
               onChange={onInputChange}
               onKeyDown={onKeyDown}
               placeholder="Ask Mizi..."
               disabled={isLoading}
-              className="pr-10 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700 rounded-xl"
+              className="pr-20 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700 rounded-xl"
             />
-            <Button 
-              size="icon" 
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent hover:bg-minimal-gray-700 text-minimal-white transition-colors"
-              onClick={onSendMessage} 
-              disabled={isLoading || !input.trim()}
-            >
-              <Send size={18} />
-            </Button>
-          </div>
-
-          {/* Controls row with only the attachment button */}
-          <div className="flex items-center mt-3 px-1">
-            {/* Attachment Button */}
-            <div>
-              <input 
-                type="file" 
-                id="file-upload" 
-                className="hidden" 
-                onChange={handleFileInputChange} 
-              />
-              <label htmlFor="file-upload">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+              <label htmlFor="file-upload" className="cursor-pointer">
                 <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
-                  asChild
+                  size="icon" 
+                  variant="ghost"
+                  className="h-8 w-8 bg-transparent hover:bg-minimal-gray-700 text-minimal-gray-400 hover:text-minimal-white transition-colors rounded-full"
                 >
-                  <span>
-                    <Paperclip size={14} />
-                    <span className="text-xs">Attach</span>
-                  </span>
+                  <Paperclip size={18} />
                 </Button>
               </label>
+              <Button 
+                size="icon" 
+                className="bg-transparent hover:bg-minimal-gray-700 text-minimal-white transition-colors rounded-full"
+                onClick={onSendMessage} 
+                disabled={isLoading || !input.trim()}
+              >
+                <Send size={18} />
+              </Button>
             </div>
           </div>
         </div>
