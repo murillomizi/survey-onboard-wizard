@@ -181,61 +181,44 @@ const Landing = () => {
     ]
   };
   
-  // Planos de preços
+  // Planos de preços - modificado para remover o Free Trial
   const pricingPlans = [
     {
-      name: "Free Trial",
-      description: "Perfect for testing our platform",
-      price: "$0",
-      duration: "14 days",
-      icon: Package,
-      features: [
-        "Up to 50 prospects",
-        "Basic personalization",
-        "Standard templates",
-        "Email support"
-      ],
-      highlightedFeature: "Risk-free trial",
-      cta: "Start Free Trial",
-      popular: false,
-      color: "bg-minimal-gray-100"
-    },
-    {
       name: "MVP",
-      description: "Ideal for growing sales teams",
-      price: "$99",
-      duration: "per month",
+      description: "Ideal para times de vendas em crescimento",
+      price: "Consulte nosso time",
+      duration: "",
       icon: Rocket,
       features: [
-        "Up to 500 prospects",
-        "Advanced personalization",
-        "Custom templates",
-        "Priority email support",
-        "Analytics dashboard",
-        "Team collaboration"
+        "Até 500 prospectos",
+        "Personalização avançada",
+        "Templates personalizados",
+        "Suporte prioritário por e-mail",
+        "Painel de análise",
+        "Colaboração em equipe"
       ],
-      highlightedFeature: "Most popular choice",
-      cta: "Get Started",
+      highlightedFeature: "Escolha mais popular",
+      cta: "Fale com Vendas",
       popular: true,
       color: "bg-minimal-black text-minimal-white"
     },
     {
       name: "Scale",
-      description: "Enterprise-grade personalization",
-      price: "$249",
-      duration: "per month",
+      description: "Personalização de nível empresarial",
+      price: "Consulte nosso time",
+      duration: "",
       icon: TrendingUp,
       features: [
-        "Unlimited prospects",
-        "Elite personalization",
-        "Custom integration",
-        "Dedicated account manager",
-        "Advanced analytics",
-        "API access",
-        "White-labeling options"
+        "Prospectos ilimitados",
+        "Personalização elite",
+        "Integração personalizada",
+        "Gerente de conta dedicado",
+        "Analytics avançado",
+        "Acesso à API",
+        "Opções de white-label"
       ],
-      highlightedFeature: "Ultimate solution",
-      cta: "Contact Sales",
+      highlightedFeature: "Solução definitiva",
+      cta: "Contatar Vendas",
       popular: false,
       color: "bg-minimal-gray-100"
     }
@@ -641,7 +624,7 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Pricing Plans Section - Moved to the end of the page */}
+      {/* Pricing Plans Section - Modificada para ter apenas dois planos */}
       <motion.section 
         className="px-4 md:px-8 py-16 md:py-28 bg-minimal-gray-100" 
         initial="hidden" 
@@ -652,14 +635,14 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-              Choose Your Mizi Plan
+              Escolha Seu Plano Mizi
             </h2>
             <p className="text-minimal-gray-600 text-lg max-w-2xl mx-auto">
-              Flexible pricing options to match your outreach needs
+              Opções flexíveis para atender às suas necessidades de outreach
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {pricingPlans.map((plan, index) => {
               const PlanIcon = plan.icon;
               return (
@@ -681,13 +664,12 @@ const Landing = () => {
                     </CardHeader>
                     <CardContent className="text-center pt-4 pb-6">
                       <div className="mb-6">
-                        <span className="text-4xl font-bold">{plan.price}</span>
-                        <span className={`text-sm ${plan.color === 'bg-minimal-black text-minimal-white' ? 'text-minimal-gray-300' : 'text-minimal-gray-500'}`}> {plan.duration}</span>
+                        <span className="text-xl font-bold">{plan.price}</span>
                       </div>
                       
                       {plan.popular && (
                         <Badge className="mx-auto mb-6 bg-minimal-white text-minimal-black hover:bg-minimal-gray-100">
-                          Most Popular
+                          Mais Popular
                         </Badge>
                       )}
                       
@@ -706,7 +688,7 @@ const Landing = () => {
                           ? "w-full bg-minimal-white text-minimal-black hover:bg-minimal-gray-100" 
                           : "w-full bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"}
                         size="lg"
-                        onClick={plan.popular ? handleOpenRegisterDialog : handleOpenLoginDialog}
+                        onClick={handleOpenLoginDialog}
                       >
                         {plan.cta}
                       </Button>
@@ -719,10 +701,10 @@ const Landing = () => {
           
           <div className="text-center mt-12 pt-8 border-t border-minimal-gray-200">
             <p className="text-minimal-gray-600 mb-6">
-              Need a custom solution? Contact our sales team for enterprise options.
+              Para conhecer nossos planos e preços, entre em contato com nosso time de vendas.
             </p>
             <Button variant="outline" size="lg" className="border-minimal-gray-300" onClick={handleOpenLoginDialog}>
-              <Shield className="h-4 w-4 mr-2" /> Contact Enterprise Sales
+              <Shield className="h-4 w-4 mr-2" /> Falar com Time de Vendas
             </Button>
           </div>
         </div>
