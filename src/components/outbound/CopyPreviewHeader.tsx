@@ -1,11 +1,30 @@
 
 import React, { useState } from "react";
-import { Users, Building2, ArrowLeftRight, Link2, Check } from "lucide-react";
+import { Users, Building2, ArrowLeftRight, Link2, Check, ArrowLeft, ArrowRight, Briefcase, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+
+// Tipo para os prospects
+interface Prospect {
+  id: number;
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  company: string;
+}
+
+// Dados de prospects simulados
+const mockProspects: Prospect[] = [
+  { id: 1, firstName: "Maria", lastName: "Silva", jobTitle: "Diretora de Marketing", company: "TechSolutions" },
+  { id: 2, firstName: "João", lastName: "Santos", jobTitle: "CEO", company: "Inovação Digital" },
+  { id: 3, firstName: "Ana", lastName: "Oliveira", jobTitle: "Gerente de Vendas", company: "MegaVendas" },
+  { id: 4, firstName: "Carlos", lastName: "Ferreira", jobTitle: "CTO", company: "DataPro" },
+  { id: 5, firstName: "Juliana", lastName: "Almeida", jobTitle: "COO", company: "StartupNow" },
+];
 
 interface CopyPreviewHeaderProps {
   selectedPersonaSource: string | null;
@@ -25,7 +44,11 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   const [companyWebsite, setCompanyWebsite] = useState<string>('');
   const [isCompanyPopoverOpen, setIsCompanyPopoverOpen] = useState(false);
   const [urlIsValid, setUrlIsValid] = useState<boolean | null>(null);
+  const [currentProspectIndex, setCurrentProspectIndex] = useState<number>(0);
   
+  // Current prospect
+  const currentProspect = mockProspects[currentProspectIndex];
+
   const validateUrl = (url: string): boolean => {
     if (!url) return false;
 
@@ -74,8 +97,17 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
     });
   };
 
-  return (
-    <div className="flex flex-col items-center justify-between mb-8">
+  const handlePreviousProspect = () => {
+    setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : mockProspects.length - 1));
+    // Removido o toast de navegação
+  };
+
+  const handleNextProspect = () => {
+    setCurrentProspectIndex(prev => (prev < mockProspects.length - 1 ? prev + 1 : 0));
+    // Removido o toast de navegação
+  };
+
+  return <div className="flex flex-col items-center justify-between mb-8">
       <div className="connection-container w-full flex items-center justify-between relative mb-2">
         {/* Botão Persona */}
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
@@ -157,7 +189,11 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
           </PopoverContent>
         </Popover>
       </div>
+
+      {/* Visual Result Text */}
+      <div className="copy-formation-text text-center mt-2 mb-5">
+        
+      </div>
     </div>;
 };
-
 export default CopyPreviewHeader;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Linkedin } from "lucide-react";
@@ -7,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentType, FilterOptions, FollowUps } from "@/types/outbound";
 import CopyPreviewHeader from "./CopyPreviewHeader";
+import ProspectFilters from "./ProspectFilters";
+import ProspectCard from "./ProspectCard";
 import FollowUpSelector from "./FollowUpSelector";
 import ContentEditor from "./ContentEditor";
 import CopyPreviewActions from "./CopyPreviewActions";
@@ -38,6 +39,19 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     linkedin: []
   });
   const [activeFollowUpIndex, setActiveFollowUpIndex] = useState<number | null>(null);
+  const [currentProspectIndex, setCurrentProspectIndex] = useState<number>(0);
+  const [filters, setFilters] = useState<FilterOptions>({
+    industry: "",
+    companySize: "",
+    seniority: "",
+    location: "",
+  });
+  const [filteredProspects, setFilteredProspects] = useState(mockProspects);
+  
+  // Current prospect
+  const currentProspect = filteredProspects.length > 0 
+    ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0] 
+    : mockProspects[0];
   
   // Extrair assunto e corpo do email ao carregar ou alterar o conteúdo
   useEffect(() => {
@@ -61,6 +75,54 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       console.log("File selected:", e.target.files[0].name);
       setSelectedPersonaSource(`Dataset: ${e.target.files[0].name}`);
     }
+  };
+
+  // Aplicar filtros
+  useEffect(() => {
+    let result = mockProspects;
+    
+    if (filters.industry && filters.industry !== "all") {
+      result = result.filter(p => p.industry === filters.industry);
+    }
+    
+    if (filters.companySize && filters.companySize !== "all") {
+      result = result.filter(p => p.companySize === filters.companySize);
+    }
+    
+    if (filters.seniority && filters.seniority !== "all") {
+      result = result.filter(p => p.seniority === filters.seniority);
+    }
+    
+    if (filters.location && filters.location !== "all") {
+      result = result.filter(p => p.location === filters.location);
+    }
+    
+    setFilteredProspects(result);
+    
+    // Reset currentProspectIndex if necessary
+    if (currentProspectIndex >= result.length && result.length > 0) {
+      setCurrentProspectIndex(0);
+    }
+  }, [filters, currentProspectIndex]);
+
+  const handlePreviousProspect = () => {
+    setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : filteredProspects.length - 1));
+  };
+
+  const handleNextProspect = () => {
+    setCurrentProspectIndex(prev => (prev < filteredProspects.length - 1 ? prev + 1 : 0));
+  };
+
+  // Resetar filtros
+  const resetFilters = () => {
+    setFilters({
+      industry: "",
+      companySize: "",
+      seniority: "",
+      location: ""
+    });
+    setFilteredProspects(mockProspects);
+    setCurrentProspectIndex(0);
   };
 
   const handleSaveChanges = () => {
@@ -234,6 +296,24 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               </TabsList>
             </Tabs>
           </div>
+          
+          {/* Filtros de Prospects */}
+          <ProspectFilters 
+            filters={filters}
+            setFilters={setFilters}
+            filteredProspectsCount={filteredProspects.length}
+            totalProspectsCount={mockProspects.length}
+            resetFilters={resetFilters}
+          />
+          
+          {/* Cartão de Prospect */}
+          <ProspectCard 
+            currentProspect={currentProspect}
+            currentProspectIndex={currentProspectIndex}
+            totalProspects={filteredProspects.length}
+            onPreviousProspect={handlePreviousProspect}
+            onNextProspect={handleNextProspect}
+          />
           
           {/* Seletor de Follow-ups */}
           <FollowUpSelector 

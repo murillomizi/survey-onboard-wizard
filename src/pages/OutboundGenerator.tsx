@@ -1,11 +1,9 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Message, ContentType } from "@/types/outbound";
 import ChatSidebar from "@/components/outbound/ChatSidebar";
 import CopyPreview from "@/components/outbound/CopyPreview";
-import ProspectCard from "@/components/outbound/ProspectCard";
-import ProspectFilters from "@/components/outbound/ProspectFilters";
-import { mockProspects } from "@/data/prospects";
 
 const OutboundGenerator = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,40 +15,6 @@ const OutboundGenerator = () => {
     linkedin: "Olá Maria! \n\nTenho acompanhado o trabalho da TechSolutions e fiquei realmente impressionado com os resultados que vocês têm alcançado no mercado de tecnologia.\n\nTrabalho com uma solução que tem ajudado empresas como a DataPro a aumentarem suas conversões em 32% e reduzirem custos operacionais em quase um terço.\n\nSeria interessante conversarmos sobre como poderíamos aplicar essa abordagem ao contexto específico da TechSolutions?\n\nPosso compartilhar alguns casos práticos em uma conversa rápida de 15 minutos.\n\nAguardo seu retorno!\n\nCarlos Santos\nInova Digital"
   });
   const chatEndRef = useRef<HTMLDivElement>(null);
-  
-  // Prospect handling
-  const [currentProspectIndex, setCurrentProspectIndex] = useState(0);
-  const [filters, setFilters] = useState({
-    industry: "",
-    companySize: "",
-    seniority: "",
-    location: ""
-  });
-  const [filteredProspects, setFilteredProspects] = useState(mockProspects);
-
-  // Filter prospects
-  useEffect(() => {
-    let result = mockProspects;
-    
-    if (filters.industry && filters.industry !== "all") {
-      result = result.filter(p => p.industry === filters.industry);
-    }
-    
-    if (filters.companySize && filters.companySize !== "all") {
-      result = result.filter(p => p.companySize === filters.companySize);
-    }
-    
-    if (filters.seniority && filters.seniority !== "all") {
-      result = result.filter(p => p.jobTitle.includes(filters.seniority));
-    }
-    
-    if (filters.location && filters.location !== "all") {
-      result = result.filter(p => p.location === filters.location);
-    }
-    
-    setFilteredProspects(result);
-    setCurrentProspectIndex(0);
-  }, [filters]);
 
   // Auto scroll chat to bottom when new messages are added
   useEffect(() => {
@@ -100,7 +64,7 @@ Nosso software permite:
 • Aumento de 28% na produtividade da equipe
 • Economia de até 22% em custos operacionais
 
-Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Posso mostrar como nossa solução se aplicaria especificamente ao contexto da TechSolutions?
+Teria disponibilidade para uma breve demonstração de 15 minutos na próxima semana? Posso mostrar como nossa solução se aplicaria especificamente ao contexto da TechSolutions.
 
 Atenciosamente,
 Carlos Santos
@@ -224,29 +188,8 @@ Inova Digital`;
     });
   };
 
-  const handlePreviousProspect = () => {
-    setCurrentProspectIndex(prev => 
-      prev > 0 ? prev - 1 : filteredProspects.length - 1
-    );
-  };
-
-  const handleNextProspect = () => {
-    setCurrentProspectIndex(prev => 
-      prev < filteredProspects.length - 1 ? prev + 1 : 0
-    );
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      industry: "",
-      companySize: "",
-      seniority: "",
-      location: ""
-    });
-  };
-
   return (
-    <div className="flex h-full min-h-screen bg-white overflow-hidden font-sans">
+    <div className="flex h-full min-h-screen bg-minimal-gray-100 overflow-hidden">
       <ChatSidebar 
         messages={messages}
         input={input}

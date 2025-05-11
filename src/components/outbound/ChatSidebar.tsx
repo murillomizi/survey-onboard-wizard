@@ -12,6 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import EditOptionsModal from "./EditOptionsModal";
 
 type Message = {
@@ -41,9 +48,17 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMachineLearningEnabled, setIsMachineLearningEnabled] = useState(false);
+  const [isFileInputOpen, setIsFileInputOpen] = useState(false);
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      console.log("File selected:", e.target.files[0].name);
+      // Here you would handle the file upload
+    }
+  };
 
   return (
-    <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10 font-sans">
+    <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
       <div className="p-4 border-b border-minimal-gray-700 flex items-center justify-between">
         <Logo size="md" />
@@ -59,13 +74,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white">
             <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700" onClick={() => setIsEditModalOpen(true)}>
-              Edit model
+              Editar modelo
             </DropdownMenuItem>
             <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-              Settings
+              Configurações
             </DropdownMenuItem>
             <DropdownMenuItem className="text-xs hover:bg-minimal-gray-700">
-              Start new conversation
+              Começar nova conversa
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -124,6 +139,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 type="file" 
                 id="file-upload" 
                 className="hidden" 
+                onChange={handleFileInputChange} 
               />
               <label htmlFor="file-upload">
                 <Button 
@@ -134,7 +150,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 >
                   <span>
                     <Paperclip size={14} />
-                    <span className="text-xs">Attach</span>
+                    <span className="text-xs">Anexar</span>
                   </span>
                 </Button>
               </label>
