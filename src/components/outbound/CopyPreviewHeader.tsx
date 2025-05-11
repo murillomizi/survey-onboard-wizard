@@ -7,24 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
-// Tipo para os prospects
-interface Prospect {
-  id: number;
-  firstName: string;
-  lastName: string;
-  jobTitle: string;
-  company: string;
-}
-
-// Dados de prospects simulados
-const mockProspects: Prospect[] = [
-  { id: 1, firstName: "Maria", lastName: "Silva", jobTitle: "Diretora de Marketing", company: "TechSolutions" },
-  { id: 2, firstName: "João", lastName: "Santos", jobTitle: "CEO", company: "Inovação Digital" },
-  { id: 3, firstName: "Ana", lastName: "Oliveira", jobTitle: "Gerente de Vendas", company: "MegaVendas" },
-  { id: 4, firstName: "Carlos", lastName: "Ferreira", jobTitle: "CTO", company: "DataPro" },
-  { id: 5, firstName: "Juliana", lastName: "Almeida", jobTitle: "COO", company: "StartupNow" },
-];
-
 interface CopyPreviewHeaderProps {
   selectedPersonaSource: string | null;
   isPersonaPopoverOpen: boolean;
@@ -93,89 +75,87 @@ const CopyPreviewHeader: React.FC<CopyPreviewHeaderProps> = ({
   };
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-minimal-gray-200 p-4 mb-4">
-        {/* Botão Persona */}
-        <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
-              <Users size={18} className="mr-2 text-black" />
-              <span className="font-medium">Persona</span>
-              {selectedPersonaSource && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({selectedPersonaSource})</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72 p-3 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 shadow-md" align="start">
-            <Tabs defaultValue="dataset" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-minimal-gray-50 mb-3">
-                <TabsTrigger value="dataset" className="text-xs">Dataset</TabsTrigger>
-                <TabsTrigger value="enrichment" className="text-xs">Enrichment</TabsTrigger>
-              </TabsList>
-              <TabsContent value="dataset" className="mt-2 space-y-2">
-                <p className="text-xs text-minimal-gray-600 mb-2">Upload um arquivo CSV ou JSON com seus dados de contato</p>
-                <input type="file" id="preview-dataset-upload" className="hidden" accept=".csv,.json" onChange={handleFileInputChange} />
-                <label htmlFor="preview-dataset-upload">
-                  <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-50" asChild>
-                    <span>
-                      <Users size={12} className="text-black" />
-                      Fazer upload de dataset
-                    </span>
-                  </Button>
+    <div className="flex items-center justify-between gap-4">
+      {/* Botão Persona */}
+      <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm flex-1 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
+            <Users size={18} className="mr-2 text-minimal-black" />
+            <span className="font-medium">Persona</span>
+            {selectedPersonaSource && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({selectedPersonaSource})</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-72 p-3 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 shadow-md" align="start">
+          <Tabs defaultValue="dataset" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-minimal-gray-50 mb-3">
+              <TabsTrigger value="dataset" className="text-xs">Dataset</TabsTrigger>
+              <TabsTrigger value="enrichment" className="text-xs">Enrichment</TabsTrigger>
+            </TabsList>
+            <TabsContent value="dataset" className="mt-2 space-y-2">
+              <p className="text-xs text-minimal-gray-600 mb-2">Upload um arquivo CSV ou JSON com seus dados de contato</p>
+              <input type="file" id="preview-dataset-upload" className="hidden" accept=".csv,.json" onChange={handleFileInputChange} />
+              <label htmlFor="preview-dataset-upload">
+                <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-50" asChild>
+                  <span>
+                    <Users size={12} className="text-black" />
+                    Fazer upload de dataset
+                  </span>
+                </Button>
+              </label>
+            </TabsContent>
+            <TabsContent value="enrichment" className="mt-2 space-y-2">
+              <p className="text-xs text-minimal-gray-600 mb-2">Conecte com uma ferramenta de sales enrichment</p>
+              <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-50" onClick={() => handlePersonaSelection("Apollo.io")}>
+                Apollo.io
+              </Button>
+              <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-50" onClick={() => handlePersonaSelection("ZoomInfo")}>
+                ZoomInfo
+              </Button>
+            </TabsContent>
+          </Tabs>
+        </PopoverContent>
+      </Popover>
+      
+      {/* Botão Sua Empresa */}
+      <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm flex-1 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
+            <Building2 size={18} className="mr-2 text-minimal-black" />
+            <span className="font-medium">Sua Empresa</span>
+            {companyWebsite && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({formatDisplayUrl(companyWebsite)})</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-72 p-3 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 shadow-md" align="end">
+          <form onSubmit={handleCompanyWebsiteSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="company-website" className="block text-sm font-medium text-minimal-gray-700 mb-1">
+                  Site da empresa
                 </label>
-              </TabsContent>
-              <TabsContent value="enrichment" className="mt-2 space-y-2">
-                <p className="text-xs text-minimal-gray-600 mb-2">Conecte com uma ferramenta de sales enrichment</p>
-                <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-50" onClick={() => handlePersonaSelection("Apollo.io")}>
-                  Apollo.io
-                </Button>
-                <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-50" onClick={() => handlePersonaSelection("ZoomInfo")}>
-                  ZoomInfo
-                </Button>
-              </TabsContent>
-            </Tabs>
-          </PopoverContent>
-        </Popover>
-        
-        {/* Botão Sua Empresa */}
-        <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="h-10 px-4 py-2 justify-start text-sm bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 hover:bg-minimal-gray-50 hover:text-minimal-gray-900">
-              <Building2 size={18} className="mr-2 text-black" />
-              <span className="font-medium">Sua Empresa</span>
-              {companyWebsite && <span className="ml-2 text-xs text-minimal-gray-500 max-w-24 truncate">({formatDisplayUrl(companyWebsite)})</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72 p-3 bg-minimal-white border-minimal-gray-200 text-minimal-gray-800 shadow-md" align="end">
-            <form onSubmit={handleCompanyWebsiteSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="company-website" className="block text-sm font-medium text-minimal-gray-700 mb-1">
-                    Site da empresa
-                  </label>
-                  <div className="flex relative">
-                    <div className="flex items-center px-3 bg-minimal-gray-50 border border-r-0 border-minimal-gray-200 rounded-l-md">
-                      <Link2 size={16} className={`${urlIsValid === true ? 'text-green-500' : urlIsValid === false ? 'text-red-500' : 'text-black'}`} />
-                    </div>
-                    <Input id="company-website" type="text" value={companyWebsite} onChange={handleUrlChange} placeholder="www.suaempresa.com" className={`rounded-l-none ${urlIsValid === true ? 'border-green-500 focus:border-green-500' : urlIsValid === false ? 'border-red-500 focus:border-red-500' : ''}`} />
-                    {urlIsValid === true && <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                        <Check size={16} className="text-green-500" />
-                      </div>}
+                <div className="flex relative">
+                  <div className="flex items-center px-3 bg-minimal-gray-50 border border-r-0 border-minimal-gray-200 rounded-l-md">
+                    <Link2 size={16} className={`${urlIsValid === true ? 'text-green-500' : urlIsValid === false ? 'text-red-500' : 'text-black'}`} />
                   </div>
-                  {urlIsValid === false && <p className="mt-1 text-xs text-red-500">
-                      Por favor, insira uma URL válida (ex: empresa.com)
-                    </p>}
-                  <p className="mt-1 text-xs text-minimal-gray-500">
-                    Adicione o site da sua empresa para personalizar seu outbound
-                  </p>
+                  <Input id="company-website" type="text" value={companyWebsite} onChange={handleUrlChange} placeholder="www.suaempresa.com" className={`rounded-l-none ${urlIsValid === true ? 'border-green-500 focus:border-green-500' : urlIsValid === false ? 'border-red-500 focus:border-red-500' : ''}`} />
+                  {urlIsValid === true && <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                      <Check size={16} className="text-green-500" />
+                    </div>}
                 </div>
-                
-                <Button type="submit" className="w-full bg-minimal-black text-white hover:bg-minimal-gray-800" disabled={urlIsValid === false || urlIsValid === null}>
-                  Salvar informações
-                </Button>
+                {urlIsValid === false && <p className="mt-1 text-xs text-red-500">
+                    Por favor, insira uma URL válida (ex: empresa.com)
+                  </p>}
+                <p className="mt-1 text-xs text-minimal-gray-500">
+                  Adicione o site da sua empresa para personalizar seu outbound
+                </p>
               </div>
-            </form>
-          </PopoverContent>
-        </Popover>
-      </div>
+              
+              <Button type="submit" className="w-full bg-minimal-black text-white hover:bg-minimal-gray-800" disabled={urlIsValid === false || urlIsValid === null}>
+                Salvar informações
+              </Button>
+            </div>
+          </form>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };

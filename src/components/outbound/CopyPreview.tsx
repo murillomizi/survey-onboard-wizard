@@ -4,6 +4,7 @@ import { Mail, Linkedin } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { ContentType, FilterOptions, FollowUps } from "@/types/outbound";
 import CopyPreviewHeader from "./CopyPreviewHeader";
 import ProspectFilters from "./ProspectFilters";
@@ -186,6 +187,39 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     });
   };
 
+  const handleDownload = () => {
+    let contentToDownload = "";
+    
+    if (activeFollowUpIndex !== null) {
+      if (contentType === "email") {
+        const followUp = followUps.email[activeFollowUpIndex];
+        contentToDownload = `Assunto: ${followUp.subject}\n\n${followUp.body}`;
+      } else {
+        contentToDownload = followUps.linkedin[activeFollowUpIndex];
+      }
+    } else {
+      contentToDownload = contentType === "email" 
+        ? `Assunto: ${emailSubject}\n\n${emailBody}`
+        : linkedinContent;
+    }
+    
+    // Create a temporary element to trigger the download
+    const element = document.createElement("a");
+    const file = new Blob([contentToDownload], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = contentType === "email" 
+      ? "email_outbound.txt" 
+      : "linkedin_outbound.txt";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    
+    toast({
+      title: "Conteúdo baixado!",
+      description: `O arquivo foi baixado com sucesso.`
+    });
+  };
+
   const addFollowUp = () => {
     const newFollowUps = {...followUps};
     
@@ -273,15 +307,27 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-3xl"
       >
-        <CopyPreviewHeader 
-          selectedPersonaSource={selectedPersonaSource}
-          isPersonaPopoverOpen={isPersonaPopoverOpen}
-          setIsPersonaPopoverOpen={setIsPersonaPopoverOpen}
-          handlePersonaSelection={handlePersonaSelection}
-          handleFileInputChange={handleFileInputChange}
-        />
+        {/* Header Mizi estilizado */}
+        <div className="bg-white p-6 mb-4 rounded-xl shadow-md">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold text-minimal-black">Mizi Outbound</h1>
+            <div className="text-sm text-minimal-gray-500">
+              Personalize seu outbound para resultados melhores
+            </div>
+          </div>
+          
+          <CopyPreviewHeader 
+            selectedPersonaSource={selectedPersonaSource}
+            isPersonaPopoverOpen={isPersonaPopoverOpen}
+            setIsPersonaPopoverOpen={setIsPersonaPopoverOpen}
+            handlePersonaSelection={handlePersonaSelection}
+            handleFileInputChange={handleFileInputChange}
+          />
+        </div>
         
-        <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden">
+        <Separator className="my-6 bg-minimal-gray-300/50" />
+        
+        <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden mt-2">
           <div className="p-4 bg-gradient-to-r from-minimal-gray-100 to-minimal-white border-b border-minimal-gray-300 flex justify-between items-center">
             <Tabs defaultValue="email" value={contentType} onValueChange={onContentTypeChange} className="w-full">
               <TabsList className="grid grid-cols-2 rounded-lg bg-minimal-gray-200/70 p-1">
@@ -345,6 +391,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
             activeFollowUpIndex={activeFollowUpIndex}
             onDispatch={handleDispatch}
             onShare={handleShare}
+            onDownload={handleDownload}
           />
         </Card>
       </motion.div>
