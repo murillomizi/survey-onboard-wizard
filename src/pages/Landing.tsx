@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginDialog } from "@/components/ui/login-dialog";
-import { ChatInput } from "@/components/survey/ChatInput";
+import ChatInput from "@/components/survey/ChatInput";
 
 // Animation variants for smooth transitions
 const fadeIn = {
@@ -307,21 +307,21 @@ const Landing = () => {
           </motion.p>
           <motion.div variants={fadeIn} custom={3} className="max-w-xl mx-auto">
             {/* Chat Input replacing the Button */}
-            <div className="relative bg-minimal-black rounded-md shadow-lg p-0.5">
+            <div className="relative bg-minimal-black rounded-full shadow-lg p-1">
               <Input
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 placeholder="Ask Mizi to create a prototype..."
-                className="w-full bg-minimal-black text-minimal-white border-0 pr-12 py-6 h-auto text-base focus:ring-0 focus:outline-none placeholder:text-minimal-gray-400"
+                className="w-full bg-minimal-black text-minimal-white border-0 pr-12 py-6 h-auto text-base focus:ring-0 focus:outline-none placeholder:text-minimal-gray-400 rounded-full"
                 onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
                 <Button
                   onClick={handleSendChatMessage}
                   disabled={!chatMessage.trim()}
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full bg-transparent hover:bg-minimal-gray-800 text-minimal-white"
+                  className="h-9 w-9 rounded-full bg-transparent hover:bg-minimal-gray-800 text-minimal-white"
                 >
                   <Send size={16} />
                 </Button>
