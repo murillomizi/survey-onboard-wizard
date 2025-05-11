@@ -2,7 +2,8 @@
 import React from "react";
 
 const CopyPreviewHeader: React.FC = () => {
-  return null; // Empty component as buttons were moved to sidebar
+  // Componente vazio sem logo nem botões
+  return null;
 };
 
 export default CopyPreviewHeader;
