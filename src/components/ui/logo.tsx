@@ -14,17 +14,17 @@ const Logo = ({ withText = true, size = "md", className = "", projectName = "miz
     sm: {
       fontSize: "1.25rem", // text-xl
       logoSize: 20,
-      spacing: "gap-2"
+      spacing: "gap-1" // Reduced gap
     },
     md: {
       fontSize: "1.5rem", // text-2xl
       logoSize: 24,
-      spacing: "gap-2.5"
+      spacing: "gap-1.5" // Reduced gap
     },
     lg: {
       fontSize: "1.875rem", // text-3xl
       logoSize: 32,
-      spacing: "gap-3"
+      spacing: "gap-2" // Reduced gap
     },
   };
 
