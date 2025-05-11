@@ -286,9 +286,12 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero section - Increased height with vh-100 to take full viewport height */}
-      <motion.section className="px-4 md:px-8 py-16 md:py-28 max-w-7xl mx-auto min-h-[100vh] flex flex-col justify-center" initial="hidden" animate="visible" variants={fadeIn} custom={0}>
+      {/* Hero section */}
+      <motion.section className="px-4 md:px-8 py-16 md:py-28 max-w-7xl mx-auto" initial="hidden" animate="visible" variants={fadeIn} custom={0}>
         <div className="max-w-4xl mx-auto text-center">
+          <motion.div className="flex justify-center mb-8" variants={fadeIn} custom={0.5}>
+            <Logo size="lg" withText={false} />
+          </motion.div>
           <motion.h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight" variants={fadeIn} custom={1}>
             AI that actually personalize your approach.
           </motion.h1>
