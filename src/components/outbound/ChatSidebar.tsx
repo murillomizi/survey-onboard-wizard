@@ -138,7 +138,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with logo */}
-      <div className="p-3 border-b border-minimal-gray-700 flex items-center">
+      <div className="p-3 border-b border-minimal-gray-700 flex items-center justify-between">
         <Logo 
           withText={true} 
           size="md" 
@@ -147,27 +147,24 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           showProjectArrow={true}
         />
         
-        <div className="ml-auto">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-7 w-7 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
-            onClick={() => console.log("History clicked")}
-          >
-            <History size={16} />
-          </Button>
-        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-7 w-7 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
+          onClick={() => console.log("History clicked")}
+        >
+          <History size={16} />
+        </Button>
       </div>
       
-      {/* Persona and Company buttons section */}
-      <div className="px-3 py-3 border-b border-minimal-gray-700 flex items-center gap-2">
-        {/* Botão Persona */}
+      {/* Persona and Company buttons section - redesigned for minimalism */}
+      <div className="flex border-b border-minimal-gray-700 bg-minimal-gray-900">
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-8 px-3 py-1 justify-start text-xs flex-1 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700 hover:text-minimal-white">
-              <Users size={14} className="mr-1.5 text-minimal-gray-400" />
-              <span className="font-medium">Persona</span>
-              {selectedPersonaSource && <span className="ml-1.5 text-xs text-minimal-gray-500 max-w-20 truncate">({selectedPersonaSource})</span>}
+            <Button variant="ghost" className="flex-1 h-10 justify-center text-xs rounded-none border-r border-minimal-gray-800 text-minimal-gray-300 hover:bg-minimal-gray-800 hover:text-minimal-white">
+              <Users size={14} className="mr-1.5" />
+              Persona
+              {selectedPersonaSource && <span className="ml-1 text-xs opacity-60 max-w-20 truncate">({selectedPersonaSource})</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-64 p-3 bg-minimal-gray-900 border-minimal-gray-700 text-minimal-white shadow-md" align="start">
@@ -201,13 +198,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </PopoverContent>
         </Popover>
         
-        {/* Botão Sua Empresa */}
         <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-8 px-3 py-1 justify-start text-xs flex-1 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700 hover:text-minimal-white">
-              <Building2 size={14} className="mr-1.5 text-minimal-gray-400" />
-              <span className="font-medium">Sua Empresa</span>
-              {companyWebsite && <span className="ml-1.5 text-xs text-minimal-gray-500 max-w-20 truncate">({formatDisplayUrl(companyWebsite)})</span>}
+            <Button variant="ghost" className="flex-1 h-10 justify-center text-xs rounded-none text-minimal-gray-300 hover:bg-minimal-gray-800 hover:text-minimal-white">
+              <Building2 size={14} className="mr-1.5" />
+              Sua Empresa
+              {companyWebsite && <span className="ml-1 text-xs opacity-60 max-w-20 truncate">({formatDisplayUrl(companyWebsite)})</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-64 p-3 bg-minimal-gray-900 border-minimal-gray-700 text-minimal-white shadow-md" align="end">

@@ -306,8 +306,6 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
         transition={{ duration: 0.5 }}
         className="max-w-3xl mx-auto"
       >
-        {/* Removido o header com os botões de Persona e Sua Empresa */}
-        
         <div className="p-3">
           <Card className="border-minimal-gray-300 shadow-xl rounded-xl overflow-hidden">
             <div className="p-4 bg-gradient-to-r from-minimal-gray-100 to-minimal-white border-b border-minimal-gray-300 flex justify-between items-center">
