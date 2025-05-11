@@ -118,41 +118,41 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           <div ref={chatEndRef} />
         </div>
         
-        <div className="p-4 border-t border-minimal-gray-700 bg-minimal-gray-900/50">
-          <div className="relative">
+        <div className="p-4 border-t border-minimal-gray-700">
+          <div className="bg-minimal-gray-900 rounded-lg flex items-center p-1">
             <input 
               type="file" 
               id="file-upload" 
               className="hidden" 
               onChange={handleFileInputChange} 
             />
+            <label htmlFor="file-upload" className="cursor-pointer">
+              <Button 
+                size="icon" 
+                variant="ghost"
+                className="h-8 w-8 bg-transparent hover:bg-minimal-gray-800 text-minimal-gray-400 hover:text-minimal-white transition-colors rounded-md"
+              >
+                <Paperclip size={16} />
+              </Button>
+            </label>
+            
             <ChatInput 
               value={input}
               onChange={onInputChange}
               onKeyDown={onKeyDown}
               placeholder="Ask Mizi..."
               disabled={isLoading}
-              className="pr-20 bg-minimal-gray-800 text-minimal-white border-minimal-gray-700 rounded-xl"
+              className="flex-1 px-3 py-2 bg-transparent text-minimal-white border-0 focus-visible:ring-0 focus-visible:outline-none placeholder:text-minimal-gray-400 rounded-md resize-none h-9"
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <Button 
-                  size="icon" 
-                  variant="ghost"
-                  className="h-8 w-8 bg-transparent hover:bg-minimal-gray-700 text-minimal-gray-400 hover:text-minimal-white transition-colors rounded-full"
-                >
-                  <Paperclip size={18} />
-                </Button>
-              </label>
-              <Button 
-                size="icon" 
-                className="bg-transparent hover:bg-minimal-gray-700 text-minimal-white transition-colors rounded-full"
-                onClick={onSendMessage} 
-                disabled={isLoading || !input.trim()}
-              >
-                <Send size={18} />
-              </Button>
-            </div>
+            
+            <Button 
+              size="icon" 
+              className="h-8 w-8 bg-transparent hover:bg-minimal-gray-800 text-minimal-white transition-colors rounded-md"
+              onClick={onSendMessage} 
+              disabled={isLoading || !input.trim()}
+            >
+              <Send size={16} />
+            </Button>
           </div>
         </div>
       </div>
