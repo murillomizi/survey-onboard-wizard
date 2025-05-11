@@ -11,22 +11,40 @@ interface LogoProps {
 
 const Logo = ({ withText = true, size = "md", className = "", projectName = "mizi" }: LogoProps) => {
   const sizeClasses = {
-    sm: "h-6 w-auto",
-    md: "h-8 w-auto",
-    lg: "h-10 w-auto",
+    sm: {
+      fontSize: "1.25rem", // text-xl
+      spacing: "gap-1"
+    },
+    md: {
+      fontSize: "1.5rem", // text-2xl
+      spacing: "gap-1.5"
+    },
+    lg: {
+      fontSize: "1.875rem", // text-3xl
+      spacing: "gap-2"
+    },
   };
 
   return (
-    <Link to="/" className={`flex items-center gap-3 ${className}`}>
+    <Link to="/" className={`flex items-center ${className}`}>
       <div className="flex items-center">
-        {/* Logo mark */}
-        <div className="relative">
-          <span className="text-black font-bold" style={{ fontSize: sizeClasses[size].replace('h-', '') }}>×</span>
-          <span className="text-black font-bold ml-0.5" style={{ fontSize: sizeClasses[size].replace('h-', '') }}>mizi</span>
+        <div className={`flex items-baseline ${sizeClasses[size].spacing}`}>
+          <span 
+            className="font-bold text-black leading-none" 
+            style={{ fontSize: sizeClasses[size].fontSize }}
+          >
+            ×
+          </span>
+          <span 
+            className="font-bold text-black leading-none" 
+            style={{ fontSize: sizeClasses[size].fontSize }}
+          >
+            mizi
+          </span>
         </div>
       </div>
       {withText && !projectName.toLowerCase().includes("mizi") && (
-        <span className="text-sm md:text-base font-semibold tracking-tight ml-1">
+        <span className="ml-3 font-semibold tracking-tight" style={{ fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.85)" }}>
           {projectName}
         </span>
       )}
