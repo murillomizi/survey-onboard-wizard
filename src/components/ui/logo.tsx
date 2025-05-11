@@ -1,7 +1,23 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface LogoProps {
   withText?: boolean;
@@ -48,34 +64,78 @@ const Logo = ({
   const fontSizeMultiplier = isLandingPage ? "0.75" : "0.55";
 
   return (
-    <Link to="/" className={`flex items-center ${className}`}>
-      <div className="flex items-center">
-        <div className={`flex items-center ${sizeClasses[size].spacing}`}>
-          <svg width={sizeClasses[size].logoSize} height={sizeClasses[size].logoSize} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-current">
-            <defs>
-              <linearGradient id="miziGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={logoColor} />
-                <stop offset="50%" stopColor={isOutboundPage ? "#C8C8C9" : "#8E9196"} />
-                <stop offset="100%" stopColor={isOutboundPage ? "#8E9196" : "#C8C8C9"} />
-              </linearGradient>
-            </defs>
-            <path d="M165.712 34.288C172.945 41.522 173.511 52.568 167.088 60.555L114.823 124.784L167.088 189.014C173.511 197.001 172.945 208.047 165.712 215.28C158.478 222.514 147.432 223.08 139.445 216.657L80.664 169.527L21.884 216.657C13.897 223.08 2.851 222.514 -4.383 215.28C-11.616 208.047 -12.183 197.001 -5.759 189.014L46.504 124.784L-5.759 60.555C-12.183 52.568 -11.616 41.522 -4.383 34.288C2.851 27.055 13.897 26.489 21.884 32.912L80.664 80.042L139.445 32.912C147.432 26.489 158.478 27.055 165.712 34.288Z" fill="url(#miziGradient)" transform="scale(0.8) translate(20, 10)" />
-          </svg>
+    <div className={`flex items-center ${className}`}>
+      <Link to="/" className="flex items-center">
+        <div className="flex items-center">
+          <div className={`flex items-center ${sizeClasses[size].spacing}`}>
+            <svg width={sizeClasses[size].logoSize} height={sizeClasses[size].logoSize} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-current">
+              <defs>
+                <linearGradient id="miziGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={logoColor} />
+                  <stop offset="50%" stopColor={isOutboundPage ? "#C8C8C9" : "#8E9196"} />
+                  <stop offset="100%" stopColor={isOutboundPage ? "#8E9196" : "#C8C8C9"} />
+                </linearGradient>
+              </defs>
+              <path d="M165.712 34.288C172.945 41.522 173.511 52.568 167.088 60.555L114.823 124.784L167.088 189.014C173.511 197.001 172.945 208.047 165.712 215.28C158.478 222.514 147.432 223.08 139.445 216.657L80.664 169.527L21.884 216.657C13.897 223.08 2.851 222.514 -4.383 215.28C-11.616 208.047 -12.183 197.001 -5.759 189.014L46.504 124.784L-5.759 60.555C-12.183 52.568 -11.616 41.522 -4.383 34.288C2.851 27.055 13.897 26.489 21.884 32.912L80.664 80.042L139.445 32.912C147.432 26.489 158.478 27.055 165.712 34.288Z" fill="url(#miziGradient)" transform="scale(0.8) translate(20, 10)" />
+            </svg>
+          </div>
         </div>
-      </div>
+      </Link>
       {withText && (
-        <div className="ml-2 flex items-center">
-          <span className={`font-semibold tracking-tight ${textColor}`} style={{
-            fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
-          }}>
-            {projectName}
-          </span>
-          {showProjectArrow && (
-            <ChevronDown size={12} className={`ml-1 ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`} />
-          )}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="focus:outline-none" asChild>
+            <div className="ml-2 flex items-center cursor-pointer">
+              <span className={`font-semibold tracking-tight ${textColor}`} style={{
+                fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
+              }}>
+                {projectName}
+              </span>
+              {showProjectArrow && (
+                <ChevronDown size={12} className={`ml-1 ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`} />
+              )}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className={`w-56 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
+            <div className={`px-3 py-2 border-b ${isOutboundPage ? "border-minimal-gray-700" : "border-minimal-gray-200"}`}>
+              <h4 className={`text-sm font-medium ${isOutboundPage ? "text-minimal-white" : "text-minimal-gray-900"}`}>Projetos</h4>
+            </div>
+            <div className="p-2">
+              <DropdownMenuItem className={`px-3 py-2.5 rounded-md ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-md flex items-center justify-center ${isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"}`}>
+                    <svg width="14" height="14" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M165.712 34.288C172.945 41.522 173.511 52.568 167.088 60.555L114.823 124.784L167.088 189.014C173.511 197.001 172.945 208.047 165.712 215.28C158.478 222.514 147.432 223.08 139.445 216.657L80.664 169.527L21.884 216.657C13.897 223.08 2.851 222.514 -4.383 215.28C-11.616 208.047 -12.183 197.001 -5.759 189.014L46.504 124.784L-5.759 60.555C-12.183 52.568 -11.616 41.522 -4.383 34.288C2.851 27.055 13.897 26.489 21.884 32.912L80.664 80.042L139.445 32.912C147.432 26.489 158.478 27.055 165.712 34.288Z" fill={isOutboundPage ? "#FFFFFF" : "#000000"} transform="scale(0.8) translate(20, 10)" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium">mizi-project-1</p>
+                    <p className={`text-xs ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`}>Projeto Atual</p>
+                  </div>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem className={`mt-1 px-3 py-2.5 rounded-md ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-md flex items-center justify-center ${isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"}`}>
+                    <svg width="14" height="14" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M165.712 34.288C172.945 41.522 173.511 52.568 167.088 60.555L114.823 124.784L167.088 189.014C173.511 197.001 172.945 208.047 165.712 215.28C158.478 222.514 147.432 223.08 139.445 216.657L80.664 169.527L21.884 216.657C13.897 223.08 2.851 222.514 -4.383 215.28C-11.616 208.047 -12.183 197.001 -5.759 189.014L46.504 124.784L-5.759 60.555C-12.183 52.568 -11.616 41.522 -4.383 34.288C2.851 27.055 13.897 26.489 21.884 32.912L80.664 80.042L139.445 32.912C147.432 26.489 158.478 27.055 165.712 34.288Z" fill={isOutboundPage ? "#FFFFFF" : "#000000"} transform="scale(0.8) translate(20, 10)" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium">mizi-demo</p>
+                    <p className={`text-xs ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`}>Projeto Demo</p>
+                  </div>
+                </div>
+              </DropdownMenuItem>
+            </div>
+            <div className={`p-2 border-t ${isOutboundPage ? "border-minimal-gray-700" : "border-minimal-gray-200"}`}>
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+                Criar Novo Projeto
+              </DropdownMenuItem>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
-    </Link>
+    </div>
   );
 };
 
