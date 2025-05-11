@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { Send, Paperclip, History, FileText, Users, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -136,9 +137,17 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
-      {/* Header with project name only - X icon removed */}
-      <div className="p-3 border-b border-minimal-gray-700 flex items-center justify-center">
+      {/* Header with project name and History button */}
+      <div className="p-3 border-b border-minimal-gray-700 flex items-center justify-between">
         <span className="text-sm font-medium text-minimal-white">mizi-project-1</span>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-7 w-7 p-0 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800"
+          onClick={() => console.log("History clicked")}
+        >
+          <History size={16} />
+        </Button>
       </div>
       
       {/* Persona and Company buttons section - redesigned for minimalism */}
