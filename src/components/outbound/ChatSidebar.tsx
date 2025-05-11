@@ -138,8 +138,19 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Button>
           </div>
 
-          {/* Controls row with only the attachment button */}
-          <div className="flex items-center mt-3 px-1">
+          {/* Controls row with edit and attachment buttons */}
+          <div className="flex items-center justify-between mt-3 px-1">
+            {/* Edit Button (replaced ML button) */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 px-2 py-1 text-minimal-gray-400 hover:text-minimal-white hover:bg-minimal-gray-800 flex items-center gap-1"
+              onClick={() => setIsEditModalOpen(true)}
+            >
+              <Edit size={14} />
+              <span className="text-xs">Edit</span>
+            </Button>
+            
             {/* Attachment Button */}
             <div>
               <input 
