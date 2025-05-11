@@ -64,7 +64,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           withText={true} 
           size="md" 
           className="text-minimal-white" 
-          projectName="miziapp"
+          projectName="mizi project 1"
         />
         
         <div className="ml-auto">
