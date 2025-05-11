@@ -1,19 +1,22 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 
 interface LogoProps {
   withText?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
   projectName?: string;
+  showProjectArrow?: boolean;
 }
 
 const Logo = ({
   withText = true,
   size = "md",
   className = "",
-  projectName = "mizi"
+  projectName = "mizi",
+  showProjectArrow = false
 }: LogoProps) => {
   const sizeClasses = {
     sm: {
@@ -49,11 +52,18 @@ const Logo = ({
           </svg>
         </div>
       </div>
-      {withText && <span className="ml-2 font-semibold tracking-tight" style={{
-        fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.85)"
-      }}>
-        {projectName}
-      </span>}
+      {withText && (
+        <div className="ml-2 flex items-center">
+          <span className="font-semibold tracking-tight" style={{
+            fontSize: "calc(" + sizeClasses[size].fontSize + " * 0.7)"
+          }}>
+            {projectName}
+          </span>
+          {showProjectArrow && (
+            <ChevronDown size={12} className="ml-1 text-minimal-gray-400" />
+          )}
+        </div>
+      )}
     </Link>
   );
 };

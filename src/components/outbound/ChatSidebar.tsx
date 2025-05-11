@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Send, Edit, Lightbulb, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           withText={true} 
           size="md" 
           className="text-minimal-white" 
-          projectName="mizi project 1"
+          projectName="mizi-project-1"
+          showProjectArrow={true}
         />
         
         <div className="ml-auto">
