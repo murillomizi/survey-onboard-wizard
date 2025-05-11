@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Message, ContentType } from "@/types/outbound";
@@ -259,27 +258,25 @@ Inova Digital`;
       />
       
       <div className="ml-80 flex-1 h-full overflow-y-auto pb-6">
-        <div className="shadow-sm border-b border-minimal-gray-200">
-          <h1 className="text-2xl md:text-3xl font-bold p-6 text-minimal-black">Outbound Generator</h1>
-        </div>
-        
-        {filteredProspects.length > 0 && (
-          <ProspectCard
-            currentProspect={filteredProspects[currentProspectIndex]}
-            currentProspectIndex={currentProspectIndex}
-            totalProspects={filteredProspects.length}
-            onPreviousProspect={handlePreviousProspect}
-            onNextProspect={handleNextProspect}
+        <div className="pt-4">
+          {filteredProspects.length > 0 && (
+            <ProspectCard
+              currentProspect={filteredProspects[currentProspectIndex]}
+              currentProspectIndex={currentProspectIndex}
+              totalProspects={filteredProspects.length}
+              onPreviousProspect={handlePreviousProspect}
+              onNextProspect={handleNextProspect}
+            />
+          )}
+          
+          <ProspectFilters
+            filters={filters}
+            setFilters={setFilters}
+            filteredProspectsCount={filteredProspects.length}
+            totalProspectsCount={mockProspects.length}
+            resetFilters={resetFilters}
           />
-        )}
-        
-        <ProspectFilters
-          filters={filters}
-          setFilters={setFilters}
-          filteredProspectsCount={filteredProspects.length}
-          totalProspectsCount={mockProspects.length}
-          resetFilters={resetFilters}
-        />
+        </div>
         
         <CopyPreview 
           contentType={contentType}

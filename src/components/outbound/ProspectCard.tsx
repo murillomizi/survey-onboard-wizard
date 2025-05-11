@@ -24,24 +24,24 @@ const ProspectCard: React.FC<ProspectCardProps> = ({
     <Card className="mx-4 mt-4 bg-white shadow-md border border-minimal-gray-200 font-sans">
       <CardContent className="p-4">
         <div className="flex justify-between items-center">
-          <div className="flex-1">
+          <div className="flex flex-col">
             <div className="flex items-center mb-2">
               <User size={18} className="text-minimal-black mr-2" />
-              <h3 className="text-lg font-semibold text-minimal-black">{currentProspect.firstName} {currentProspect.lastName}</h3>
+              <h3 className="text-lg font-bold text-minimal-black">{currentProspect.firstName} {currentProspect.lastName}</h3>
             </div>
             
             <div className="flex items-center mb-2">
-              <Briefcase size={16} className="text-minimal-black mr-2" />
+              <Briefcase size={16} className="text-minimal-gray-600 mr-2" />
               <p className="text-sm text-minimal-gray-600">{currentProspect.jobTitle}</p>
             </div>
             
             <div className="flex items-center">
-              <Building2 size={16} className="text-minimal-black mr-2" />
+              <Building2 size={16} className="text-minimal-gray-600 mr-2" />
               <p className="text-sm text-minimal-gray-600">{currentProspect.company}</p>
             </div>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button 
               onClick={onPreviousProspect} 
               variant="outline" 
