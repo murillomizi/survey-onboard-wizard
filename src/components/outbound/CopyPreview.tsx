@@ -314,10 +314,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       setActiveFollowUpIndex(activeFollowUpIndex - 1);
     }
     
-    toast({
-      title: "Follow-up removido",
-      description: `O follow-up #${index + 1} foi removido com sucesso.`
-    });
+    // Removido o toast de notificação de follow-up removido
   };
 
   return (
