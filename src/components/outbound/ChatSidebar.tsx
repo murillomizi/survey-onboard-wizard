@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { Send, Paperclip, History, FileText } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Send, Paperclip, History, FileText, Users, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -21,6 +21,8 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Check, Link2 } from "lucide-react";
 
 type Message = {
   content: string;
@@ -50,6 +52,15 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+  
+  // Persona state
+  const [selectedPersonaSource, setSelectedPersonaSource] = useState<string | null>(null);
+  const [isPersonaPopoverOpen, setIsPersonaPopoverOpen] = useState(false);
+  
+  // Company state
+  const [companyWebsite, setCompanyWebsite] = useState<string>('');
+  const [isCompanyPopoverOpen, setIsCompanyPopoverOpen] = useState(false);
+  const [urlIsValid, setUrlIsValid] = useState<boolean | null>(null);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -63,6 +74,63 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     toast({
       title: "Template aplicado!",
       description: "As configurações do template foram aplicadas com sucesso."
+    });
+  };
+  
+  const handlePersonaSelection = (source: string) => {
+    setSelectedPersonaSource(source);
+    setIsPersonaPopoverOpen(false);
+    toast({
+      title: "Persona source selected",
+      description: `${source} has been selected as your persona source.`
+    });
+  };
+  
+  const validateUrl = (url: string): boolean => {
+    if (!url) return false;
+
+    // Add http:// if the URL doesn't have a protocol
+    let urlToTest = url;
+    if (!/^https?:\/\//i.test(urlToTest)) {
+      urlToTest = 'http://' + urlToTest;
+    }
+    try {
+      new URL(urlToTest);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+  
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCompanyWebsite(value);
+    if (value) {
+      setUrlIsValid(validateUrl(value));
+    } else {
+      setUrlIsValid(null);
+    }
+  };
+  
+  const formatDisplayUrl = (url: string): string => {
+    // Remove protocol for display
+    return url.replace(/^https?:\/\//i, '');
+  };
+  
+  const handleCompanyWebsiteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!companyWebsite || !validateUrl(companyWebsite)) {
+      toast({
+        title: "URL inválida",
+        description: "Por favor, insira uma URL válida para o site da empresa.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsCompanyPopoverOpen(false);
+    toast({
+      title: "Site da empresa salvo",
+      description: "As informações da empresa foram atualizadas com sucesso."
     });
   };
 
@@ -88,6 +156,90 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <History size={16} />
           </Button>
         </div>
+      </div>
+      
+      {/* Persona and Company buttons section */}
+      <div className="px-3 py-3 border-b border-minimal-gray-700 flex items-center gap-2">
+        {/* Botão Persona */}
+        <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="h-8 px-3 py-1 justify-start text-xs flex-1 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700 hover:text-minimal-white">
+              <Users size={14} className="mr-1.5 text-minimal-gray-400" />
+              <span className="font-medium">Persona</span>
+              {selectedPersonaSource && <span className="ml-1.5 text-xs text-minimal-gray-500 max-w-20 truncate">({selectedPersonaSource})</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-3 bg-minimal-gray-900 border-minimal-gray-700 text-minimal-white shadow-md" align="start">
+            <Tabs defaultValue="dataset" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-minimal-gray-800 mb-3">
+                <TabsTrigger value="dataset" className="text-xs data-[state=active]:bg-minimal-gray-700">Dataset</TabsTrigger>
+                <TabsTrigger value="enrichment" className="text-xs data-[state=active]:bg-minimal-gray-700">Enrichment</TabsTrigger>
+              </TabsList>
+              <TabsContent value="dataset" className="mt-2 space-y-2">
+                <p className="text-xs text-minimal-gray-400 mb-2">Upload um arquivo CSV ou JSON com seus dados de contato</p>
+                <input type="file" id="preview-dataset-upload" className="hidden" accept=".csv,.json" onChange={handleFileInputChange} />
+                <label htmlFor="preview-dataset-upload">
+                  <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700" asChild>
+                    <span>
+                      <Users size={12} className="text-minimal-gray-400" />
+                      Fazer upload de dataset
+                    </span>
+                  </Button>
+                </label>
+              </TabsContent>
+              <TabsContent value="enrichment" className="mt-2 space-y-2">
+                <p className="text-xs text-minimal-gray-400 mb-2">Conecte com uma ferramenta de sales enrichment</p>
+                <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700" onClick={() => handlePersonaSelection("Apollo.io")}>
+                  Apollo.io
+                </Button>
+                <Button variant="outline" size="sm" className="w-full text-xs flex items-center gap-2 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700" onClick={() => handlePersonaSelection("ZoomInfo")}>
+                  ZoomInfo
+                </Button>
+              </TabsContent>
+            </Tabs>
+          </PopoverContent>
+        </Popover>
+        
+        {/* Botão Sua Empresa */}
+        <Popover open={isCompanyPopoverOpen} onOpenChange={setIsCompanyPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="h-8 px-3 py-1 justify-start text-xs flex-1 bg-minimal-gray-800 border-minimal-gray-700 text-minimal-gray-300 hover:bg-minimal-gray-700 hover:text-minimal-white">
+              <Building2 size={14} className="mr-1.5 text-minimal-gray-400" />
+              <span className="font-medium">Sua Empresa</span>
+              {companyWebsite && <span className="ml-1.5 text-xs text-minimal-gray-500 max-w-20 truncate">({formatDisplayUrl(companyWebsite)})</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-3 bg-minimal-gray-900 border-minimal-gray-700 text-minimal-white shadow-md" align="end">
+            <form onSubmit={handleCompanyWebsiteSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="company-website" className="block text-sm font-medium text-minimal-gray-300 mb-1">
+                    Site da empresa
+                  </label>
+                  <div className="flex relative">
+                    <div className="flex items-center px-2 bg-minimal-gray-800 border border-r-0 border-minimal-gray-700 rounded-l-md">
+                      <Link2 size={12} className={`${urlIsValid === true ? 'text-green-500' : urlIsValid === false ? 'text-red-500' : 'text-minimal-gray-400'}`} />
+                    </div>
+                    <Input id="company-website" type="text" value={companyWebsite} onChange={handleUrlChange} placeholder="www.suaempresa.com" className={`rounded-l-none bg-minimal-gray-800 border-minimal-gray-700 text-minimal-white text-xs h-8 ${urlIsValid === true ? 'border-green-500 focus-visible:ring-green-500' : urlIsValid === false ? 'border-red-500 focus-visible:ring-red-500' : ''}`} />
+                    {urlIsValid === true && <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                        <Check size={12} className="text-green-500" />
+                      </div>}
+                  </div>
+                  {urlIsValid === false && <p className="mt-1 text-xs text-red-500">
+                      Por favor, insira uma URL válida (ex: empresa.com)
+                    </p>}
+                  <p className="mt-1 text-xs text-minimal-gray-500">
+                    Adicione o site da sua empresa para personalizar seu outbound
+                  </p>
+                </div>
+                
+                <Button type="submit" className="w-full bg-minimal-gray-700 text-minimal-white hover:bg-minimal-gray-600 text-xs h-8" disabled={urlIsValid === false || urlIsValid === null}>
+                  Salvar informações
+                </Button>
+              </div>
+            </form>
+          </PopoverContent>
+        </Popover>
       </div>
       
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -150,7 +302,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   <span className="text-xs">Template</span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent side="top" align="start" sideOffset={5} className="p-0 w-72">
+              <PopoverContent side="top" align="start" sideOffset={5} className="p-0 w-72 bg-minimal-gray-900 border-minimal-gray-700 text-minimal-white">
                 <TemplateConfigMenu 
                   onApplyTemplate={handleApplyTemplate}
                   onClose={() => setIsTemplateMenuOpen(false)}

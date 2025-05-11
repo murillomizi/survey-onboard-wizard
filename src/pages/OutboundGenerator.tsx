@@ -5,6 +5,7 @@ import CopyPreview from "@/components/outbound/CopyPreview";
 import { useOutboundState } from "@/hooks/useOutboundState";
 import { useOutboundMessage } from "@/hooks/useOutboundMessage";
 import { useOutboundContent } from "@/hooks/useOutboundContent";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const OutboundGenerator = () => {
   const {
