@@ -73,7 +73,7 @@ const Logo = ({
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate("/");
+      navigate("/"); // Redirecting to the home page instead of /landing
       toast.success("Logout realizado com sucesso");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);

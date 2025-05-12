@@ -148,7 +148,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate("/landing");
+      navigate("/");
       toast({
         title: "Logout realizado com sucesso",
       });

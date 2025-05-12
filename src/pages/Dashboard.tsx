@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate("/landing");
+      navigate("/"); // Redirecting to the home page instead of /landing
     }
   }, [user, loading, navigate]);
 
