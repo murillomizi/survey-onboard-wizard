@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -155,7 +156,7 @@ const Onboarding = () => {
     });
     
     setTimeout(() => {
-      navigate("/outbound");
+      navigate("/dashboard");
     }, 1500);
   };
   

@@ -60,12 +60,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
+      // Using emailRedirect: false to disable email confirmation
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
-          emailRedirectTo: window.location.origin + "/onboarding"
+          emailRedirect: false
         }
       });
       

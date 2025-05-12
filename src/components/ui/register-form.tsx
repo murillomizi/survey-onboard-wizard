@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Loader, AtSign } from "lucide-react";
@@ -26,17 +25,17 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
     e.preventDefault();
     
     if (!email || !password || !confirmPassword) {
-      toast.error("Por favor, preencha todos os campos");
+      toast.error("Please fill in all fields");
       return;
     }
     
     if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
+      toast.error("Passwords do not match");
       return;
     }
     
     if (password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres");
+      toast.error("Password must be at least 6 characters");
       return;
     }
     
@@ -46,17 +45,17 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       const { error, data } = await signUp(email, password);
       
       if (error) {
-        toast.error(error.message || "Falha no registro");
+        toast.error(error.message || "Registration failed");
         return;
       }
       
-      // Redirect to email confirmation page
-      toast.success("Registro realizado com sucesso!");
-      navigate("/email-confirmation");
+      // Redirect directly to onboarding regardless of email confirmation
+      toast.success("Registration successful!");
+      navigate("/onboarding");
       onClose();
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error("Erro durante o registro");
+      toast.error("Error during registration");
     } finally {
       setIsLoading(false);
     }
