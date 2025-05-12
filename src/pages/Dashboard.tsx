@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate("/"); // Redirecionando para a rota principal ao invés de /landing
+      navigate("/landing");
     }
   }, [user, loading, navigate]);
 
