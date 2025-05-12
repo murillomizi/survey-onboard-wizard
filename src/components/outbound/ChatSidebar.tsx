@@ -1,6 +1,5 @@
-
 import React, { useState, useRef } from "react";
-import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit } from "lucide-react";
+import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -31,6 +30,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Check, Link2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 type Message = {
   content: string;
@@ -60,6 +61,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   // Persona state
   const [selectedPersonaSource, setSelectedPersonaSource] = useState<string | null>(null);
@@ -142,6 +145,22 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     });
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/landing");
+      toast({
+        title: "Logout realizado com sucesso",
+      });
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast({
+        title: "Erro ao fazer logout",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with project name and History button */}
@@ -154,6 +173,28 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-80 p-0 bg-minimal-gray-800 border-minimal-gray-700">
+            {/* User Profile Section */}
+            {user && (
+              <>
+                <div className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 rounded-full p-2">
+                      <UserRound size={16} className="text-minimal-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-minimal-white">
+                        {user.email}
+                      </span>
+                      <span className="text-xs text-minimal-gray-400">
+                        Último acesso: {new Date(user.last_sign_in_at || "").toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <DropdownMenuSeparator className="bg-minimal-gray-700" />
+              </>
+            )}
+            
             {/* Dashboard Button */}
             <div className="p-2">
               <DropdownMenuItem className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-700 text-minimal-white">
@@ -210,6 +251,19 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   <span>Create New Project</span>
                 </div>
               </DropdownMenuItem>
+              
+              {/* Logout Button */}
+              {user && (
+                <DropdownMenuItem 
+                  className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-destructive"
+                  onClick={handleLogout}
+                >
+                  <div className="flex items-center gap-2">
+                    <LogOut size={16} className="text-destructive" />
+                    <span>Sair</span>
+                  </div>
+                </DropdownMenuItem>
+              )}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
