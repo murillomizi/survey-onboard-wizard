@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
@@ -175,21 +174,21 @@ const Logo = ({
             
             {/* Project Actions */}
             <div className="p-2">
-              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}>
                 <div className="flex items-center gap-2">
                   <Edit size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
                   <span>Rename Project</span>
                 </div>
               </DropdownMenuItem>
               
-              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}>
                 <div className="flex items-center gap-2">
                   <Copy size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
                   <span>Duplicate Project</span>
                 </div>
               </DropdownMenuItem>
               
-              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-minimal-white" : "hover:bg-minimal-gray-100 text-minimal-gray-900"}`}>
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}>
                 <div className="flex items-center gap-2">
                   <span>Create New Project</span>
                 </div>
@@ -198,12 +197,12 @@ const Logo = ({
               {/* Logout Button */}
               {user && (
                 <DropdownMenuItem 
-                  className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-destructive" : "hover:bg-minimal-gray-100 text-destructive"}`}
+                  className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}
                   onClick={handleLogout}
                 >
                   <div className="flex items-center gap-2">
-                    <LogOut size={16} className="text-destructive" />
-                    <span>Logout</span>
+                    <LogOut size={16} className="text-red-500" />
+                    <span>Sair</span>
                   </div>
                 </DropdownMenuItem>
               )}

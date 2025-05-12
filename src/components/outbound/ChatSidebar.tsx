@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -255,11 +256,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               {/* Logout Button */}
               {user && (
                 <DropdownMenuItem 
-                  className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-destructive"
+                  className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-red-500"
                   onClick={handleLogout}
                 >
                   <div className="flex items-center gap-2">
-                    <LogOut size={16} className="text-destructive" />
+                    <LogOut size={16} className="text-red-500" />
                     <span>Sair</span>
                   </div>
                 </DropdownMenuItem>
