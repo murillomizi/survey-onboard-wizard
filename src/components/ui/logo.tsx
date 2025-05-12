@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, Database, Copy, Edit } from "lucide-react";
+import { ChevronDown, Database, Copy, Edit, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LogoProps {
   withText?: boolean;
@@ -36,6 +38,7 @@ const Logo = ({
   showProjectArrow = false
 }: LogoProps) => {
   const location = useLocation();
+  const { user } = useAuth();
   const isOutboundPage = location.pathname === "/outbound";
   const isLandingPage = location.pathname === "/landing";
   
@@ -97,6 +100,28 @@ const Logo = ({
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className={`w-80 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
+            {/* User Profile Section */}
+            {user && (
+              <>
+                <div className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`flex items-center justify-center w-9 h-9 rounded-full ${isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"}`}>
+                      <User size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
+                    </div>
+                    <div>
+                      <p className={`font-medium text-sm ${isOutboundPage ? "text-minimal-white" : "text-minimal-gray-900"}`}>
+                        {user.email}
+                      </p>
+                      <p className={`text-xs ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`}>
+                        Último login: {new Date(user.last_sign_in_at || "").toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
+              </>
+            )}
+
             {/* Dashboard Button */}
             <div className="p-2">
               <Link to="/dashboard">
