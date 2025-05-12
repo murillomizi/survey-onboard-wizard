@@ -173,7 +173,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <ChevronDown size={12} className="ml-1 text-minimal-gray-400" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-80 p-0 bg-minimal-gray-800 border-minimal-gray-700">
+          <DropdownMenuContent align="start" className="w-72 p-0 bg-minimal-gray-800 border-minimal-gray-700">
             {/* User Profile Section */}
             {user && (
               <>
@@ -198,12 +198,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             
             {/* Dashboard Button */}
             <div className="p-2">
-              <DropdownMenuItem className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-700 text-minimal-white">
-                <div className="flex items-center gap-2">
-                  <Database size={16} className="text-minimal-white" />
-                  <span>Dashboard</span>
-                </div>
-              </DropdownMenuItem>
+              <Link to="/dashboard" className="block">
+                <DropdownMenuItem className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-700 text-minimal-white">
+                  <div className="flex items-center gap-2">
+                    <Database size={16} className="text-minimal-white" />
+                    <span>Dashboard</span>
+                  </div>
+                </DropdownMenuItem>
+              </Link>
             </div>
             
             <DropdownMenuSeparator className="bg-minimal-gray-700" />
@@ -232,24 +234,24 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <DropdownMenuSeparator className="bg-minimal-gray-700" />
             
             {/* Project Actions */}
-            <div className="p-2">
-              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-minimal-white">
+            <div className="p-2 space-y-1">
+              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700">
                 <div className="flex items-center gap-2">
-                  <Edit size={16} className="text-minimal-white" />
-                  <span>Rename Project</span>
+                  <Edit size={16} className="text-minimal-gray-400" />
+                  <span className="text-minimal-gray-300">Rename Project</span>
                 </div>
               </DropdownMenuItem>
               
-              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-minimal-white">
+              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700">
                 <div className="flex items-center gap-2">
-                  <Copy size={16} className="text-minimal-white" />
-                  <span>Duplicate Project</span>
+                  <Copy size={16} className="text-minimal-gray-400" />
+                  <span className="text-minimal-gray-300">Duplicate Project</span>
                 </div>
               </DropdownMenuItem>
               
-              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700 text-minimal-white">
+              <DropdownMenuItem className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-700">
                 <div className="flex items-center gap-2">
-                  <span>Create New Project</span>
+                  <span className="text-minimal-gray-300">Create New Project</span>
                 </div>
               </DropdownMenuItem>
               
@@ -278,7 +280,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         </Button>
       </div>
       
-      {/* Persona and Company buttons section - redesigned for minimalism */}
+      {/* Persona and Company buttons section */}
       <div className="flex border-b border-minimal-gray-700 bg-minimal-gray-900">
         <Popover open={isPersonaPopoverOpen} onOpenChange={setIsPersonaPopoverOpen}>
           <PopoverTrigger asChild>

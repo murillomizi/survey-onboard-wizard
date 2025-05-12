@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
@@ -112,7 +113,7 @@ const Logo = ({
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className={`w-80 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
+          <DropdownMenuContent align="start" className={`w-72 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
             {/* User Profile Section */}
             {user && (
               <>
@@ -173,24 +174,24 @@ const Logo = ({
             <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
             
             {/* Project Actions */}
-            <div className="p-2">
-              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}>
+            <div className="p-2 space-y-1">
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700" : "hover:bg-minimal-gray-100"}`}>
                 <div className="flex items-center gap-2">
-                  <Edit size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
-                  <span>Rename Project</span>
+                  <Edit size={16} className={isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"} />
+                  <span className={isOutboundPage ? "text-minimal-gray-300" : "text-minimal-gray-700"}>Rename Project</span>
                 </div>
               </DropdownMenuItem>
               
-              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}>
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700" : "hover:bg-minimal-gray-100"}`}>
                 <div className="flex items-center gap-2">
-                  <Copy size={16} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
-                  <span>Duplicate Project</span>
+                  <Copy size={16} className={isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"} />
+                  <span className={isOutboundPage ? "text-minimal-gray-300" : "text-minimal-gray-700"}>Duplicate Project</span>
                 </div>
               </DropdownMenuItem>
               
-              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-red-500" : "hover:bg-minimal-gray-100 text-red-500"}`}>
+              <DropdownMenuItem className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700" : "hover:bg-minimal-gray-100"}`}>
                 <div className="flex items-center gap-2">
-                  <span>Create New Project</span>
+                  <span className={isOutboundPage ? "text-minimal-gray-300" : "text-minimal-gray-700"}>Create New Project</span>
                 </div>
               </DropdownMenuItem>
               
