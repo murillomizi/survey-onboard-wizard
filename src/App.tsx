@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import OutboundGenerator from "./pages/OutboundGenerator";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import EmailConfirmation from "./pages/EmailConfirmation";
 import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -26,6 +27,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/email-confirmation" element={<EmailConfirmation />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <Dashboard />

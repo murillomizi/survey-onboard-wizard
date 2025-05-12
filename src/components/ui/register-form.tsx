@@ -26,17 +26,17 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
     e.preventDefault();
     
     if (!email || !password || !confirmPassword) {
-      toast.error("Please fill in all fields");
+      toast.error("Por favor, preencha todos os campos");
       return;
     }
     
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("As senhas não coincidem");
       return;
     }
     
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("A senha deve ter pelo menos 6 caracteres");
       return;
     }
     
@@ -46,17 +46,17 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       const { error, data } = await signUp(email, password);
       
       if (error) {
-        toast.error(error.message || "Registration failed");
+        toast.error(error.message || "Falha no registro");
         return;
       }
       
-      // Login immediately after signup - no email confirmation required
-      toast.success("Registration successful!");
-      navigate("/onboarding");
+      // Redirect to email confirmation page
+      toast.success("Registro realizado com sucesso!");
+      navigate("/email-confirmation");
       onClose();
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error("Error during registration");
+      toast.error("Erro durante o registro");
     } finally {
       setIsLoading(false);
     }
