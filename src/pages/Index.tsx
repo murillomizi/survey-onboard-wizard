@@ -1,11 +1,10 @@
-import React from "react";
 
+import React from "react";
+import { Navigate } from "react-router-dom";
+
+// This file now just redirects to the home page
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-minimal-white flex flex-col items-center justify-center p-4 font-['Inter',sans-serif]">
-      {/* Empty home page */}
-    </div>
-  );
+  return <Navigate to="/" replace />;
 };
 
 export default Index;
