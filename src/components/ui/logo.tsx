@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, Database, Copy, Edit } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/components/ui/sonner";
 
 interface LogoProps {
   withText?: boolean;
@@ -36,6 +39,9 @@ const Logo = ({
   showProjectArrow = false
 }: LogoProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  
   const isOutboundPage = location.pathname === "/outbound";
   const isLandingPage = location.pathname === "/landing";
   
@@ -63,6 +69,17 @@ const Logo = ({
 
   // Set font size multiplier based on current route
   const fontSizeMultiplier = isLandingPage ? "0.75" : "0.55";
+  
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/");
+      toast.success("Logout realizado com sucesso");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast.error("Erro ao fazer logout");
+    }
+  };
 
   return (
     <div className={`flex items-center ${className}`}>
@@ -97,6 +114,28 @@ const Logo = ({
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className={`w-80 p-0 ${isOutboundPage ? "bg-minimal-gray-800 border-minimal-gray-700" : "bg-white border-minimal-gray-200"}`}>
+            {/* User Profile Section */}
+            {user && (
+              <>
+                <div className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 rounded-full p-2">
+                      <UserRound size={20} className={isOutboundPage ? "text-minimal-white" : "text-minimal-black"} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className={`text-sm font-medium ${isOutboundPage ? "text-minimal-white" : "text-minimal-gray-900"}`}>
+                        {user.email}
+                      </span>
+                      <span className={`text-xs ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`}>
+                        Último acesso: {new Date(user.last_sign_in_at || "").toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <DropdownMenuSeparator className={isOutboundPage ? "bg-minimal-gray-700" : "bg-minimal-gray-200"} />
+              </>
+            )}
+            
             {/* Dashboard Button */}
             <div className="p-2">
               <Link to="/dashboard">
@@ -155,6 +194,19 @@ const Logo = ({
                   <span>Create New Project</span>
                 </div>
               </DropdownMenuItem>
+              
+              {/* Logout Button */}
+              {user && (
+                <DropdownMenuItem 
+                  className={`px-3 py-2 rounded-md text-sm ${isOutboundPage ? "hover:bg-minimal-gray-700 text-destructive" : "hover:bg-minimal-gray-100 text-destructive"}`}
+                  onClick={handleLogout}
+                >
+                  <div className="flex items-center gap-2">
+                    <LogOut size={16} className="text-destructive" />
+                    <span>Logout</span>
+                  </div>
+                </DropdownMenuItem>
+              )}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
