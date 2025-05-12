@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,13 +60,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
-      // Using autoConfirm: true to disable email confirmation
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
-          // The emailRedirect property is not valid, use autoConfirm instead
+          emailRedirectTo: undefined
         }
       });
       
