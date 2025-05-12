@@ -26,6 +26,13 @@ const Dashboard = () => {
     }
   };
 
+  // Redirect to outbound page if user is logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigate("/outbound");
+    }
+  }, [user, loading, navigate]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
