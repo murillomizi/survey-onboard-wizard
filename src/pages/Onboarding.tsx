@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Building, User, Database, Check, ArrowRight, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,11 +30,6 @@ const Onboarding = () => {
   const [fileSelected, setFileSelected] = useState<File | null>(null);
   
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
-
-  // Redirecionar se não estiver logado
-  if (!user) {
-    return <Navigate to="/" />;
-  }
 
   const steps = [
     { title: "Informações da Empresa", icon: <Building className="h-6 w-6" /> },
