@@ -11,7 +11,6 @@ import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 // Create the client outside of the component
 const queryClient = new QueryClient();
@@ -26,30 +25,9 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/outbound" 
-                element={
-                  <ProtectedRoute>
-                    <OutboundGenerator />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/onboarding" 
-                element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                } 
-              />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/outbound" element={<OutboundGenerator />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
