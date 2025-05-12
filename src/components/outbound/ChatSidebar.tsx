@@ -1,6 +1,7 @@
 
 import React, { useState, useRef } from "react";
-import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
+import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit, LogOut, UserRound, Link2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -30,7 +31,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Check, Link2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
