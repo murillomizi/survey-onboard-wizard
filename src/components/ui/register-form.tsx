@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Loader, AtSign } from "lucide-react";
@@ -53,7 +54,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       
       // If email confirmation is disabled or auto-confirm is enabled
       if (data?.session) {
-        navigate("/outbound"); // Changed from /dashboard to /outbound
+        navigate("/onboarding"); // Changed from /outbound to /onboarding
         onClose();
       } else {
         switchToLogin();

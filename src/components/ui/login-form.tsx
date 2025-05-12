@@ -40,7 +40,7 @@ export function LoginForm({ onClose, className, switchToRegister }: LoginFormPro
       }
       
       toast.success("Login successful");
-      navigate("/outbound"); // Changed from /dashboard to /outbound
+      navigate("/onboarding"); // Changed from /outbound to /onboarding
       onClose();
     } catch (error) {
       console.error("Login error:", error);
