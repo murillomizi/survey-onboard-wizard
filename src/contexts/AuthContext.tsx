@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +28,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log("Auth state changed:", event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -38,7 +36,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Retrieved existing session:", session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -54,41 +51,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
       });
       
-      if (data.session) {
-        console.log("Sign in successful:", data.session.user.email);
-      }
-      
       return { data: data.session, error };
     } catch (error) {
-      console.error("Sign in error:", error);
       return { data: null, error: error as Error };
     }
   };
   
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
-      // No autoConfirm property, Supabase handles email confirmation settings in the dashboard
+      // Using autoConfirm: true to disable email confirmation
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
+          // The emailRedirect property is not valid, use autoConfirm instead
         }
       });
       
-      if (data.user) {
-        console.log("Sign up successful:", data.user.email);
-      }
-      
       return { data, error };
     } catch (error) {
-      console.error("Sign up error:", error);
       return { data: null, error: error as Error };
     }
   };
 
   const signOut = async () => {
-    console.log("Signing out");
     await supabase.auth.signOut();
   };
 

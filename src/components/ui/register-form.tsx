@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Loader, AtSign } from "lucide-react";
@@ -47,20 +46,13 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       
       if (error) {
         toast.error(error.message || "Registration failed");
-        setIsLoading(false);
         return;
       }
       
-      // Check if registration was successful
-      if (data && (data.session || data.user)) {
-        toast.success("Registration successful!");
-        // Close the dialog and navigate to onboarding
-        onClose();
-        navigate("/onboarding");
-      } else {
-        // Handle case where confirmation is required (should be disabled in Supabase dashboard)
-        toast.info("Please check your email to confirm your account");
-      }
+      // Redirect directly to onboarding regardless of email confirmation
+      toast.success("Registration successful!");
+      navigate("/onboarding");
+      onClose();
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Error during registration");
