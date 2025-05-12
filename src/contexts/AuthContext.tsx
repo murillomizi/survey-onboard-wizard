@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         options: {
           data: metadata,
-          emailRedirectTo: undefined
+          emailRedirectTo: window.location.origin + "/onboarding"
         }
       });
       

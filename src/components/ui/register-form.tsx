@@ -155,4 +155,3 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
       </form>
     </div>
   );
-}
