@@ -1,13 +1,15 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import ChatSidebar from "@/components/outbound/ChatSidebar";
 import CopyPreview from "@/components/outbound/CopyPreview";
 import { useOutboundState } from "@/hooks/useOutboundState";
 import { useOutboundMessage } from "@/hooks/useOutboundMessage";
 import { useOutboundContent } from "@/hooks/useOutboundContent";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const OutboundGenerator = () => {
+  const { user } = useAuth();
   const {
     messages,
     setMessages,
@@ -47,6 +49,13 @@ const OutboundGenerator = () => {
   );
   
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Show welcome message when user first lands on this page
+    if (user) {
+      toast.success(`Bem-vindo ao gerador de campanhas, ${user.email?.split('@')[0] || 'usuário'}!`);
+    }
+  }, [user]);
 
   return (
     <div className="flex h-full min-h-screen bg-minimal-gray-100 overflow-hidden">
