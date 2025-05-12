@@ -15,7 +15,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onClose, className, switchToRegister }: LoginFormProps) {
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,16 +36,19 @@ export function LoginForm({ onClose, className, switchToRegister }: LoginFormPro
       
       if (error) {
         toast.error(error.message || "Login failed");
+        setIsLoading(false);
         return;
       }
       
       toast.success("Login successful");
-      navigate("/onboarding"); 
       onClose();
+      // Check if the user has completed onboarding
+      // For now, always redirect to onboarding - you can add logic later to check
+      // if the user has already completed onboarding
+      navigate("/onboarding");
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Error during login");
-    } finally {
       setIsLoading(false);
     }
   };
