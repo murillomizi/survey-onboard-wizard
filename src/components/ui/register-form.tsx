@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Loader, AtSign } from "lucide-react";
@@ -50,15 +49,10 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         return;
       }
       
-      toast.success("Registration successful! Please check your email for verification");
-      
-      // If email confirmation is disabled or auto-confirm is enabled
-      if (data?.session) {
-        navigate("/onboarding"); // Changed from /outbound to /onboarding
-        onClose();
-      } else {
-        switchToLogin();
-      }
+      // Redirect directly to onboarding regardless of email confirmation
+      toast.success("Registration successful!");
+      navigate("/onboarding");
+      onClose();
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Error during registration");
