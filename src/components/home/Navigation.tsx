@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { Link } from "react-router-dom";
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface NavigationProps {
   onOpenLogin: () => void;
@@ -21,11 +22,6 @@ const Navigation: React.FC<NavigationProps> = ({
     <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
       <div className="flex items-center gap-2">
         <Logo size="md" />
-        {user && (
-          <span className="text-sm text-minimal-gray-600 font-medium hidden md:inline-block">
-            Bem-vindo, {user.email?.split('@')[0]}
-          </span>
-        )}
       </div>
       <div className="flex items-center gap-4">
         {!user ? (
@@ -51,13 +47,11 @@ const Navigation: React.FC<NavigationProps> = ({
         ) : (
           <div className="flex items-center gap-4">
             <Link to="/outbound">
-              <Button
-                size="sm"
-                className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"
-              >
-                <User className="h-3.5 w-3.5 mr-1.5" />
-                <span>Meus Projetos</span>
-              </Button>
+              <Avatar className="h-8 w-8 bg-primary/10 hover:bg-primary/20 transition-colors">
+                <AvatarFallback className="bg-primary/10 text-minimal-black">
+                  {user.email?.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
             </Link>
           </div>
         )}
