@@ -38,13 +38,11 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       custom={4}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-minimal-gray-800">Your Projects</h2>
-            <p className="text-minimal-gray-600">View and manage your personalized campaigns</p>
-          </div>
-
-          <div className="relative w-full md:w-60 mt-4 md:mt-0">
+        <div className="flex flex-col items-center text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2 text-minimal-gray-800">Your Projects</h2>
+          <p className="text-minimal-gray-600 max-w-md">View and manage your personalized campaigns</p>
+          
+          <div className="relative w-full max-w-md mt-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-minimal-gray-400" size={18} />
             <Input
               placeholder="Search projects..."
