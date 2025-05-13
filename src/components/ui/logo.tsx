@@ -81,9 +81,14 @@ const Logo = ({
     }
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(user ? "/simple" : "/");
+  };
+
   return (
     <div className={`flex items-center ${className}`}>
-      <Link to="/" className="flex items-center">
+      <a href="#" onClick={handleLogoClick} className="flex items-center">
         <div className="flex items-center">
           <div className={`flex items-center ${sizeClasses[size].spacing}`}>
             <svg width={sizeClasses[size].logoSize} height={sizeClasses[size].logoSize} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-current">
@@ -98,7 +103,7 @@ const Logo = ({
             </svg>
           </div>
         </div>
-      </Link>
+      </a>
       {withText && (
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none" asChild>

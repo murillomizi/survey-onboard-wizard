@@ -1,7 +1,6 @@
-
 import React, { useState, useRef } from "react";
 import { Send, Paperclip, History, FileText, Users, Building2, ChevronDown, Database, Copy, Edit, LogOut, UserRound, Link2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat-input";
 import { ChatBubble, ChatBubbleMessage, ChatBubbleAvatar } from "@/components/ui/chat-bubble";
@@ -33,7 +32,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 type Message = {
   content: string;
@@ -163,6 +161,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     }
   };
 
+  const handleNavigateToDashboard = () => {
+    navigate("/simple");
+  };
+
   return (
     <div className="fixed left-0 top-0 bottom-0 w-80 bg-minimal-black text-minimal-white flex flex-col h-screen border-r border-minimal-gray-700 flex-shrink-0 z-10">
       {/* Header with project name and History button */}
@@ -199,14 +201,15 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             
             {/* Dashboard Button */}
             <div className="p-2">
-              <Link to="/dashboard" className="block">
-                <DropdownMenuItem className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-700 text-minimal-white">
-                  <div className="flex items-center gap-2">
-                    <Database size={16} className="text-minimal-white" />
-                    <span>Dashboard</span>
-                  </div>
-                </DropdownMenuItem>
-              </Link>
+              <DropdownMenuItem 
+                className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-700 text-minimal-white"
+                onClick={handleNavigateToDashboard}
+              >
+                <div className="flex items-center gap-2">
+                  <Database size={16} className="text-minimal-white" />
+                  <span>Dashboard</span>
+                </div>
+              </DropdownMenuItem>
             </div>
             
             <DropdownMenuSeparator className="bg-minimal-gray-700" />
