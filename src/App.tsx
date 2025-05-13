@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import OutboundGenerator from "./pages/OutboundGenerator";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import SimpleHome from "./pages/SimpleHome";
 import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -28,6 +29,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/outbound" element={<OutboundGenerator />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/simple" element={<SimpleHome />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
