@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -227,19 +228,19 @@ const Onboarding = () => {
                   
                   <div>
                     <Label className="mb-2 block">Tamanho</Label>
-                    <RadioGroup 
-                      onValueChange={(value) => setValue("companySize", value)}
-                      className="grid grid-cols-4 gap-2"
-                    >
+                    <div className="grid grid-cols-4 gap-2">
                       {companySizes.map((size) => (
-                        <div key={size} className="flex items-center justify-center rounded-md border p-2 hover:bg-minimal-gray-100 cursor-pointer">
-                          <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
-                          <Label htmlFor={`size-${size}`} className="cursor-pointer text-sm">
-                            {size}
-                          </Label>
+                        <div 
+                          key={size}
+                          onClick={() => setValue("companySize", size)}
+                          className={`flex items-center justify-center rounded-md border p-2 hover:bg-minimal-gray-100 cursor-pointer ${
+                            watch("companySize") === size ? "bg-minimal-gray-200 border-minimal-gray-400" : ""
+                          }`}
+                        >
+                          <span className="text-sm">{size}</span>
                         </div>
                       ))}
-                    </RadioGroup>
+                    </div>
                   </div>
                   
                   <div>
