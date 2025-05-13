@@ -200,7 +200,7 @@ const Projects = () => {
         </div>
       </motion.section>
 
-      {/* Projects Section */}
+      {/* Projects Storage Section */}
       <motion.section 
         className="px-4 md:px-8 py-8 bg-minimal-gray-50" 
         initial="hidden" 
@@ -343,18 +343,6 @@ const Projects = () => {
           )}
         </div>
       </motion.section>
-
-      {/* Simple footer */}
-      <footer className="px-4 md:px-8 py-6 border-t border-minimal-gray-200">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <Logo size="sm" />
-          </div>
-          <p className="text-sm text-minimal-gray-500">
-            © {new Date().getFullYear()} Mizi AI. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
