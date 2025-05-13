@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -90,7 +89,6 @@ const SimpleHome = () => {
       {/* Projects Storage Section */}
       <ProjectsSection 
         projects={projects}
-        onCreateProject={handleCreateProject}
         onViewProject={handleViewProject}
       />
     </div>
