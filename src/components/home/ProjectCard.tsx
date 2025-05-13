@@ -1,7 +1,8 @@
 
 import React from "react";
-import { Folder, ArrowRightIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 interface Project {
   id: number;
@@ -17,24 +18,25 @@ interface ProjectCardProps {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onViewProject }) => {
   return (
-    <Card 
-      className="border border-minimal-gray-100 hover:border-minimal-gray-200 hover:shadow-sm transition-all duration-300 bg-white overflow-hidden cursor-pointer"
-      onClick={onViewProject}
+    <motion.div 
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
     >
-      <CardContent className="p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="bg-minimal-gray-50 rounded-full p-2">
-            <Folder size={20} className="text-minimal-gray-500" />
+      <Card 
+        className="border border-minimal-gray-100 hover:border-minimal-gray-200 hover:shadow-md transition-all duration-300 bg-white overflow-hidden cursor-pointer group"
+        onClick={onViewProject}
+      >
+        <CardContent className="p-6">
+          <h3 className="font-semibold text-lg text-minimal-gray-800 mb-3 truncate">{project.name}</h3>
+          
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-minimal-gray-500">Updated {project.updatedAt}</span>
+            <ArrowRight size={18} className="text-minimal-gray-300 group-hover:text-minimal-gray-600 transition-colors duration-300" />
           </div>
-          <h3 className="font-semibold text-lg text-minimal-gray-800 truncate">{project.name}</h3>
-        </div>
-        
-        <div className="flex justify-between items-center text-sm text-minimal-gray-500">
-          <span>Updated {project.updatedAt}</span>
-          <span className="text-xs">Created {project.createdAt}</span>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="text-xs text-minimal-gray-400 mt-1">Created {project.createdAt}</div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
