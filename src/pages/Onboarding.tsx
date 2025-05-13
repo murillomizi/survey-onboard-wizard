@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Building, User, Database, Check, ArrowRight } from "lucide-react";
@@ -22,6 +23,7 @@ type FormData = {
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [fileSelected, setFileSelected] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -35,6 +37,13 @@ const Onboarding = () => {
       personaGoals: []
     }
   });
+
+  // Redirect to outbound if already logged in but no onboarding needed
+  useEffect(() => {
+    if (user && false) { // TODO: Add condition to check if onboarding is completed
+      navigate("/outbound");
+    }
+  }, [user, navigate]);
 
   const steps = [
     { title: "Empresa", icon: <Building className="h-5 w-5" /> },
@@ -154,6 +163,7 @@ const Onboarding = () => {
       description: "Preparando sua experiência...",
     });
     
+    // After onboarding is complete, redirect to outbound
     setTimeout(() => {
       navigate("/outbound");
     }, 1500);
