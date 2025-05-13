@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -37,13 +37,6 @@ const SimpleHome = () => {
   const [initialDialogTab, setInitialDialogTab] = useState<"login" | "register">("login");
   const [projects, setProjects] = useState(mockProjects);
   
-  // Check for existing session
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
-  
   const handleOpenLoginDialog = () => {
     setInitialDialogTab("login");
     setShowLoginDialog(true);
@@ -59,13 +52,20 @@ const SimpleHome = () => {
   };
   
   const handleCreateProject = () => {
-    // In a real app, this would create a new project
-    handleOpenRegisterDialog(); // Prompt login/signup for unauthenticated users
-    toast.info("Please sign up to create a project");
+    if (user) {
+      toast.success("Projeto criado com sucesso!");
+    } else {
+      handleOpenRegisterDialog(); // Prompt login/signup for unauthenticated users
+      toast.info("Please sign up to create a project");
+    }
   };
 
   const handleViewProject = () => {
-    handleOpenLoginDialog();
+    if (user) {
+      navigate("/outbound");
+    } else {
+      handleOpenLoginDialog();
+    }
   };
 
   return (
@@ -81,6 +81,7 @@ const SimpleHome = () => {
       <Navigation 
         onOpenLogin={handleOpenLoginDialog} 
         onOpenRegister={handleOpenRegisterDialog} 
+        user={user}
       />
 
       {/* Hero section */}
