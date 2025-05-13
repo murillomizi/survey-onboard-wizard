@@ -32,19 +32,19 @@ const fadeIn = {
 const mockProjects = [
   {
     id: 1,
-    name: "Cold Email Campaign",
+    name: "mizi-project-1",
     createdAt: "2024-05-10",
     updatedAt: "2024-05-11",
   },
   {
     id: 2,
-    name: "LinkedIn Outreach",
+    name: "mizi-project-2",
     createdAt: "2024-05-09",
     updatedAt: "2024-05-09",
   },
   {
     id: 3,
-    name: "Sales Follow-up",
+    name: "mizi-project-3",
     createdAt: "2024-05-08",
     updatedAt: "2024-05-10",
   }
