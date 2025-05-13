@@ -42,9 +42,9 @@ const UserDropdownContent: React.FC<UserDropdownContentProps> = ({ user }) => {
   };
 
   return (
-    <DropdownMenuContent align="end" className="w-72 p-0">
+    <DropdownMenuContent align="end" className="w-72 p-0 bg-white border-minimal-gray-200 shadow-md">
       {/* User Profile Section */}
-      <div className="p-3">
+      <div className="p-3 border-b border-minimal-gray-200">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 rounded-full p-2">
             <UserRound size={16} className="text-minimal-black" />
@@ -59,12 +59,11 @@ const UserDropdownContent: React.FC<UserDropdownContentProps> = ({ user }) => {
           </div>
         </div>
       </div>
-      <DropdownMenuSeparator className="bg-minimal-gray-200" />
             
       {/* Project Button */}
       <div className="p-2">
         <DropdownMenuItem 
-          className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-100 text-minimal-gray-900"
+          className="px-3 py-2.5 rounded-md hover:bg-minimal-gray-100 text-minimal-gray-900 font-medium"
           onClick={handleNavigateToOutbound}
         >
           <div className="flex items-center gap-2">
@@ -86,35 +85,33 @@ const UserDropdownContent: React.FC<UserDropdownContentProps> = ({ user }) => {
         </DropdownMenuItem>
       </div>
       
-      <DropdownMenuSeparator className="bg-minimal-gray-200" />
+      <DropdownMenuSeparator className="bg-minimal-gray-300" />
       
       {/* Usage Limits */}
-      <div className="p-3 border-minimal-gray-200 text-minimal-gray-700">
+      <div className="p-3 border-b border-minimal-gray-200 text-minimal-gray-700">
         <h4 className="text-xs font-medium mb-2 text-minimal-gray-700">Usage Limits</h4>
         <div className="space-y-2">
           <div className="flex justify-between items-center text-xs">
             <span>Prospects used:</span>
             <span className="font-medium">48 / 100</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-1.5">
+          <div className="w-full bg-minimal-gray-200 rounded-full h-1.5">
             <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: '48%' }}></div>
           </div>
           <div className="flex justify-between items-center text-xs">
             <span>API Requests:</span>
             <span className="font-medium">324 / 1000</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-1.5">
+          <div className="w-full bg-minimal-gray-200 rounded-full h-1.5">
             <div className="bg-green-600 h-1.5 rounded-full" style={{ width: '32.4%' }}></div>
           </div>
         </div>
       </div>
       
-      <DropdownMenuSeparator className="bg-minimal-gray-200" />
-      
       {/* Logout Button */}
       <div className="p-2">
         <DropdownMenuItem 
-          className="px-3 py-2 rounded-md text-sm hover:bg-minimal-gray-100 text-red-500"
+          className="px-3 py-2 rounded-md text-sm hover:bg-red-50 text-red-500"
           onClick={handleLogout}
         >
           <div className="flex items-center gap-2">
