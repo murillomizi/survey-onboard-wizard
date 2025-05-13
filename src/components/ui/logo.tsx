@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
@@ -85,6 +84,12 @@ const Logo = ({
     e.preventDefault();
     navigate(user ? "/simple" : "/");
   };
+  
+  const handleProjectNameClick = () => {
+    if (user) {
+      navigate("/outbound");
+    }
+  };
 
   return (
     <div className={`flex items-center ${className}`}>
@@ -108,11 +113,23 @@ const Logo = ({
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none" asChild>
             <div className="ml-2 flex items-center cursor-pointer">
-              <span className={`font-semibold tracking-tight ${textColor}`} style={{
-                fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
-              }}>
-                {projectName}
-              </span>
+              {user && isOutboundPage ? (
+                <span className={`font-semibold tracking-tight ${textColor}`} style={{
+                  fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
+                }}>
+                  mizi-project-1
+                </span>
+              ) : (
+                <span 
+                  className={`font-semibold tracking-tight ${textColor} ${user ? "hover:underline" : ""}`}
+                  style={{
+                    fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
+                  }}
+                  onClick={handleProjectNameClick}
+                >
+                  {user ? "mizi-project-1" : projectName}
+                </span>
+              )}
               {showProjectArrow && (
                 <ChevronDown size={12} className={`ml-1 ${isOutboundPage ? "text-minimal-gray-400" : "text-minimal-gray-500"}`} />
               )}

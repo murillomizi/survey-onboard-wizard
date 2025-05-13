@@ -19,7 +19,14 @@ const Navigation: React.FC<NavigationProps> = ({
 }) => {
   return (
     <nav className="px-4 md:px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
-      <Logo size="md" />
+      <div className="flex items-center gap-2">
+        <Logo size="md" />
+        {user && (
+          <span className="text-sm text-minimal-gray-600 font-medium hidden md:inline-block">
+            Bem-vindo, {user.email?.split('@')[0]}
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-4">
         {!user ? (
           <>
@@ -43,7 +50,6 @@ const Navigation: React.FC<NavigationProps> = ({
           </>
         ) : (
           <div className="flex items-center gap-4">
-            <div className="text-sm font-medium">{user.email}</div>
             <Link to="/outbound">
               <Button
                 size="sm"
