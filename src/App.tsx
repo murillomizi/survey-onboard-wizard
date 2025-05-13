@@ -42,22 +42,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route 
-                path="/outbound" 
-                element={
-                  <ProtectedRoute>
-                    <OutboundGenerator />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/onboarding" 
-                element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                } 
-              />
+              <Route path="/outbound" element={<OutboundGenerator />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               <Route 
                 path="/simple" 
                 element={

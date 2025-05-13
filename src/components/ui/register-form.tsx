@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Loader, AtSign } from "lucide-react";
@@ -50,7 +49,7 @@ export function RegisterForm({ onClose, className, switchToLogin }: RegisterForm
         return;
       }
       
-      // Redirect to onboarding after successful registration
+      // Redirect directly to onboarding regardless of email confirmation
       toast.success("Registration successful!");
       navigate("/onboarding");
       onClose();
