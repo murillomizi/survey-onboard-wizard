@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import OutboundGenerator from "./pages/OutboundGenerator";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import Projects from "./pages/Projects";
 import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -26,6 +27,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/outbound" element={<OutboundGenerator />} />
               <Route path="/onboarding" element={<Onboarding />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
