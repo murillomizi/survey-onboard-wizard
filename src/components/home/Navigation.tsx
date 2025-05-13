@@ -1,11 +1,16 @@
 
 import React from "react";
-import { LogIn, UserPlus, User } from "lucide-react";
+import { LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/logo";
 import { Link } from "react-router-dom";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import UserDropdownContent from "./UserDropdownContent";
 
 interface NavigationProps {
   onOpenLogin: () => void;
@@ -46,13 +51,16 @@ const Navigation: React.FC<NavigationProps> = ({
           </>
         ) : (
           <div className="flex items-center gap-4">
-            <Link to="/outbound">
-              <Avatar className="h-8 w-8 bg-primary/10 hover:bg-primary/20 transition-colors">
-                <AvatarFallback className="bg-primary/10 text-minimal-black">
-                  {user.email?.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="h-8 w-8 bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer">
+                  <AvatarFallback className="bg-primary/10 text-minimal-black">
+                    {user.email?.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <UserDropdownContent user={user} />
+            </DropdownMenu>
           </div>
         )}
       </div>
