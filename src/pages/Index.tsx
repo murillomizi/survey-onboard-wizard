@@ -146,7 +146,7 @@ const Index = () => {
       {
         name: "Generic LLMs",
         description: "ChatGPT and similar tools for outreach",
-        ratings: [3, 4, 5, 4, 3],
+        ratings: [3, 4, 1, 4, 3],
         benefits: [
           "Superficial personalization without business context",
           "Requires advanced prompt engineering",
