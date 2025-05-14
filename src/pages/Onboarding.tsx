@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -169,18 +168,19 @@ const Onboarding = () => {
         personaGoals: watch("personaGoals"),
       };
 
-      // Create a random email and password for demonstration purposes
-      // In a real app, you'd collect these from the user in a previous step
-      const tempEmail = `user_${Math.floor(Math.random() * 10000)}@example.com`;
-      const tempPassword = `Password${Math.floor(Math.random() * 10000)}`;
+      // Gerar um email válido e senha para demonstração
+      // Usando um domínio válido real e garantindo formato adequado
+      const randomId = Math.floor(Math.random() * 10000);
+      const validEmail = `user${randomId}@mizi-demo.com`;
+      const validPassword = `MiziPassword${randomId}!`;
       
-      setEmail(tempEmail);
-      setPassword(tempPassword);
+      setEmail(validEmail);
+      setPassword(validPassword);
 
-      // Create account in Supabase
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: tempEmail,
-        password: tempPassword,
+      // Criar conta no Supabase
+      const { error: signUpError, data: signUpData } = await supabase.auth.signUp({
+        email: validEmail,
+        password: validPassword,
         options: {
           data: {
             survey: surveyData,
@@ -195,19 +195,24 @@ const Onboarding = () => {
         throw new Error(signUpError.message);
       }
 
-      // Automatically sign in the user
-      const { error: signInError } = await signIn(tempEmail, tempPassword);
+      console.log("Signup successful with email:", validEmail);
+      
+      // Login automático do usuário
+      const { error: signInError } = await signIn(validEmail, validPassword);
       
       if (signInError) {
+        console.error("Login error:", signInError);
         throw new Error(signInError.message);
       }
+
+      console.log("Login successful");
       
-      // Insert data into mizi_ai_surveys table
+      // Inserir dados na tabela mizi_ai_surveys
       const { error: insertError } = await supabase
         .from('mizi_ai_surveys')
         .insert({
           csv_file_name: fileSelected.name,
-          csv_data: surveyData, // Storing survey data as JSON
+          csv_data: surveyData, // Armazenando dados da pesquisa como JSON
           funnel_stage: "Onboarding"
         });
         
@@ -215,19 +220,19 @@ const Onboarding = () => {
         console.error("Error saving survey data:", insertError);
       }
 
-      // Show success message
+      // Mostrar mensagem de sucesso
       toast({
         title: "Onboarding concluído!",
         description: "Login automático realizado com sucesso.",
       });
       
-      // Redirect to outbound page
+      // Redirecionar para a página outbound
       setTimeout(() => {
         navigate("/outbound");
       }, 1000);
       
     } catch (error) {
-      console.error("Error during completion:", error);
+      console.error("Error durante a conclusão:", error);
       toast({
         title: "Erro",
         description: error instanceof Error ? error.message : "Ocorreu um erro ao processar sua solicitação",
