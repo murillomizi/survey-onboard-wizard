@@ -35,7 +35,14 @@ const OnboardingWizard: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
+  
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/outbound');
+    }
+  }, [user, navigate]);
   
   const form = useForm<Partial<OnboardingData>>({
     defaultValues: formData,
@@ -98,6 +105,52 @@ const OnboardingWizard: React.FC = () => {
       // Update form data
       const currentValues = form.getValues();
       setFormData(prev => ({ ...prev, ...currentValues }));
+      
+      // For first step (authentication), create account but don't sign in yet
+      if (currentStep === 0) {
+        const { email, password } = form.getValues();
+        
+        if (!email || !password) {
+          toast({
+            title: "Error",
+            description: "Email and password are required",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        try {
+          setIsAuthenticating(true);
+          
+          // Check if email already exists
+          const { error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+          });
+          
+          if (signUpError) {
+            // If error is "User already registered", we can proceed
+            if (!signUpError.message.includes("already registered")) {
+              throw new Error(signUpError.message);
+            }
+          }
+          
+          // Success or user already registered - we proceed either way
+          console.log('Account creation initiated for:', email);
+          
+        } catch (error) {
+          console.error('Error during account creation:', error);
+          toast({
+            title: "Error",
+            description: error instanceof Error ? error.message : "An unexpected error occurred",
+            variant: "destructive"
+          });
+          setIsAuthenticating(false);
+          return;
+        } finally {
+          setIsAuthenticating(false);
+        }
+      }
     }
     
     if (currentStep < steps.length - 1) {
@@ -121,37 +174,31 @@ const OnboardingWizard: React.FC = () => {
     try {
       setIsAuthenticating(true);
       
-      // Register user in Supabase with the email and password from the first step
+      // Get the email and password from the first step
       const { email, password } = finalData;
       
       if (!email || !password) {
         throw new Error("Email and password are required");
       }
       
-      console.log('Creating account and signing in with:', email);
+      console.log('Signing in with:', email);
       
-      // Create account with the provided email and password
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            name: finalData.name,
-            company: finalData.company,
-            role: finalData.role,
-            teamSize: finalData.teamSize,
-            interests: finalData.interests,
-            goal: finalData.goal,
-            theme: finalData.theme,
-          }
+      // Update user metadata with the collected information
+      const { error: userUpdateError } = await supabase.auth.updateUser({
+        data: {
+          name: finalData.name,
+          company: finalData.company,
+          role: finalData.role,
+          teamSize: finalData.teamSize,
+          interests: finalData.interests,
+          goal: finalData.goal,
+          theme: finalData.theme,
         }
       });
       
-      if (signUpError) {
-        throw new Error(signUpError.message);
+      if (userUpdateError) {
+        console.error('Error updating user data:', userUpdateError);
       }
-      
-      console.log('Account created successfully');
       
       // Save onboarding data to the mizi_ai_surveys table
       const { error: surveyError } = await supabase
@@ -173,7 +220,7 @@ const OnboardingWizard: React.FC = () => {
         console.error('Error saving survey data:', surveyError);
       }
       
-      // Log in with the created account
+      // Sign in with the created account
       const { error: signInError } = await signIn(email, password);
       
       if (signInError) {
