@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
-import { Check, LucideIcon } from 'lucide-react';
+import { Check, LucideIcon, Mail, Lock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 type WizardStepProps = {
   step: number;
@@ -57,17 +59,81 @@ const WizardStep: React.FC<WizardStepProps> = ({
       </div>
     );
   }
-  
-  const getOptionLabel = (field: string, value: string): string => {
-    const step = steps.find(s => s.field === field);
-    if (!step || !step.options) return value;
-    
-    const option = step.options.find(opt => opt.value === value);
-    return option ? option.label : value;
-  };
 
+  // New Authentication step (step 0)
+  if (step === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <div>
+            <label className="wizard-label" htmlFor="email">
+              Email
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-4 w-4 text-gray-400" />
+              </div>
+              <Input
+                {...register('email', { 
+                  required: 'Email is required',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Invalid email address'
+                  } 
+                })}
+                id="email"
+                type="email"
+                className="pl-10"
+                placeholder="you@example.com"
+                autoComplete="email"
+              />
+            </div>
+            {errors.email && (
+              <span className="text-sm text-red-500 mt-1 block">
+                {errors.email.message as string}
+              </span>
+            )}
+          </div>
+          
+          <div>
+            <label className="wizard-label" htmlFor="password">
+              Create Password
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-4 w-4 text-gray-400" />
+              </div>
+              <Input
+                {...register('password', { 
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters'
+                  }
+                })}
+                id="password"
+                type="password"
+                className="pl-10"
+                placeholder="Min. 6 characters"
+              />
+            </div>
+            {errors.password && (
+              <span className="text-sm text-red-500 mt-1 block">
+                {errors.password.message as string}
+              </span>
+            )}
+            <p className="text-xs text-gray-500 mt-1">
+              Password must be at least 6 characters long
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // The rest of the original steps, with their indices shifted by 1
   switch(step) {
-    case 0: // Welcome step
+    case 1: // Welcome step (was 0)
       return (
         <div className="py-8 text-center space-y-4">
           <motion.div 
@@ -88,7 +154,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 1: // Profile step
+    case 2: // Profile step (was 1)
       return (
         <div className="space-y-6">
           <div className="space-y-4">
@@ -149,7 +215,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 2: // Team size step
+    case 3: // Team size step (was 2)
       return (
         <div>
           <fieldset className="space-y-3">
@@ -192,7 +258,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 3: // Interests step
+    case 4: // Interests step (was 3)
       return (
         <div>
           <p className="text-sm text-gray-500 mb-4">
@@ -233,7 +299,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 4: // Goal step
+    case 5: // Goal step (was 4)
       return (
         <div>
           <fieldset className="space-y-3">
@@ -276,7 +342,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 5: // Appearance step
+    case 6: // Appearance step (was 5)
       return (
         <div>
           <p className="text-sm text-gray-500 mb-4">
