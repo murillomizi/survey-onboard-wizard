@@ -1,13 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft, ArrowRight, CheckCircle, Moon, Sun, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import WizardStep from './WizardStep';
 import WizardMascot from './WizardMascot';
+import { useAuth } from '@/contexts/AuthContext';
 
 type OnboardingData = {
   name: string;
@@ -17,6 +20,8 @@ type OnboardingData = {
   interests: string[];
   goal: string;
   theme: 'light' | 'dark' | 'system';
+  email: string;
+  password: string;
 };
 
 const OnboardingWizard: React.FC = () => {
@@ -26,7 +31,10 @@ const OnboardingWizard: React.FC = () => {
     interests: []
   });
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { signIn } = useAuth();
   
   const form = useForm<Partial<OnboardingData>>({
     defaultValues: formData,
@@ -67,6 +75,12 @@ const OnboardingWizard: React.FC = () => {
       title: '🎨 Choose your theme',
       description: 'Select your preferred appearance',
       fields: ['theme']
+    },
+    {
+      id: 'login',
+      title: '🔐 Login',
+      description: 'Enter your credentials to complete the setup',
+      fields: ['email', 'password']
     }
   ];
   
@@ -98,18 +112,58 @@ const OnboardingWizard: React.FC = () => {
     }
   };
   
-  const handleComplete = () => {
-    // Submit all collected data
+  const handleComplete = async () => {
+    // Get all form data including email and password
     const finalData = { ...formData, ...form.getValues() };
     console.log('Onboarding completed with data:', finalData);
     
-    // Show success message
-    toast({
-      title: "Onboarding completed! 🎉",
-      description: "Your workspace is ready to use.",
-    });
+    setIsLoggingIn(true);
     
-    setIsCompleted(true);
+    try {
+      // Use the email and password from the form to sign in
+      if (finalData.email && finalData.password) {
+        const { error } = await signIn(finalData.email, finalData.password);
+        
+        if (error) {
+          console.error('Login error:', error);
+          toast({
+            title: "Login failed",
+            description: error.message || "Please check your credentials",
+            variant: "destructive",
+          });
+          setIsLoggingIn(false);
+          return;
+        }
+        
+        // Show success message
+        toast({
+          title: "Onboarding completed! 🎉",
+          description: "Your workspace is ready to use.",
+        });
+        
+        setIsCompleted(true);
+        
+        // Navigate to outbound after successful login
+        setTimeout(() => {
+          navigate('/outbound');
+        }, 1500);
+      } else {
+        toast({
+          title: "Login error",
+          description: "Email and password are required",
+          variant: "destructive",
+        });
+        setIsLoggingIn(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Login failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      setIsLoggingIn(false);
+    }
   };
   
   const handleSelectInterest = (interest: string) => {
@@ -209,6 +263,7 @@ const OnboardingWizard: React.FC = () => {
                     themeOptions={themeOptions}
                     handleSelectInterest={handleSelectInterest}
                     isCompleted={isCompleted}
+                    isLoggingIn={isLoggingIn}
                   />
                 </form>
               </motion.div>
@@ -233,11 +288,12 @@ const OnboardingWizard: React.FC = () => {
               
               <Button
                 onClick={handleNext}
+                disabled={isLoggingIn}
                 className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700"
               >
                 {currentStep === steps.length - 1 ? (
                   <>
-                    Complete <CheckCircle size={16} />
+                    {isLoggingIn ? 'Logging in...' : 'Complete'} {!isLoggingIn && <CheckCircle size={16} />}
                   </>
                 ) : (
                   <>

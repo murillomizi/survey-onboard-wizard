@@ -1,7 +1,10 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
-import { Check, LucideIcon } from 'lucide-react';
+import { Check, LucideIcon, AtSign, Loader } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 type WizardStepProps = {
   step: number;
@@ -14,6 +17,7 @@ type WizardStepProps = {
   themeOptions: { value: string; label: string; icon: LucideIcon }[];
   handleSelectInterest: (interest: string) => void;
   isCompleted: boolean;
+  isLoggingIn?: boolean;
 };
 
 const WizardStep: React.FC<WizardStepProps> = ({
@@ -26,7 +30,8 @@ const WizardStep: React.FC<WizardStepProps> = ({
   goalOptions,
   themeOptions,
   handleSelectInterest,
-  isCompleted
+  isCompleted,
+  isLoggingIn = false
 }) => {
   const { register, watch, formState: { errors } } = form;
   
@@ -305,6 +310,75 @@ const WizardStep: React.FC<WizardStepProps> = ({
               );
             })}
           </div>
+        </div>
+      );
+      
+    case 6: // Login step
+      return (
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="email" className="block text-sm font-medium mb-1">
+                Email
+              </Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <AtSign className="h-4 w-4 text-gray-400" />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  {...register('email', { 
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address"
+                    }
+                  })}
+                  className="pl-10 w-full"
+                />
+              </div>
+              {errors.email && (
+                <span className="text-sm text-red-500 mt-1 block">
+                  {errors.email.message as string}
+                </span>
+              )}
+            </div>
+            
+            <div>
+              <Label htmlFor="password" className="block text-sm font-medium mb-1">
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="********"
+                {...register('password', { 
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters'
+                  }
+                })}
+                className="w-full"
+              />
+              {errors.password && (
+                <span className="text-sm text-red-500 mt-1 block">
+                  {errors.password.message as string}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {isLoggingIn && (
+            <div className="flex justify-center pt-4">
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Loader className="animate-spin h-5 w-5" />
+                <span>Logging in...</span>
+              </div>
+            </div>
+          )}
         </div>
       );
       
