@@ -70,7 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
       console.log("Attempting to sign up with:", email);
-      // Usando autoConfirm: true para desabilitar confirmação por email
       const { data, error } = await supabase.auth.signUp({
         email,
         password,

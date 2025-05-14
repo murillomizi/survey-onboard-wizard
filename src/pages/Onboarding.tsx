@@ -1,11 +1,13 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Building, User, Database, Check, ArrowRight } from "lucide-react";
+import { Building, User, Database, Check, ArrowRight, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import LogoIcon from "@/components/ui/logo/LogoIcon";
 import CSVFileUpload from "@/components/survey/CSVFileUpload";
 import { toast } from "@/components/ui/use-toast";
@@ -19,6 +21,8 @@ type FormData = {
   personaRole: string;
   personaChallenges: string[];
   personaGoals: string[];
+  email: string;
+  password: string;
 };
 
 const Onboarding = () => {
@@ -29,15 +33,15 @@ const Onboarding = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const { register, handleSubmit, setValue, watch } = useForm<FormData>({
     defaultValues: {
       companyDescription: [],
       personaChallenges: [],
-      personaGoals: []
+      personaGoals: [],
+      email: "",
+      password: ""
     }
   });
 
@@ -45,6 +49,7 @@ const Onboarding = () => {
     { title: "Empresa", icon: <Building className="h-5 w-5" /> },
     { title: "Persona", icon: <User className="h-5 w-5" /> },
     { title: "Prospects", icon: <Database className="h-5 w-5" /> },
+    { title: "Autenticação", icon: <Mail className="h-5 w-5" /> },
   ];
 
   const industries = [
@@ -155,6 +160,19 @@ const Onboarding = () => {
       return;
     }
 
+    // Verificar se email e senha foram preenchidos
+    const email = watch("email");
+    const password = watch("password");
+    
+    if (!email || !password) {
+      toast({
+        title: "Erro",
+        description: "Por favor, informe seu email e senha.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
@@ -168,19 +186,12 @@ const Onboarding = () => {
         personaGoals: watch("personaGoals"),
       };
 
-      // Gerar um email válido e senha para demonstração
-      // Usando um domínio válido real e garantindo formato adequado
-      const randomId = Math.floor(Math.random() * 10000);
-      const validEmail = `user${randomId}@mizi-demo.com`;
-      const validPassword = `MiziPassword${randomId}!`;
-      
-      setEmail(validEmail);
-      setPassword(validPassword);
+      console.log("Criando usuário com email:", email);
 
-      // Criar conta no Supabase
+      // Criar conta no Supabase com os dados fornecidos pelo usuário
       const { error: signUpError, data: signUpData } = await supabase.auth.signUp({
-        email: validEmail,
-        password: validPassword,
+        email: email,
+        password: password,
         options: {
           data: {
             survey: surveyData,
@@ -195,17 +206,17 @@ const Onboarding = () => {
         throw new Error(signUpError.message);
       }
 
-      console.log("Signup successful with email:", validEmail);
+      console.log("Signup successful with email:", email);
       
-      // Login automático do usuário
-      const { error: signInError } = await signIn(validEmail, validPassword);
+      // Login automático do usuário com as credenciais informadas
+      const { error: signInError } = await signIn(email, password);
       
       if (signInError) {
         console.error("Login error:", signInError);
         throw new Error(signInError.message);
       }
 
-      console.log("Login successful");
+      console.log("Login successful with provided credentials");
       
       // Inserir dados na tabela mizi_ai_surveys
       const { error: insertError } = await supabase
@@ -433,6 +444,50 @@ const Onboarding = () => {
                       <span className="text-sm">{fileSelected.name}</span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Step 4: Autenticação - NOVO */}
+              {currentStep === 3 && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="email" className="block text-sm font-medium mb-1">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        className="pl-10"
+                        {...register("email", { required: true })}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password" className="block text-sm font-medium mb-1">
+                      Senha
+                    </Label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Lock className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Mínimo 6 caracteres"
+                        className="pl-10"
+                        {...register("password", { required: true, minLength: 6 })}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Sua senha deve ter pelo menos 6 caracteres
+                    </p>
+                  </div>
                 </div>
               )}
 
