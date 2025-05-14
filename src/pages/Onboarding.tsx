@@ -2,17 +2,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Building, User, Database, Check, ArrowRight, Mail, Lock } from "lucide-react";
+import { Building, User, Database, Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import LogoIcon from "@/components/ui/logo/LogoIcon";
 import CSVFileUpload from "@/components/survey/CSVFileUpload";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 
 type FormData = {
   industry: string;
@@ -21,27 +19,21 @@ type FormData = {
   personaRole: string;
   personaChallenges: string[];
   personaGoals: string[];
-  email: string;
-  password: string;
 };
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [fileSelected, setFileSelected] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const { register, handleSubmit, setValue, watch } = useForm<FormData>({
     defaultValues: {
       companyDescription: [],
       personaChallenges: [],
-      personaGoals: [],
-      email: "",
-      password: ""
+      personaGoals: []
     }
   });
 
@@ -49,7 +41,6 @@ const Onboarding = () => {
     { title: "Empresa", icon: <Building className="h-5 w-5" /> },
     { title: "Persona", icon: <User className="h-5 w-5" /> },
     { title: "Prospects", icon: <Database className="h-5 w-5" /> },
-    { title: "Autenticação", icon: <Mail className="h-5 w-5" /> },
   ];
 
   const industries = [
@@ -149,8 +140,7 @@ const Onboarding = () => {
     }
   };
 
-  // Handler to save data to Supabase and automatically log in
-  const handleComplete = async () => {
+  const handleComplete = () => {
     if (!fileSelected) {
       toast({
         title: "Erro",
@@ -160,98 +150,14 @@ const Onboarding = () => {
       return;
     }
 
-    // Verificar se email e senha foram preenchidos
-    const email = watch("email");
-    const password = watch("password");
+    toast({
+      title: "Onboarding concluído!",
+      description: "Preparando sua experiência...",
+    });
     
-    if (!email || !password) {
-      toast({
-        title: "Erro",
-        description: "Por favor, informe seu email e senha.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    
-    try {
-      // Save the onboarding survey data
-      const surveyData = {
-        industry: watch("industry"),
-        companySize: watch("companySize"),
-        companyDescription: watch("companyDescription"),
-        personaRole: watch("personaRole"),
-        personaChallenges: watch("personaChallenges"),
-        personaGoals: watch("personaGoals"),
-      };
-
-      console.log("Criando usuário com email:", email);
-
-      // Criar conta no Supabase com os dados fornecidos pelo usuário
-      const { error: signUpError, data: signUpData } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            survey: surveyData,
-            industry: watch("industry"),
-            companySize: watch("companySize"),
-            personaRole: watch("personaRole")
-          }
-        }
-      });
-
-      if (signUpError) {
-        throw new Error(signUpError.message);
-      }
-
-      console.log("Signup successful with email:", email);
-      
-      // Login automático do usuário com as credenciais informadas
-      const { error: signInError } = await signIn(email, password);
-      
-      if (signInError) {
-        console.error("Login error:", signInError);
-        throw new Error(signInError.message);
-      }
-
-      console.log("Login successful with provided credentials");
-      
-      // Inserir dados na tabela mizi_ai_surveys
-      const { error: insertError } = await supabase
-        .from('mizi_ai_surveys')
-        .insert({
-          csv_file_name: fileSelected.name,
-          csv_data: surveyData, // Armazenando dados da pesquisa como JSON
-          funnel_stage: "Onboarding"
-        });
-        
-      if (insertError) {
-        console.error("Error saving survey data:", insertError);
-      }
-
-      // Mostrar mensagem de sucesso
-      toast({
-        title: "Onboarding concluído!",
-        description: "Login automático realizado com sucesso.",
-      });
-      
-      // Redirecionar para a página outbound
-      setTimeout(() => {
-        navigate("/outbound");
-      }, 1000);
-      
-    } catch (error) {
-      console.error("Error durante a conclusão:", error);
-      toast({
-        title: "Erro",
-        description: error instanceof Error ? error.message : "Ocorreu um erro ao processar sua solicitação",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setTimeout(() => {
+      navigate("/outbound");
+    }, 1500);
   };
   
   return (
@@ -447,50 +353,6 @@ const Onboarding = () => {
                 </div>
               )}
 
-              {/* Step 4: Autenticação - NOVO */}
-              {currentStep === 3 && (
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="email" className="block text-sm font-medium mb-1">
-                      Email
-                    </Label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="seu@email.com"
-                        className="pl-10"
-                        {...register("email", { required: true })}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="password" className="block text-sm font-medium mb-1">
-                      Senha
-                    </Label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Lock className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Mínimo 6 caracteres"
-                        className="pl-10"
-                        {...register("password", { required: true, minLength: 6 })}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Sua senha deve ter pelo menos 6 caracteres
-                    </p>
-                  </div>
-                </div>
-              )}
-
               {/* Botões de navegação simplificados */}
               <div className="flex justify-between pt-4">
                 <Button
@@ -515,14 +377,10 @@ const Onboarding = () => {
                   <Button 
                     type="button"
                     onClick={handleComplete}
-                    disabled={!fileSelected || isLoading}
                     className="bg-minimal-black text-white hover:bg-minimal-gray-800"
+                    disabled={!fileSelected}
                   >
-                    {isLoading ? (
-                      <>Processando...</>
-                    ) : (
-                      <>Concluir <Check className="ml-1 h-4 w-4" /></>
-                    )}
+                    Concluir <Check className="ml-1 h-4 w-4" />
                   </Button>
                 )}
               </div>

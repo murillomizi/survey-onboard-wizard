@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +28,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log("Auth state change event:", event);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -38,7 +36,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Initial session check:", session ? "Session found" : "No session");
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -49,45 +46,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log("Attempting to sign in with:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
-      if (error) {
-        console.error("Sign in error:", error);
-      } else {
-        console.log("Sign in successful:", data.session?.user.email);
-      }
-      
       return { data: data.session, error };
     } catch (error) {
-      console.error("Exception during sign in:", error);
       return { data: null, error: error as Error };
     }
   };
   
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
-      console.log("Attempting to sign up with:", email);
+      // Using autoConfirm: true to disable email confirmation
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
+          // The emailRedirect property is not valid, use autoConfirm instead
         }
       });
       
-      if (error) {
-        console.error("Sign up error:", error);
-      } else {
-        console.log("Sign up successful for:", email);
-      }
-      
       return { data, error };
     } catch (error) {
-      console.error("Exception during sign up:", error);
       return { data: null, error: error as Error };
     }
   };
