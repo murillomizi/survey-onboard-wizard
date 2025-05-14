@@ -31,6 +31,21 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
+// Route that redirects to dashboard if already authenticated
+const PublicRoute = ({ children }: { children: JSX.Element }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">Carregando...</div>;
+  }
+  
+  if (user) {
+    return <Navigate to="/outbound" replace />;
+  }
+  
+  return children;
+};
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -41,8 +56,16 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/outbound" element={<OutboundGenerator />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/outbound" element={
+                <ProtectedRoute>
+                  <OutboundGenerator />
+                </ProtectedRoute>
+              } />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route 
                 path="/simple" 

@@ -11,6 +11,7 @@ import LogoIcon from "@/components/ui/logo/LogoIcon";
 import CSVFileUpload from "@/components/survey/CSVFileUpload";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 type FormData = {
   industry: string;
@@ -23,11 +24,15 @@ type FormData = {
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [fileSelected, setFileSelected] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const { register, handleSubmit, setValue, watch } = useForm<FormData>({
     defaultValues: {
@@ -140,7 +145,8 @@ const Onboarding = () => {
     }
   };
 
-  const handleComplete = () => {
+  // Handler to save data to Supabase and automatically log in
+  const handleComplete = async () => {
     if (!fileSelected) {
       toast({
         title: "Erro",
@@ -150,14 +156,86 @@ const Onboarding = () => {
       return;
     }
 
-    toast({
-      title: "Onboarding concluído!",
-      description: "Preparando sua experiência...",
-    });
+    setIsLoading(true);
     
-    setTimeout(() => {
-      navigate("/outbound");
-    }, 1500);
+    try {
+      // Save the onboarding survey data
+      const surveyData = {
+        industry: watch("industry"),
+        companySize: watch("companySize"),
+        companyDescription: watch("companyDescription"),
+        personaRole: watch("personaRole"),
+        personaChallenges: watch("personaChallenges"),
+        personaGoals: watch("personaGoals"),
+      };
+
+      // Create a random email and password for demonstration purposes
+      // In a real app, you'd collect these from the user in a previous step
+      const tempEmail = `user_${Math.floor(Math.random() * 10000)}@example.com`;
+      const tempPassword = `Password${Math.floor(Math.random() * 10000)}`;
+      
+      setEmail(tempEmail);
+      setPassword(tempPassword);
+
+      // Create account in Supabase
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: tempEmail,
+        password: tempPassword,
+        options: {
+          data: {
+            survey: surveyData,
+            industry: watch("industry"),
+            companySize: watch("companySize"),
+            personaRole: watch("personaRole")
+          }
+        }
+      });
+
+      if (signUpError) {
+        throw new Error(signUpError.message);
+      }
+
+      // Automatically sign in the user
+      const { error: signInError } = await signIn(tempEmail, tempPassword);
+      
+      if (signInError) {
+        throw new Error(signInError.message);
+      }
+      
+      // Insert data into mizi_ai_surveys table
+      const { error: insertError } = await supabase
+        .from('mizi_ai_surveys')
+        .insert({
+          csv_file_name: fileSelected.name,
+          csv_data: surveyData, // Storing survey data as JSON
+          funnel_stage: "Onboarding"
+        });
+        
+      if (insertError) {
+        console.error("Error saving survey data:", insertError);
+      }
+
+      // Show success message
+      toast({
+        title: "Onboarding concluído!",
+        description: "Login automático realizado com sucesso.",
+      });
+      
+      // Redirect to outbound page
+      setTimeout(() => {
+        navigate("/outbound");
+      }, 1000);
+      
+    } catch (error) {
+      console.error("Error during completion:", error);
+      toast({
+        title: "Erro",
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao processar sua solicitação",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -377,10 +455,14 @@ const Onboarding = () => {
                   <Button 
                     type="button"
                     onClick={handleComplete}
+                    disabled={!fileSelected || isLoading}
                     className="bg-minimal-black text-white hover:bg-minimal-gray-800"
-                    disabled={!fileSelected}
                   >
-                    Concluir <Check className="ml-1 h-4 w-4" />
+                    {isLoading ? (
+                      <>Processando...</>
+                    ) : (
+                      <>Concluir <Check className="ml-1 h-4 w-4" /></>
+                    )}
                   </Button>
                 )}
               </div>
