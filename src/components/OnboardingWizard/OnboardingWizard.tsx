@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import WizardStep from './WizardStep';
 import WizardMascot from './WizardMascot';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 type OnboardingData = {
   name: string;
@@ -22,6 +23,8 @@ type OnboardingData = {
   theme: 'light' | 'dark' | 'system';
   email: string;
   password: string;
+  csvData?: any[];
+  csvFileName?: string;
 };
 
 const OnboardingWizard: React.FC = () => {
@@ -32,6 +35,7 @@ const OnboardingWizard: React.FC = () => {
   });
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signIn } = useAuth();
@@ -77,6 +81,12 @@ const OnboardingWizard: React.FC = () => {
       fields: ['theme']
     },
     {
+      id: 'csvUpload',
+      title: '📊 Import Data',
+      description: 'Upload your CSV file with prospect data',
+      fields: ['csvData']
+    },
+    {
       id: 'login',
       title: '🔐 Login',
       description: 'Enter your credentials to complete the setup',
@@ -111,11 +121,98 @@ const OnboardingWizard: React.FC = () => {
       setCurrentStep(prev => prev - 1);
     }
   };
+
+  const handleFileUpload = (file: File, data: any[]) => {
+    form.setValue('csvData', data);
+    form.setValue('csvFileName', file.name);
+    setFormData(prev => ({ 
+      ...prev, 
+      csvData: data,
+      csvFileName: file.name
+    }));
+
+    console.log('CSV data saved to form:', data);
+  };
+  
+  const saveDataToSupabase = async (data: Partial<OnboardingData>) => {
+    try {
+      setIsSaving(true);
+      
+      if (!data.csvData || !data.csvData.length) {
+        toast({
+          title: "Erro nos dados",
+          description: "Nenhum dado CSV encontrado para salvar",
+          variant: "destructive",
+        });
+        setIsSaving(false);
+        return false;
+      }
+      
+      // Limitar a quantidade de linhas salvas para evitar problemas de tamanho
+      const csvDataToSave = data.csvData.length > 100 
+        ? data.csvData.slice(0, 100) 
+        : data.csvData;
+        
+      console.log('Sending data to Supabase:', {
+        csv_data: csvDataToSave,
+        csv_file_name: data.csvFileName
+      });
+      
+      const { data: savedData, error } = await supabase
+        .from('mizi_ai_surveys')
+        .insert([
+          {
+            csv_data: csvDataToSave,
+            csv_file_name: data.csvFileName
+          }
+        ])
+        .select();
+      
+      if (error) {
+        console.error('Error saving to Supabase:', error);
+        toast({
+          title: "Erro ao salvar",
+          description: "Não foi possível salvar seus dados. Tente novamente.",
+          variant: "destructive",
+        });
+        setIsSaving(false);
+        return false;
+      }
+      
+      console.log('Data saved successfully:', savedData);
+      toast({
+        title: "Dados salvos",
+        description: "Seus dados foram salvos com sucesso!",
+      });
+      
+      setIsSaving(false);
+      return true;
+    } catch (error) {
+      console.error('Unexpected error saving data:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+      setIsSaving(false);
+      return false;
+    }
+  };
   
   const handleComplete = async () => {
     // Get all form data including email and password
     const finalData = { ...formData, ...form.getValues() };
     console.log('Onboarding completed with data:', finalData);
+    
+    // First save CSV data to Supabase
+    setIsSaving(true);
+    const saveSuccess = await saveDataToSupabase(finalData);
+    setIsSaving(false);
+    
+    if (!saveSuccess) {
+      console.error('Failed to save data to Supabase');
+      return;
+    }
     
     setIsLoggingIn(true);
     
@@ -262,8 +359,10 @@ const OnboardingWizard: React.FC = () => {
                     goalOptions={goalOptions}
                     themeOptions={themeOptions}
                     handleSelectInterest={handleSelectInterest}
+                    handleFileUpload={handleFileUpload}
                     isCompleted={isCompleted}
                     isLoggingIn={isLoggingIn}
+                    isSaving={isSaving}
                   />
                 </form>
               </motion.div>
@@ -288,12 +387,12 @@ const OnboardingWizard: React.FC = () => {
               
               <Button
                 onClick={handleNext}
-                disabled={isLoggingIn}
+                disabled={isLoggingIn || isSaving}
                 className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700"
               >
                 {currentStep === steps.length - 1 ? (
                   <>
-                    {isLoggingIn ? 'Logging in...' : 'Complete'} {!isLoggingIn && <CheckCircle size={16} />}
+                    {isLoggingIn ? 'Logging in...' : isSaving ? 'Saving...' : 'Complete'} {!isLoggingIn && !isSaving && <CheckCircle size={16} />}
                   </>
                 ) : (
                   <>
