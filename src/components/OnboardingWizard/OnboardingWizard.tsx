@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, ArrowRight, CheckCircle, Moon, Sun, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,26 +11,27 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import WizardStep from './WizardStep';
 import WizardMascot from './WizardMascot';
-import { useAuth } from '@/contexts/AuthContext';
 
 type OnboardingData = {
+  canal: string;
   websiteUrl: string;
-  email: string;
-  password: string;
-  theme: 'light' | 'dark' | 'system';
+  tomVoz: string;
+  tamanho: number;
+  gatilhos: string;
+  csvFileName: string;
+  userEmail: string;
 };
 
 const OnboardingWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<OnboardingData>>({
-    theme: 'system',
+    tamanho: 350,
   });
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { signIn } = useAuth();
   
   const form = useForm<Partial<OnboardingData>>({
     defaultValues: formData,
@@ -40,35 +41,65 @@ const OnboardingWizard: React.FC = () => {
     {
       id: 'welcome',
       title: '👋 Bem-vindo!',
-      description: 'Vamos configurar sua experiência em poucos passos',
+      description: 'Vamos configurar suas campanhas em poucos passos',
     },
     {
-      id: 'company',
-      title: '🏢 Sua empresa',
+      id: 'canal',
+      title: '📱 Canal',
+      description: 'Qual canal você vai usar para suas campanhas',
+      fields: ['canal']
+    },
+    {
+      id: 'website',
+      title: '🏢 Website',
       description: 'Informe o site da sua empresa',
       fields: ['websiteUrl']
     },
     {
-      id: 'csv',
-      title: '📊 Importar base',
-      description: 'Importe sua base de contatos para personalização',
+      id: 'tom-voz',
+      title: '🎭 Tom de Voz',
+      description: 'Escolha o tom de voz para suas mensagens',
+      fields: ['tomVoz']
     },
     {
-      id: 'login',
-      title: '🔐 Login',
-      description: 'Entre com suas credenciais para completar a configuração',
-      fields: ['email', 'password']
+      id: 'tamanho',
+      title: '📏 Comprimento',
+      description: 'Escolha o tamanho das suas mensagens',
+      fields: ['tamanho']
+    },
+    {
+      id: 'gatilho',
+      title: '🎯 Gatilhos',
+      description: 'Selecione um gatilho de persuasão',
+      fields: ['gatilhos']
+    },
+    {
+      id: 'csv',
+      title: '📊 Base de dados',
+      description: 'Importe sua base de contatos',
+      fields: ['csvFile']
+    },
+    {
+      id: 'email',
+      title: '📧 Email',
+      description: 'Informe seu email para receber os resultados',
+      fields: ['userEmail']
     }
   ];
   
   const progressPercentage = ((currentStep) / (steps.length - 1)) * 100;
   
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-    toast({
-      title: "Arquivo selecionado",
-      description: `${file.name} foi carregado com sucesso.`,
-    });
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setSelectedFile(file);
+      setFormData(prev => ({ ...prev, csvFileName: file.name }));
+      toast({
+        title: "Arquivo selecionado",
+        description: `${file.name} foi carregado com sucesso.`,
+      });
+    }
   };
   
   const handleNext = async () => {
@@ -97,32 +128,54 @@ const OnboardingWizard: React.FC = () => {
     }
   };
   
-  const saveSurveyData = async (websiteUrl: string, file: File | null) => {
-    if (!file) {
-      toast({
-        title: "Erro",
-        description: "Por favor, selecione um arquivo CSV para continuar.",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
+  const saveSurveyData = async () => {
     try {
-      // Parse and prepare CSV data if needed
-      // For now we're just saving the file name and website URL
+      // Get all form data
+      const finalData = { ...formData, ...form.getValues() };
+      
+      // Prepare CSV data if file is selected
+      let csvData = [];
+      if (selectedFile) {
+        try {
+          const text = await selectedFile.text();
+          const rows = text.split('\n');
+          const headers = rows[0].split(',');
+          
+          for (let i = 1; i < Math.min(rows.length, 101); i++) {
+            if (rows[i].trim()) {
+              const values = rows[i].split(',');
+              const row = {};
+              for (let j = 0; j < headers.length; j++) {
+                row[headers[j].trim()] = values[j] ? values[j].trim() : '';
+              }
+              csvData.push(row);
+            }
+          }
+          console.log('Parsed CSV data:', csvData.length, 'rows');
+        } catch (e) {
+          console.error('Error parsing CSV:', e);
+          csvData = []; // Reset if parsing fails
+        }
+      }
+      
+      // Insert data into Supabase
       const { error } = await supabase
         .from('mizi_ai_surveys')
         .insert({
-          website_url: websiteUrl,
-          csv_file_name: file.name,
-          // Leave other fields blank as requested
+          website_url: finalData.websiteUrl || '',
+          canal: finalData.canal || '',
+          tone_of_voice: finalData.tomVoz || '',
+          message_length: finalData.tamanho || 350,
+          persuasion_trigger: finalData.gatilhos || '',
+          csv_file_name: finalData.csvFileName || '',
+          csv_data: csvData.length > 0 ? csvData : null
         });
       
       if (error) {
-        console.error('Error saving survey data:', error);
+        console.error('Error saving data to Supabase:', error);
         toast({
           title: "Erro ao salvar dados",
-          description: error.message,
+          description: error.message || "Não foi possível salvar os dados. Tente novamente.",
           variant: "destructive",
         });
         return false;
@@ -133,7 +186,7 @@ const OnboardingWizard: React.FC = () => {
       console.error('Error in saveSurveyData:', error);
       toast({
         title: "Erro inesperado",
-        description: "Não foi possível salvar os dados do formulário.",
+        description: "Não foi possível processar sua solicitação.",
         variant: "destructive",
       });
       return false;
@@ -141,61 +194,33 @@ const OnboardingWizard: React.FC = () => {
   };
   
   const handleComplete = async () => {
-    // Get all form data including email and password
-    const finalData = { ...formData, ...form.getValues() };
-    console.log('Onboarding completed with data:', finalData);
-    
     setIsLoggingIn(true);
     
     try {
       // Save survey data to Supabase
-      const websiteUrl = finalData.websiteUrl || '';
-      const saveSuccess = await saveSurveyData(websiteUrl, selectedFile);
+      const saveSuccess = await saveSurveyData();
       
       if (!saveSuccess) {
         setIsLoggingIn(false);
         return;
       }
       
-      // Use the email and password from the form to sign in
-      if (finalData.email && finalData.password) {
-        const { error } = await signIn(finalData.email, finalData.password);
-        
-        if (error) {
-          console.error('Login error:', error);
-          toast({
-            title: "Login falhou",
-            description: error.message || "Por favor verifique suas credenciais",
-            variant: "destructive",
-          });
-          setIsLoggingIn(false);
-          return;
-        }
-        
-        // Show success message
-        toast({
-          title: "Onboarding concluído! 🎉",
-          description: "Seu espaço de trabalho está pronto para uso.",
-        });
-        
-        setIsCompleted(true);
-        
-        // Navigate to outbound after successful login
-        setTimeout(() => {
-          navigate('/outbound');
-        }, 1500);
-      } else {
-        toast({
-          title: "Erro de login",
-          description: "Email e senha são obrigatórios",
-          variant: "destructive",
-        });
-        setIsLoggingIn(false);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
+      // Show success message
       toast({
-        title: "Login falhou",
+        title: "Dados salvos com sucesso! 🎉",
+        description: "Suas campanhas personalizadas serão enviadas para seu email.",
+      });
+      
+      setIsCompleted(true);
+      
+      // Navigate to outbound after successful submission
+      setTimeout(() => {
+        navigate('/outbound');
+      }, 1500);
+    } catch (error) {
+      console.error('Error in handleComplete:', error);
+      toast({
+        title: "Erro",
         description: "Ocorreu um erro inesperado",
         variant: "destructive",
       });
@@ -207,7 +232,7 @@ const OnboardingWizard: React.FC = () => {
     <div className="flex flex-col min-h-screen items-center justify-center p-4 md:p-6 lg:p-8 bg-gradient-to-br from-indigo-50 to-purple-50">
       <div className="w-full max-w-xl">
         <motion.div 
-          className="wizard-card overflow-visible"
+          className="wizard-card overflow-visible bg-white shadow-xl rounded-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -286,7 +311,7 @@ const OnboardingWizard: React.FC = () => {
               >
                 {currentStep === steps.length - 1 ? (
                   <>
-                    {isLoggingIn ? 'Entrando...' : 'Concluir'} {!isLoggingIn && <CheckCircle size={16} />}
+                    {isLoggingIn ? 'Processando...' : 'Concluir'} {!isLoggingIn && <CheckCircle size={16} />}
                   </>
                 ) : (
                   <>
