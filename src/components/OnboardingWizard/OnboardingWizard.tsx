@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft, ArrowRight, CheckCircle, Moon, Sun, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
 
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -13,25 +14,20 @@ import WizardMascot from './WizardMascot';
 import { useAuth } from '@/contexts/AuthContext';
 
 type OnboardingData = {
-  name: string;
-  role: string;
-  company: string;
-  teamSize: string;
-  interests: string[];
-  goal: string;
-  theme: 'light' | 'dark' | 'system';
+  websiteUrl: string;
   email: string;
   password: string;
+  theme: 'light' | 'dark' | 'system';
 };
 
 const OnboardingWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<OnboardingData>>({
     theme: 'system',
-    interests: []
   });
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signIn } = useAuth();
@@ -43,48 +39,37 @@ const OnboardingWizard: React.FC = () => {
   const steps = [
     {
       id: 'welcome',
-      title: '👋 Welcome!',
-      description: 'Let\'s set up your workspace in just a few quick steps',
+      title: '👋 Bem-vindo!',
+      description: 'Vamos configurar sua experiência em poucos passos',
     },
     {
-      id: 'profile',
-      title: '👤 About you',
-      description: 'Help us personalize your experience',
-      fields: ['name', 'role', 'company']
+      id: 'company',
+      title: '🏢 Sua empresa',
+      description: 'Informe o site da sua empresa',
+      fields: ['websiteUrl']
     },
     {
-      id: 'team',
-      title: '👥 Team details',
-      description: 'Tell us about your team size',
-      fields: ['teamSize']
-    },
-    {
-      id: 'interests',
-      title: '✨ Your interests',
-      description: 'We\'ll customize your dashboard based on these',
-      fields: ['interests']
-    },
-    {
-      id: 'goals',
-      title: '🎯 Your main goal',
-      description: 'What brings you here today?',
-      fields: ['goal']
-    },
-    {
-      id: 'appearance',
-      title: '🎨 Choose your theme',
-      description: 'Select your preferred appearance',
-      fields: ['theme']
+      id: 'csv',
+      title: '📊 Importar base',
+      description: 'Importe sua base de contatos para personalização',
     },
     {
       id: 'login',
       title: '🔐 Login',
-      description: 'Enter your credentials to complete the setup',
+      description: 'Entre com suas credenciais para completar a configuração',
       fields: ['email', 'password']
     }
   ];
   
   const progressPercentage = ((currentStep) / (steps.length - 1)) * 100;
+  
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+    toast({
+      title: "Arquivo selecionado",
+      description: `${file.name} foi carregado com sucesso.`,
+    });
+  };
   
   const handleNext = async () => {
     const currentFields = steps[currentStep]?.fields || [];
@@ -112,6 +97,49 @@ const OnboardingWizard: React.FC = () => {
     }
   };
   
+  const saveSurveyData = async (websiteUrl: string, file: File | null) => {
+    if (!file) {
+      toast({
+        title: "Erro",
+        description: "Por favor, selecione um arquivo CSV para continuar.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    try {
+      // Parse and prepare CSV data if needed
+      // For now we're just saving the file name and website URL
+      const { error } = await supabase
+        .from('mizi_ai_surveys')
+        .insert({
+          website_url: websiteUrl,
+          csv_file_name: file.name,
+          // Leave other fields blank as requested
+        });
+      
+      if (error) {
+        console.error('Error saving survey data:', error);
+        toast({
+          title: "Erro ao salvar dados",
+          description: error.message,
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error in saveSurveyData:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Não foi possível salvar os dados do formulário.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+  
   const handleComplete = async () => {
     // Get all form data including email and password
     const finalData = { ...formData, ...form.getValues() };
@@ -120,6 +148,15 @@ const OnboardingWizard: React.FC = () => {
     setIsLoggingIn(true);
     
     try {
+      // Save survey data to Supabase
+      const websiteUrl = finalData.websiteUrl || '';
+      const saveSuccess = await saveSurveyData(websiteUrl, selectedFile);
+      
+      if (!saveSuccess) {
+        setIsLoggingIn(false);
+        return;
+      }
+      
       // Use the email and password from the form to sign in
       if (finalData.email && finalData.password) {
         const { error } = await signIn(finalData.email, finalData.password);
@@ -127,8 +164,8 @@ const OnboardingWizard: React.FC = () => {
         if (error) {
           console.error('Login error:', error);
           toast({
-            title: "Login failed",
-            description: error.message || "Please check your credentials",
+            title: "Login falhou",
+            description: error.message || "Por favor verifique suas credenciais",
             variant: "destructive",
           });
           setIsLoggingIn(false);
@@ -137,8 +174,8 @@ const OnboardingWizard: React.FC = () => {
         
         // Show success message
         toast({
-          title: "Onboarding completed! 🎉",
-          description: "Your workspace is ready to use.",
+          title: "Onboarding concluído! 🎉",
+          description: "Seu espaço de trabalho está pronto para uso.",
         });
         
         setIsCompleted(true);
@@ -149,8 +186,8 @@ const OnboardingWizard: React.FC = () => {
         }, 1500);
       } else {
         toast({
-          title: "Login error",
-          description: "Email and password are required",
+          title: "Erro de login",
+          description: "Email e senha são obrigatórios",
           variant: "destructive",
         });
         setIsLoggingIn(false);
@@ -158,53 +195,13 @@ const OnboardingWizard: React.FC = () => {
     } catch (error) {
       console.error('Login error:', error);
       toast({
-        title: "Login failed",
-        description: "An unexpected error occurred",
+        title: "Login falhou",
+        description: "Ocorreu um erro inesperado",
         variant: "destructive",
       });
       setIsLoggingIn(false);
     }
   };
-  
-  const handleSelectInterest = (interest: string) => {
-    const currentInterests = form.getValues('interests') || [];
-    
-    if (currentInterests.includes(interest)) {
-      form.setValue('interests', currentInterests.filter(i => i !== interest));
-    } else {
-      form.setValue('interests', [...currentInterests, interest]);
-    }
-  };
-  
-  const interestOptions = [
-    { value: 'productivity', label: '⚡ Productivity', icon: '⚡' },
-    { value: 'collaboration', label: '👥 Collaboration', icon: '👥' },
-    { value: 'analytics', label: '📊 Analytics', icon: '📊' },
-    { value: 'automation', label: '🤖 Automation', icon: '🤖' },
-    { value: 'design', label: '🎨 Design', icon: '🎨' },
-    { value: 'development', label: '👨‍💻 Development', icon: '👨‍💻' }
-  ];
-  
-  const teamSizeOptions = [
-    { value: 'solo', label: 'Just me' },
-    { value: 'small', label: '2-10 people' },
-    { value: 'medium', label: '11-50 people' },
-    { value: 'large', label: '51-200 people' },
-    { value: 'enterprise', label: '200+ people' }
-  ];
-  
-  const goalOptions = [
-    { value: 'personal', label: 'Personal productivity' },
-    { value: 'team', label: 'Team collaboration' },
-    { value: 'project', label: 'Project management' },
-    { value: 'customer', label: 'Customer management' }
-  ];
-  
-  const themeOptions = [
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
-    { value: 'system', label: 'System default', icon: Sparkles }
-  ];
   
   return (
     <div className="flex flex-col min-h-screen items-center justify-center p-4 md:p-6 lg:p-8 bg-gradient-to-br from-indigo-50 to-purple-50">
@@ -232,8 +229,8 @@ const OnboardingWizard: React.FC = () => {
           {/* Progress bar */}
           <div className="px-8">
             <div className="flex items-center justify-between text-xs text-gray-500 mt-6 mb-2">
-              <span>Start</span>
-              <span>{Math.round(progressPercentage)}% Complete</span>
+              <span>Início</span>
+              <span>{Math.round(progressPercentage)}% Concluído</span>
             </div>
             <Progress 
               value={progressPercentage} 
@@ -257,13 +254,9 @@ const OnboardingWizard: React.FC = () => {
                     form={form}
                     formData={formData}
                     steps={steps}
-                    interestOptions={interestOptions}
-                    teamSizeOptions={teamSizeOptions}
-                    goalOptions={goalOptions}
-                    themeOptions={themeOptions}
-                    handleSelectInterest={handleSelectInterest}
                     isCompleted={isCompleted}
                     isLoggingIn={isLoggingIn}
+                    onFileSelect={handleFileSelect}
                   />
                 </form>
               </motion.div>
@@ -280,7 +273,7 @@ const OnboardingWizard: React.FC = () => {
                   className="flex items-center gap-2 text-gray-600"
                 >
                   <ArrowLeft size={16} />
-                  Back
+                  Voltar
                 </Button>
               ) : (
                 <div></div>
@@ -293,11 +286,11 @@ const OnboardingWizard: React.FC = () => {
               >
                 {currentStep === steps.length - 1 ? (
                   <>
-                    {isLoggingIn ? 'Logging in...' : 'Complete'} {!isLoggingIn && <CheckCircle size={16} />}
+                    {isLoggingIn ? 'Entrando...' : 'Concluir'} {!isLoggingIn && <CheckCircle size={16} />}
                   </>
                 ) : (
                   <>
-                    Continue <ArrowRight size={16} />
+                    Continuar <ArrowRight size={16} />
                   </>
                 )}
               </Button>

@@ -5,19 +5,16 @@ import { UseFormReturn } from 'react-hook-form';
 import { Check, LucideIcon, AtSign, Loader } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import CSVFileUpload from '@/components/survey/CSVFileUpload';
 
 type WizardStepProps = {
   step: number;
   form: UseFormReturn<any>;
   formData: any;
   steps: any[];
-  interestOptions: { value: string; label: string; icon: string }[];
-  teamSizeOptions: { value: string; label: string }[];
-  goalOptions: { value: string; label: string }[];
-  themeOptions: { value: string; label: string; icon: LucideIcon }[];
-  handleSelectInterest: (interest: string) => void;
   isCompleted: boolean;
   isLoggingIn?: boolean;
+  onFileSelect: (file: File) => void;
 };
 
 const WizardStep: React.FC<WizardStepProps> = ({
@@ -25,15 +22,11 @@ const WizardStep: React.FC<WizardStepProps> = ({
   form,
   formData,
   steps,
-  interestOptions,
-  teamSizeOptions,
-  goalOptions,
-  themeOptions,
-  handleSelectInterest,
   isCompleted,
-  isLoggingIn = false
+  isLoggingIn = false,
+  onFileSelect
 }) => {
-  const { register, watch, formState: { errors } } = form;
+  const { register, formState: { errors } } = form;
   
   if (isCompleted) {
     return (
@@ -47,29 +40,21 @@ const WizardStep: React.FC<WizardStepProps> = ({
           <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
             <Check className="w-10 h-10 text-green-500" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">All set!</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">Tudo pronto!</h3>
           <p className="text-gray-600 mb-6">
-            Your workspace is ready to use. Let's get started!
+            Seu espaço de trabalho está pronto para uso. Vamos começar!
           </p>
           <motion.div 
             className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
           >
-            Go to Dashboard
+            Ir para o Dashboard
           </motion.div>
         </motion.div>
       </div>
     );
   }
-  
-  const getOptionLabel = (field: string, value: string): string => {
-    const step = steps.find(s => s.field === field);
-    if (!step || !step.options) return value;
-    
-    const option = step.options.find(opt => opt.value === value);
-    return option ? option.label : value;
-  };
 
   switch(step) {
     case 0: // Welcome step
@@ -85,68 +70,32 @@ const WizardStep: React.FC<WizardStepProps> = ({
           </motion.div>
           
           <h3 className="text-xl font-bold text-gray-800">
-            Welcome to your new workspace
+            Bem-vindo ao seu novo espaço de trabalho
           </h3>
           <p className="text-gray-600 max-w-md mx-auto">
-            We'll help you set everything up in just a few steps. It'll only take a minute or two.
+            Vamos ajudá-lo a configurar tudo em apenas alguns passos simples.
           </p>
         </div>
       );
       
-    case 1: // Profile step
+    case 1: // Company step (only website field)
       return (
         <div className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="wizard-label" htmlFor="name">
-                Your name
-              </label>
-              <input
-                {...register('name', { required: 'Name is required' })}
-                id="name"
-                className={`wizard-input ${errors.name ? 'border-red-300 focus:border-red-500' : ''}`}
-                placeholder="John Doe"
-                autoComplete="name"
+              <Label className="wizard-label" htmlFor="websiteUrl">
+                Site da empresa
+              </Label>
+              <Input
+                {...register('websiteUrl', { required: 'Site da empresa é obrigatório' })}
+                id="websiteUrl"
+                type="url"
+                className={`wizard-input ${errors.websiteUrl ? 'border-red-300 focus:border-red-500' : ''}`}
+                placeholder="https://minhaempresa.com.br"
               />
-              {errors.name && (
+              {errors.websiteUrl && (
                 <span className="text-sm text-red-500 mt-1 block">
-                  {errors.name.message as string}
-                </span>
-              )}
-            </div>
-            
-            <div>
-              <label className="wizard-label" htmlFor="role">
-                Job title
-              </label>
-              <input
-                {...register('role', { required: 'Job title is required' })}
-                id="role"
-                className={`wizard-input ${errors.role ? 'border-red-300 focus:border-red-500' : ''}`}
-                placeholder="Product Manager"
-                autoComplete="organization-title"
-              />
-              {errors.role && (
-                <span className="text-sm text-red-500 mt-1 block">
-                  {errors.role.message as string}
-                </span>
-              )}
-            </div>
-            
-            <div>
-              <label className="wizard-label" htmlFor="company">
-                Company name
-              </label>
-              <input
-                {...register('company', { required: 'Company name is required' })}
-                id="company"
-                className={`wizard-input ${errors.company ? 'border-red-300 focus:border-red-500' : ''}`}
-                placeholder="Acme Inc."
-                autoComplete="organization"
-              />
-              {errors.company && (
-                <span className="text-sm text-red-500 mt-1 block">
-                  {errors.company.message as string}
+                  {errors.websiteUrl.message as string}
                 </span>
               )}
             </div>
@@ -154,166 +103,14 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 2: // Team size step
+    case 2: // CSV import step
       return (
-        <div>
-          <fieldset className="space-y-3">
-            <legend className="sr-only">Team size</legend>
-            <p className="text-sm text-gray-500 mb-3">
-              How many people will be working in this workspace?
-            </p>
-            
-            {teamSizeOptions.map((option) => (
-              <label 
-                key={option.value}
-                className={`radio-card flex items-center ${watch('teamSize') === option.value ? 'selected' : ''}`}
-              >
-                <input
-                  type="radio"
-                  {...register('teamSize', { required: 'Please select a team size' })}
-                  value={option.value}
-                  className="sr-only"
-                />
-                <span className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0 mr-3 flex items-center justify-center">
-                  {watch('teamSize') === option.value && (
-                    <motion.span 
-                      className="w-2 h-2 rounded-full bg-indigo-500"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                    />
-                  )}
-                </span>
-                <span>{option.label}</span>
-              </label>
-            ))}
-            
-            {errors.teamSize && (
-              <span className="text-sm text-red-500 mt-1 block">
-                {errors.teamSize.message as string}
-              </span>
-            )}
-          </fieldset>
+        <div className="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+          <CSVFileUpload onFileSelect={onFileSelect} />
         </div>
       );
       
-    case 3: // Interests step
-      return (
-        <div>
-          <p className="text-sm text-gray-500 mb-4">
-            Select all that interest you (pick at least one)
-          </p>
-          
-          <div className="grid grid-cols-2 gap-3">
-            {interestOptions.map((option) => (
-              <div
-                key={option.value}
-                onClick={() => handleSelectInterest(option.value)}
-                className={`radio-card flex flex-col items-center justify-center py-4 ${
-                  watch('interests')?.includes(option.value) ? 'selected' : ''
-                }`}
-              >
-                <span className="text-2xl mb-1">{option.icon}</span>
-                <span className="text-sm">{option.label.split(' ')[1]}</span>
-                
-                {watch('interests')?.includes(option.value) && (
-                  <motion.div 
-                    className="absolute top-2 right-2 w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Check className="text-white w-3 h-3" />
-                  </motion.div>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          {errors.interests && (
-            <span className="text-sm text-red-500 mt-3 block">
-              {errors.interests.message as string}
-            </span>
-          )}
-        </div>
-      );
-      
-    case 4: // Goal step
-      return (
-        <div>
-          <fieldset className="space-y-3">
-            <legend className="sr-only">Main goal</legend>
-            <p className="text-sm text-gray-500 mb-3">
-              What's your main goal with our platform?
-            </p>
-            
-            {goalOptions.map((option) => (
-              <label 
-                key={option.value}
-                className={`radio-card flex items-center ${watch('goal') === option.value ? 'selected' : ''}`}
-              >
-                <input
-                  type="radio"
-                  {...register('goal', { required: 'Please select a goal' })}
-                  value={option.value}
-                  className="sr-only"
-                />
-                <span className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0 mr-3 flex items-center justify-center">
-                  {watch('goal') === option.value && (
-                    <motion.span 
-                      className="w-2 h-2 rounded-full bg-indigo-500"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                    />
-                  )}
-                </span>
-                <span>{option.label}</span>
-              </label>
-            ))}
-            
-            {errors.goal && (
-              <span className="text-sm text-red-500 mt-1 block">
-                {errors.goal.message as string}
-              </span>
-            )}
-          </fieldset>
-        </div>
-      );
-      
-    case 5: // Appearance step
-      return (
-        <div>
-          <p className="text-sm text-gray-500 mb-4">
-            Choose your preferred appearance
-          </p>
-          
-          <div className="grid grid-cols-3 gap-3">
-            {themeOptions.map((option) => {
-              const Icon = option.icon;
-              return (
-                <label 
-                  key={option.value}
-                  className={`radio-card flex flex-col items-center justify-center py-4 text-center ${
-                    watch('theme') === option.value ? 'selected' : ''
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    {...register('theme')}
-                    value={option.value}
-                    className="sr-only"
-                  />
-                  <Icon className="mb-2 h-6 w-6" />
-                  <span className="text-sm">{option.label}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-      );
-      
-    case 6: // Login step
+    case 3: // Login step
       return (
         <div className="space-y-6">
           <div className="space-y-4">
@@ -328,12 +125,12 @@ const WizardStep: React.FC<WizardStepProps> = ({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="seu@email.com"
                   {...register('email', { 
-                    required: 'Email is required',
+                    required: 'Email é obrigatório',
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address"
+                      message: "Email inválido"
                     }
                   })}
                   className="pl-10 w-full"
@@ -348,17 +145,17 @@ const WizardStep: React.FC<WizardStepProps> = ({
             
             <div>
               <Label htmlFor="password" className="block text-sm font-medium mb-1">
-                Password
+                Senha
               </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="********"
                 {...register('password', { 
-                  required: 'Password is required',
+                  required: 'Senha é obrigatória',
                   minLength: {
                     value: 6,
-                    message: 'Password must be at least 6 characters'
+                    message: 'A senha deve ter pelo menos 6 caracteres'
                   }
                 })}
                 className="w-full"
@@ -375,7 +172,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
             <div className="flex justify-center pt-4">
               <div className="flex items-center space-x-2 text-gray-600">
                 <Loader className="animate-spin h-5 w-5" />
-                <span>Logging in...</span>
+                <span>Entrando...</span>
               </div>
             </div>
           )}
