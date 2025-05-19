@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
-import { Check, LucideIcon, AtSign, Loader, Upload, Globe, Link2 } from 'lucide-react';
+import { Check, LucideIcon, AtSign, Loader } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Papa from 'papaparse';
-import { Button } from '@/components/ui/button';
 
 type WizardStepProps = {
   step: number;
@@ -17,10 +16,8 @@ type WizardStepProps = {
   goalOptions: { value: string; label: string }[];
   themeOptions: { value: string; label: string; icon: LucideIcon }[];
   handleSelectInterest: (interest: string) => void;
-  handleFileUpload?: (file: File, data: any[]) => void;
   isCompleted: boolean;
   isLoggingIn?: boolean;
-  isSaving?: boolean;
 };
 
 const WizardStep: React.FC<WizardStepProps> = ({
@@ -33,15 +30,10 @@ const WizardStep: React.FC<WizardStepProps> = ({
   goalOptions,
   themeOptions,
   handleSelectInterest,
-  handleFileUpload,
   isCompleted,
-  isLoggingIn = false,
-  isSaving = false
+  isLoggingIn = false
 }) => {
   const { register, watch, formState: { errors } } = form;
-  const [csvFileName, setCsvFileName] = useState<string | null>(null);
-  const [csvError, setCsvError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   
   if (isCompleted) {
     return (
@@ -70,42 +62,6 @@ const WizardStep: React.FC<WizardStepProps> = ({
       </div>
     );
   }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    
-    if (!file) {
-      return;
-    }
-    
-    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-      setCsvError('Please select a CSV file');
-      return;
-    }
-    
-    setIsUploading(true);
-    setCsvFileName(file.name);
-    setCsvError(null);
-    
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        console.log('CSV parsed:', results);
-        if (results.data && Array.isArray(results.data)) {
-          if (handleFileUpload) {
-            handleFileUpload(file, results.data);
-          }
-        }
-        setIsUploading(false);
-      },
-      error: (error) => {
-        console.error('Error parsing CSV:', error);
-        setCsvError('Error parsing the CSV file');
-        setIsUploading(false);
-      }
-    });
-  };
   
   const getOptionLabel = (field: string, value: string): string => {
     const step = steps.find(s => s.field === field);
@@ -113,22 +69,6 @@ const WizardStep: React.FC<WizardStepProps> = ({
     
     const option = step.options.find(opt => opt.value === value);
     return option ? option.label : value;
-  };
-
-  const validateUrl = (url: string): boolean => {
-    if (!url) return false;
-
-    // Add http:// if the URL doesn't have a protocol
-    let urlToTest = url;
-    if (!/^https?:\/\//i.test(urlToTest)) {
-      urlToTest = 'http://' + urlToTest;
-    }
-    try {
-      new URL(urlToTest);
-      return true;
-    } catch (e) {
-      return false;
-    }
   };
 
   switch(step) {
@@ -214,42 +154,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 2: // Company step - Modificado para mostrar apenas o campo de website
-      return (
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <label className="wizard-label flex items-center gap-2" htmlFor="companyWebsite">
-                <Globe className="h-4 w-4" /> Site da empresa
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Link2 className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  {...register('companyWebsite', { 
-                    required: 'O site da empresa é obrigatório',
-                    validate: (value) => validateUrl(value) || 'Por favor, insira uma URL válida'
-                  })}
-                  id="companyWebsite"
-                  className={`wizard-input pl-10 ${errors.companyWebsite ? 'border-red-300 focus:border-red-500' : ''}`}
-                  placeholder="www.suaempresa.com.br"
-                />
-              </div>
-              {errors.companyWebsite && (
-                <span className="text-sm text-red-500 mt-1 block">
-                  {errors.companyWebsite.message as string}
-                </span>
-              )}
-              <p className="text-xs text-gray-500 mt-1">
-                Adicione o site da sua empresa para personalizar seu outbound
-              </p>
-            </div>
-          </div>
-        </div>
-      );
-      
-    case 3: // Team size step
+    case 2: // Team size step
       return (
         <div>
           <fieldset className="space-y-3">
@@ -292,7 +197,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 4: // Interests step
+    case 3: // Interests step
       return (
         <div>
           <p className="text-sm text-gray-500 mb-4">
@@ -333,7 +238,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 5: // Goal step
+    case 4: // Goal step
       return (
         <div>
           <fieldset className="space-y-3">
@@ -376,7 +281,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 6: // Appearance step
+    case 5: // Appearance step
       return (
         <div>
           <p className="text-sm text-gray-500 mb-4">
@@ -407,69 +312,8 @@ const WizardStep: React.FC<WizardStepProps> = ({
           </div>
         </div>
       );
-
-    case 7: // CSV Upload step
-      return (
-        <div className="space-y-6">
-          <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
-            <p className="font-semibold mb-2">🚀 Maximize a Personalização da IA</p>
-            <p className="text-sm mb-2">
-              Quanto mais dados você incluir no seu CSV, mais precisa e personalizada será a estratégia de comunicação.
-            </p>
-            <p className="text-xs text-gray-500 italic">
-              Exemplos de dados úteis: nome completo, cargo, empresa, e-mail, histórico de interações, principais desafios, interesses profissionais, etc.
-            </p>
-          </div>
-          
-          <div className="flex flex-col items-center p-6 border-2 border-dashed border-minimal-gray-300 rounded-lg bg-minimal-gray-50">
-            <input
-              type="file"
-              id="csvFile"
-              accept=".csv"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            
-            <label htmlFor="csvFile">
-              <div className="mb-4 flex flex-col items-center cursor-pointer">
-                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-2">
-                  <Upload className="h-8 w-8 text-indigo-600" />
-                </div>
-                <span className="font-medium text-gray-800">Selecione seu arquivo CSV</span>
-                <span className="text-sm text-gray-500">ou arraste e solte aqui</span>
-              </div>
-            </label>
-            
-            {isUploading && (
-              <div className="mt-4 flex items-center justify-center">
-                <Loader className="animate-spin h-5 w-5 mr-2 text-indigo-500" />
-                <span>Processando arquivo...</span>
-              </div>
-            )}
-            
-            {csvFileName && !isUploading && (
-              <div className="mt-4 p-3 bg-minimal-gray-100 border rounded-md flex items-center text-minimal-gray-700 w-full">
-                <Check className="h-4 w-4 mr-2 text-green-500" />
-                <span className="text-sm">{csvFileName}</span>
-              </div>
-            )}
-            
-            {csvError && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center text-red-700 w-full">
-                <span className="text-sm">{csvError}</span>
-              </div>
-            )}
-          </div>
-          
-          {!csvFileName && !isUploading && (
-            <div className="text-center text-gray-500 text-sm mt-4">
-              O arquivo CSV deve conter informações sobre seus prospects
-            </div>
-          )}
-        </div>
-      );
       
-    case 8: // Login step
+    case 6: // Login step
       return (
         <div className="space-y-6">
           <div className="space-y-4">
@@ -527,11 +371,11 @@ const WizardStep: React.FC<WizardStepProps> = ({
             </div>
           </div>
           
-          {(isLoggingIn || isSaving) && (
+          {isLoggingIn && (
             <div className="flex justify-center pt-4">
               <div className="flex items-center space-x-2 text-gray-600">
                 <Loader className="animate-spin h-5 w-5" />
-                <span>{isSaving ? 'Saving data...' : 'Logging in...'}</span>
+                <span>Logging in...</span>
               </div>
             </div>
           )}
