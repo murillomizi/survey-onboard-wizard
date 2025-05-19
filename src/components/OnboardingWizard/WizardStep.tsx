@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
-import { Check, LucideIcon, AtSign, Loader, Upload } from 'lucide-react';
+import { Check, LucideIcon, AtSign, Loader, Upload, Globe, Link2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Papa from 'papaparse';
@@ -116,6 +115,22 @@ const WizardStep: React.FC<WizardStepProps> = ({
     return option ? option.label : value;
   };
 
+  const validateUrl = (url: string): boolean => {
+    if (!url) return false;
+
+    // Add http:// if the URL doesn't have a protocol
+    let urlToTest = url;
+    if (!/^https?:\/\//i.test(urlToTest)) {
+      urlToTest = 'http://' + urlToTest;
+    }
+    try {
+      new URL(urlToTest);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
   switch(step) {
     case 0: // Welcome step
       return (
@@ -199,7 +214,42 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 2: // Team size step
+    case 2: // Company step - Modificado para mostrar apenas o campo de website
+      return (
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="wizard-label flex items-center gap-2" htmlFor="companyWebsite">
+                <Globe className="h-4 w-4" /> Site da empresa
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Link2 className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  {...register('companyWebsite', { 
+                    required: 'O site da empresa é obrigatório',
+                    validate: (value) => validateUrl(value) || 'Por favor, insira uma URL válida'
+                  })}
+                  id="companyWebsite"
+                  className={`wizard-input pl-10 ${errors.companyWebsite ? 'border-red-300 focus:border-red-500' : ''}`}
+                  placeholder="www.suaempresa.com.br"
+                />
+              </div>
+              {errors.companyWebsite && (
+                <span className="text-sm text-red-500 mt-1 block">
+                  {errors.companyWebsite.message as string}
+                </span>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                Adicione o site da sua empresa para personalizar seu outbound
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+      
+    case 3: // Team size step
       return (
         <div>
           <fieldset className="space-y-3">
@@ -242,7 +292,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 3: // Interests step
+    case 4: // Interests step
       return (
         <div>
           <p className="text-sm text-gray-500 mb-4">
@@ -283,7 +333,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 4: // Goal step
+    case 5: // Goal step
       return (
         <div>
           <fieldset className="space-y-3">
@@ -326,7 +376,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 5: // Appearance step
+    case 6: // Appearance step
       return (
         <div>
           <p className="text-sm text-gray-500 mb-4">
@@ -358,7 +408,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
 
-    case 6: // CSV Upload step
+    case 7: // CSV Upload step
       return (
         <div className="space-y-6">
           <div className="mb-4 border border-blue-100 bg-blue-50 p-4 rounded-xl text-gray-700">
@@ -419,7 +469,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 7: // Login step
+    case 8: // Login step
       return (
         <div className="space-y-6">
           <div className="space-y-4">

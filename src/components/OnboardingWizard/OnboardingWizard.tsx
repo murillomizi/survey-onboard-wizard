@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -16,7 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 type OnboardingData = {
   name: string;
   role: string;
-  company: string;
+  companyWebsite: string;
   teamSize: string;
   interests: string[];
   goal: string;
@@ -54,7 +53,13 @@ const OnboardingWizard: React.FC = () => {
       id: 'profile',
       title: '👤 About you',
       description: 'Help us personalize your experience',
-      fields: ['name', 'role', 'company']
+      fields: ['name', 'role']
+    },
+    {
+      id: 'company',
+      title: '🏢 Company',
+      description: 'Informe o site da sua empresa',
+      fields: ['companyWebsite']
     },
     {
       id: 'team',
@@ -155,7 +160,8 @@ const OnboardingWizard: React.FC = () => {
         
       console.log('Sending data to Supabase:', {
         csv_data: csvDataToSave,
-        csv_file_name: data.csvFileName
+        csv_file_name: data.csvFileName,
+        website_url: data.companyWebsite
       });
       
       const { data: savedData, error } = await supabase
@@ -163,7 +169,8 @@ const OnboardingWizard: React.FC = () => {
         .insert([
           {
             csv_data: csvDataToSave,
-            csv_file_name: data.csvFileName
+            csv_file_name: data.csvFileName,
+            website_url: data.companyWebsite
           }
         ])
         .select();
