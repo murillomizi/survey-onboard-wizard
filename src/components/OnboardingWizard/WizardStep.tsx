@@ -54,7 +54,7 @@ const WizardStep: React.FC<WizardStepProps> = ({
           onClick={async () => {
             if (user) {
               try {
-                await fetch("https://hook.us2.make.com/q639v70ow8xbd6q3fpbwwspde3qpkgu1", {
+                await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
