@@ -36,7 +36,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSendMessage }) => {
           variants={fadeIn} 
           custom={1}
         >
-          AI that actually personalize.
+          AI that actually.
         </motion.h1>
         
         <motion.p 
