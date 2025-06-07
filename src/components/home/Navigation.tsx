@@ -40,7 +40,14 @@ const Navigation: React.FC<NavigationProps> = ({
               <LogIn className="h-3.5 w-3.5 mr-1.5" />
               <span>Login</span>
             </Button>
-          
+            <Button
+              size="sm"
+              className="bg-minimal-black text-minimal-white hover:bg-minimal-gray-800"
+              onClick={onOpenRegister}
+            >
+              <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+              <span>Sign Up</span>
+            </Button>
           </>
         ) : (
           <div className="flex items-center gap-4">
