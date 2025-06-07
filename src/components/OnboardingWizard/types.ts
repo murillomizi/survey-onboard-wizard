@@ -1,39 +1,15 @@
 
 export type OnboardingData = {
-  canal: string;
-  websiteUrl: string;
-  tomVoz: string;
-  tamanho: number;
-  gatilhos: string;
-  csvFileName: string;
-  userEmail: string;
-  csvData?: any[];  // Add support for parsed CSV data
-};
+  setor: string;
+  tamanhoEmpresa: string;
+  palavrasChave: string[];
 
-export type WizardStep = {
-  id: string;
-  title: string;
-  description: string;
-  fields?: string[];
-  isOptional?: boolean;  // Mark steps that are optional
-};
+  cargo: string;
+  desafios: string[];
+  objetivos: string[];
 
-export type WizardFooterProps = {
-  currentStep: number;
-  steps: WizardStep[];
-  isCompleted: boolean;
-  isLoggingIn: boolean;
-  onBack: () => void;
-  onNext: () => void;
-};
+  csvFileName?: string;
+  csvData?: any[];
 
-export type WizardHeaderProps = {
-  step: WizardStep;
-  currentStep: number;
-  isCompleted: boolean;
-};
-
-export type WizardProgressProps = {
-  currentStep: number;
-  totalSteps: number;
+  userEmail?: string;
 };

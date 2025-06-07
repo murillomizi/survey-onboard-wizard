@@ -58,10 +58,11 @@ const WizardStep: React.FC<WizardStepProps> = ({
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    userId: user.id,
-                    email: user.email,
-                    respostas: formData,
-                  }),
+  userId: user.id,
+  email: user.email,
+  respostas: form.getValues(), // pega os valores reais preenchidos no formulário
+}),
+
                 });
 
                 navigate("/outbound");
