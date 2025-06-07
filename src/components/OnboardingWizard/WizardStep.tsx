@@ -35,30 +35,51 @@ const WizardStep: React.FC<WizardStepProps> = ({
   const { user } = useAuth();
 
   if (isCompleted) {
-    return (
-      <div className="py-8">
-       <Button
-  onClick={() => {
-    if (user) {
-      navigate("/outbound");
-    } else {
-      console.error("Usuário não está logado.");
-    }
-  }}
-  className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
->
-  Ir para o Dashboard
-</Button> 
-            className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Ir para o Dashboard
-          </motion.div>
-        </motion.div>
-      </div>
-    );
-  }
+  return (
+    <div className="py-8">
+      <motion.div 
+        className="flex flex-col items-center text-center"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+          <Check className="w-10 h-10 text-green-500" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Tudo pronto!</h3>
+        <p className="text-gray-600 mb-6">
+          Seus dados foram salvos. Vamos começar a personalizar suas campanhas!
+        </p>
+        <Button
+          onClick={async () => {
+            if (user) {
+              try {
+                await fetch("https://hook.us2.make.com/q639v70ow8xbd6q3fpbwwspde3qpkgu1", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    userId: user.id,
+                    email: user.email,
+                    respostas: formData,
+                  }),
+                });
+
+                navigate("/outbound");
+              } catch (err) {
+                console.error("Erro ao enviar para o Make:", err);
+              }
+            } else {
+              console.error("Usuário não autenticado.");
+            }
+          }}
+          className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
+        >
+          Ir para o Dashboard
+        </Button>
+      </motion.div>
+    </div>
+  );
+}
 
   switch(step) {
     case 0: // Welcome step
