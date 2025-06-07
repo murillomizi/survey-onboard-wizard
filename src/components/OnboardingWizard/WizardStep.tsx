@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 type WizardStepProps = {
   step: number;
@@ -29,24 +31,24 @@ const WizardStep: React.FC<WizardStepProps> = ({
   onFileSelect
 }) => {
   const { register, formState: { errors }, watch, setValue } = form;
-  
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   if (isCompleted) {
     return (
       <div className="py-8">
-        <motion.div 
-          className="flex flex-col items-center text-center"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
-            <Check className="w-10 h-10 text-green-500" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Tudo pronto!</h3>
-          <p className="text-gray-600 mb-6">
-            Seus dados foram salvos. Vamos começar a personalizar suas campanhas!
-          </p>
-          <motion.div 
+       <Button
+  onClick={() => {
+    if (user) {
+      navigate("/outbound");
+    } else {
+      console.error("Usuário não está logado.");
+    }
+  }}
+  className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
+>
+  Ir para o Dashboard
+</Button> 
             className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
