@@ -284,7 +284,7 @@ const Index = () => {
       <motion.section className="px-4 md:px-8 py-16 md:py-28 max-w-7xl mx-auto" initial="hidden" animate="visible" variants={fadeIn} custom={0}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight" variants={fadeIn} custom={1}>
-            AI that actually personalize.
+            AI that actually personalize your approach.
           </motion.h1>
           <motion.p className="text-lg md:text-xl text-minimal-gray-600 mb-12 max-w-2xl mx-auto" variants={fadeIn} custom={2}>
             Hyper-personalized cold outreach at scale. Get more replies, book more meetings.
