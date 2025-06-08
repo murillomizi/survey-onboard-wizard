@@ -51,47 +51,43 @@ const WizardStep: React.FC<WizardStepProps> = ({
           Seus dados foram salvos. Vamos começar a personalizar suas campanhas!
         </p>
         <Button
-          onClick={async () => {
-            if (user) {
-              try {
-                const dados = form.getValues();
-const dataToSend = {
-  userId: user.id,
-  email: user.email,
-  respostas: form.getValues(),
-};
+  onClick={async () => {
+    if (!user) {
+      console.error("Usuário não autenticado.");
+      return;
+    }
 
-console.log("🚀 Enviando para o Make:", dataToSend);
+    const dataToSend = {
+      userId: user.id,
+      email: user.email,
+      respostas: form.getValues(),
+    };
 
-try {
-  await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(dataToSend),
-});
-                await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-  userId: user.id,
-  email: user.email,
-  respostas: form.getValues(), // pega os valores reais preenchidos no formulário
-}),
+    console.log("🚀 Enviando para o Make:", dataToSend);
 
-                });
+    try {
+      const res = await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
 
-                navigate("/outbound");
-              } catch (err) {
-                console.error("Erro ao enviar para o Make:", err);
-              }
-            } else {
-              console.error("Usuário não autenticado.");
-            }
-          }}
-          className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
-        >
-          Ir para o Dashboard
-        </Button>
+      if (!res.ok) {
+        throw new Error(`Erro HTTP ${res.status}`);
+      }
+
+      console.log("✅ Enviado com sucesso para o Make.");
+    } catch (err) {
+      console.error("❌ Erro ao enviar para o Make:", err);
+    }
+
+    navigate("/outbound");
+  }}
+  className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
+>
+  Concluir
+</Button>
+
       </motion.div>
     </div>
   );
