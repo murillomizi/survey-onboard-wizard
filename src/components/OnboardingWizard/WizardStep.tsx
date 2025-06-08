@@ -55,7 +55,20 @@ const WizardStep: React.FC<WizardStepProps> = ({
             if (user) {
               try {
                 const dados = form.getValues();
-console.log("Dados enviados para o webhook:", dados);
+const dataToSend = {
+  userId: user.id,
+  email: user.email,
+  respostas: form.getValues(),
+};
+
+console.log("🚀 Enviando para o Make:", dataToSend);
+
+try {
+  await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dataToSend),
+});
                 await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
