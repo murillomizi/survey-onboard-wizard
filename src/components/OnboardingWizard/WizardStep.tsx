@@ -278,51 +278,6 @@ const WizardStep: React.FC<WizardStepProps> = ({
         </div>
       );
       
-    case 7: // Email to receive results
-      return (
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="userEmail" className="block text-sm font-medium mb-1">
-                Email para receber resultados
-              </Label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <AtSign className="h-4 w-4 text-gray-400" />
-                </div>
-                <Input
-                  id="userEmail"
-                  type="email"
-                  placeholder="seu@email.com"
-                  {...register('userEmail', { 
-                    required: 'Email é obrigatório',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Email inválido"
-                    }
-                  })}
-                  className="pl-10 w-full"
-                />
-              </div>
-              {errors.userEmail && (
-                <span className="text-sm text-red-500 mt-1 block">
-                  {errors.userEmail.message as string}
-                </span>
-              )}
-            </div>
-          </div>
-          
-          {isLoggingIn && (
-            <div className="flex justify-center pt-4">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Loader className="animate-spin h-5 w-5" />
-                <span>Processando...</span>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-      
     default:
       return null;
   }
