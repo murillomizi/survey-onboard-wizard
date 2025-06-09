@@ -11,17 +11,6 @@ export const surveySteps: SurveyStep[] = [
     field: "canal"
   },
   {
-    question: "Em que estágio do funil de vendas está sua base de contatos?",
-    options: [
-      { value: "topo", label: "Topo de Funil" },
-      { value: "meio", label: "Meio de Funil" },
-      { value: "fim", label: "Fim de Funil" },
-      { value: "cliente", label: "Cliente Existente" },
-      { value: "inbound", label: "Leads de Ação de Inbound" }
-    ],
-    field: "funnelStage"
-  },
-  {
     question: "Qual é o site da sua empresa?",
     field: "websiteUrl",
     inputType: "text"
@@ -38,8 +27,6 @@ export const surveySteps: SurveyStep[] = [
       { value: "informal", label: "Informal" },
       { value: "neutro", label: "Neutro" },
       { value: "consultivo", label: "Consultivo" },
-      { value: "curioso", label: "Curioso" },
-      { value: "inovador", label: "Inovador" }
     ],
     field: "tomVoz"
   },
@@ -56,11 +43,6 @@ export const surveySteps: SurveyStep[] = [
       { value: "consenso", label: "Consenso" }
     ],
     field: "gatilhos"
-  },
-  {
-    question: "Qual é o e-mail onde você gostaria de receber sua base de contatos personalizada?",
-    field: "userEmail",
-    inputType: "text"
   },
   {
     question: "Agora, você pode fazer upload da sua base de prospecção em formato CSV. Quanto mais dados você fornecer, mais personalizada e precisa será a análise da IA!",
