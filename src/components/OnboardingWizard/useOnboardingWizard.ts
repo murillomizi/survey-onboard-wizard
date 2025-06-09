@@ -27,28 +27,28 @@ export const useOnboardingWizard = () => {
       description: 'Vamos configurar suas campanhas em poucos passos',
     },
     {
-      id: 'canal',
-      title: '📱 Canal',
-      description: 'Qual canal você vai usar para suas campanhas',
-      fields: ['canal']
-    },
-    {
       id: 'website',
       title: '🏢 Website',
       description: 'Informe o site da sua empresa',
       fields: ['websiteUrl']
     },
     {
-      id: 'tom-voz',
-      title: '🎭 Tom de Voz',
-      description: 'Escolha o tom de voz para suas mensagens',
-      fields: ['tomVoz']
+      id: 'canal',
+      title: '📱 Canal',
+      description: 'Qual canal você vai usar para suas campanhas',
+      fields: ['canal']
     },
     {
       id: 'tamanho',
       title: '📏 Comprimento',
       description: 'Escolha o tamanho das suas mensagens',
       fields: ['tamanho']
+    },
+    {
+      id: 'tom-voz',
+      title: '🎭 Tom de Voz',
+      description: 'Escolha o tom de voz para suas mensagens',
+      fields: ['tomVoz']
     },
     {
       id: 'gatilho',
