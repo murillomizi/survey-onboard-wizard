@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
@@ -51,43 +50,13 @@ const WizardStep: React.FC<WizardStepProps> = ({
           Seus dados foram salvos. Vamos começar a personalizar suas campanhas!
         </p>
         <Button
-  onClick={async () => {
-    if (!user) {
-      console.error("Usuário não autenticado.");
-      return;
-    }
-
-    const dataToSend = {
-      userId: user.id,
-      email: user.email,
-      respostas: form.getValues(),
-    };
-
-    console.log("🚀 Enviando para o Make:", dataToSend);
-
-    try {
-      const res = await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Erro HTTP ${res.status}`);
-      }
-
-      console.log("✅ Enviado com sucesso para o Make.");
-    } catch (err) {
-      console.error("❌ Erro ao enviar para o Make:", err);
-    }
-
-    navigate("/outbound");
-  }}
-  className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
->
-  Concluir
-</Button>
-
+          onClick={async () => {
+            navigate("/outbound");
+          }}
+          className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
+        >
+          Concluir
+        </Button>
       </motion.div>
     </div>
   );

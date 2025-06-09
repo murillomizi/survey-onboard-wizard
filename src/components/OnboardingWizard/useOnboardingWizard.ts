@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -185,6 +184,37 @@ export const useOnboardingWizard = () => {
       if (!saveSuccess) {
         setIsLoggingIn(false);
         return;
+      }
+
+      // Enviar dados para o webhook do Make
+      const formValues = form.getValues();
+      const dataToSend = {
+        ...formValues,
+        csvFileName: formData.csvFileName,
+        csvData: formData.csvData
+      };
+
+      console.log("🚀 Enviando para o Make:", dataToSend);
+
+      try {
+        const res = await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSend),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Erro HTTP ${res.status}`);
+        }
+
+        console.log("✅ Enviado com sucesso para o Make.");
+      } catch (err) {
+        console.error("❌ Erro ao enviar para o Make:", err);
+        toast({
+          title: "Aviso",
+          description: "Os dados foram salvos, mas houve um erro ao enviar para o sistema externo.",
+          variant: "destructive",
+        });
       }
       
       // Show success message
