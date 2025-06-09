@@ -65,7 +65,7 @@ export const useOnboardingWizard = () => {
     {
       id: 'email',
       title: '📧 Email',
-      description: 'Informe seu email para receber os resultados',
+      description: 'Sua campanha está pronta!',
       fields: ['userEmail']
     }
   ];
