@@ -186,49 +186,75 @@ export const useOnboardingWizard = () => {
         return;
       }
 
-      // Enviar dados para o webhook do Make
+      // Preparar dados para o webhook do Make
       const formValues = form.getValues();
       const dataToSend = {
-        ...formValues,
-        csvFileName: formData.csvFileName,
-        csvData: formData.csvData
+        canal: formValues.canal || '',
+        websiteUrl: formValues.websiteUrl || '',
+        tomVoz: formValues.tomVoz || '',
+        tamanho: formValues.tamanho || 350,
+        gatilhos: formValues.gatilhos || '',
+        userEmail: formValues.userEmail || '',
+        csvFileName: formData.csvFileName || '',
+        csvData: formData.csvData || []
       };
 
-      console.log("🚀 Enviando para o Make:", dataToSend);
+      console.log("🚀 Preparando envio para o Make:", dataToSend);
 
       try {
+        console.log("📡 Iniciando requisição para o webhook...");
         const res = await fetch("https://hook.us2.make.com/gpd3vy1vrctlgjhgh3lihuub42smaifa", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
           body: JSON.stringify(dataToSend),
         });
 
+        const responseText = await res.text();
+        console.log("📥 Status da resposta:", res.status);
+        console.log("📄 Corpo da resposta:", responseText);
+        console.log("🔍 Headers da resposta:", Object.fromEntries(res.headers.entries()));
+
         if (!res.ok) {
-          throw new Error(`Erro HTTP ${res.status}`);
+          throw new Error(`Erro HTTP ${res.status}: ${responseText}`);
         }
 
-        console.log("✅ Enviado com sucesso para o Make.");
+        console.log("✅ Dados enviados com sucesso para o Make!");
+        
+        // Show success message
+        toast({
+          title: "Dados salvos com sucesso! 🎉",
+          description: "Suas campanhas personalizadas serão enviadas para seu email.",
+        });
+        
+        setIsCompleted(true);
+        
+        // Navigate to outbound after successful submission
+        setTimeout(() => {
+          navigate('/outbound');
+        }, 1500);
+
       } catch (err) {
-        console.error("❌ Erro ao enviar para o Make:", err);
+        console.error("❌ Erro detalhado ao enviar para o Make:", {
+          error: err,
+          data: dataToSend
+        });
+        
         toast({
           title: "Aviso",
-          description: "Os dados foram salvos, mas houve um erro ao enviar para o sistema externo.",
+          description: "Os dados foram salvos, mas houve um erro ao enviar para o sistema externo. Nossa equipe foi notificada.",
           variant: "destructive",
         });
+        
+        // Continue with navigation despite webhook error
+        setIsCompleted(true);
+        setTimeout(() => {
+          navigate('/outbound');
+        }, 1500);
       }
-      
-      // Show success message
-      toast({
-        title: "Dados salvos com sucesso! 🎉",
-        description: "Suas campanhas personalizadas serão enviadas para seu email.",
-      });
-      
-      setIsCompleted(true);
-      
-      // Navigate to outbound after successful submission
-      setTimeout(() => {
-        navigate('/outbound');
-      }, 1500);
+
     } catch (error) {
       console.error('Error in handleComplete:', error);
       toast({

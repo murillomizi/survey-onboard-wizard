@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import OutboundGenerator from "./pages/OutboundGenerator";
-import Onboarding from "./pages/Onboarding";
+import OnboardingWizard from "./components/OnboardingWizard/OnboardingWizard";
 import NotFound from "./pages/NotFound";
 import SimpleHome from "./pages/SimpleHome";
 import React from "react";
@@ -43,7 +42,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/outbound" element={<OutboundGenerator />} />
-              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/onboarding" element={<OnboardingWizard />} />
               <Route 
                 path="/simple" 
                 element={
