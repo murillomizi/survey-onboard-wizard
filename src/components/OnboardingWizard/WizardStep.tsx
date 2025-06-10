@@ -35,25 +35,25 @@ const WizardStep: React.FC<WizardStepProps> = ({
 
   if (isCompleted) {
   return (
-    <div className="py-8">
+    <div className="py-8 flex justify-center items-center min-h-[60vh]">
       <motion.div 
-        className="flex flex-col items-center text-center"
+        className="flex flex-col items-center text-center bg-white shadow-2xl rounded-2xl p-10 max-w-md w-full border border-gray-100"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4 shadow-lg">
           <Check className="w-10 h-10 text-green-500" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Tudo pronto!</h3>
-        <p className="text-gray-600 mb-6">
+        <h3 className="text-3xl font-bold text-gray-900 mb-2">Tudo pronto!</h3>
+        <p className="text-gray-600 mb-6 text-lg">
           Seus dados foram salvos. Vamos começar a personalizar suas campanhas!
         </p>
         <Button
           onClick={async () => {
             navigate("/outbound");
           }}
-          className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium"
+          className="w-full max-w-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-medium shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
         >
           Concluir
         </Button>

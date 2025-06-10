@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
@@ -48,26 +47,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSendMessage }) => {
         </motion.p>
         
         <motion.div variants={fadeIn} custom={3} className="max-w-xl mx-auto">
-          <div className="relative bg-minimal-black rounded-full shadow-lg p-1">
-            <Input
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              placeholder="Ask Mizi to create a campaign..."
-              className="w-full bg-minimal-black text-minimal-white border-0 pr-12 py-6 h-auto text-base focus:ring-0 focus:outline-none placeholder:text-minimal-gray-400 rounded-full"
-              onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
-              <Button
-                onClick={handleSendChatMessage}
-                disabled={!chatMessage.trim()}
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full bg-transparent hover:bg-minimal-gray-800 text-minimal-white"
-              >
-                <Send size={16} />
-              </Button>
-            </div>
-          </div>
+          <Button
+            size="lg"
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-6 px-8 rounded-full text-lg font-semibold shadow-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+            onClick={onSendMessage}
+          >
+            Ask Mizi to create a campaign
+          </Button>
         </motion.div>
       </div>
     </motion.section>
