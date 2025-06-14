@@ -239,6 +239,7 @@ const ChatbotSurvey = () => {
       const id = await handleSubmit();
       if (id) {
         setSurveyId(id);
+        navigate(`/outbound/${id}`);
       }
       setShowSuccess(true);
       addMessage(
@@ -248,9 +249,6 @@ const ChatbotSurvey = () => {
         </div>,
         "bot"
       );
-      setTimeout(() => {
-        navigate("/outbound");
-      }, 2000);
     } catch (error) {
       toast({
         title: "Error submitting survey",

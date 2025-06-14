@@ -12,6 +12,7 @@ import FollowUpSelector from "./FollowUpSelector";
 import ContentEditor from "./ContentEditor";
 import CopyPreviewActions from "./CopyPreviewActions";
 import { usePersonalizedReturn } from '@/hooks/usePersonalizedReturn';
+import { useParams } from "react-router-dom";
 
 interface CopyPreviewProps {
   contentType: ContentType;
@@ -46,7 +47,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     seniority: "",
     location: "",
   });
-  const surveyId = /* obter surveyId do contexto, props ou URL */;
+  const { surveyId } = useParams();
   const { data: personalizedProspects, loading, error } = usePersonalizedReturn(surveyId);
   const [filteredProspects, setFilteredProspects] = useState<any[]>([]);
   
