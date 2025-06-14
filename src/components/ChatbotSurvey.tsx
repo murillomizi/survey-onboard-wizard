@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import { toast } from "@/components/ui/use-toast";
@@ -9,6 +8,8 @@ import SurveyProgress from "./survey/SurveyProgress";
 import SurveySummary from "./survey/SurveySummary";
 import ChatContainer from "./survey/ChatContainer";
 import ChatFooter from "./survey/ChatFooter";
+import { CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ChatbotSurvey = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,6 +22,8 @@ const ChatbotSurvey = () => {
   const [showSlider, setShowSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(350);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   
   const {
     surveyData,
@@ -29,6 +32,8 @@ const ChatbotSurvey = () => {
     hasSubmitted,
     handleSubmit
   } = useSurveyData();
+
+  const navigate = useNavigate();
 
   const addMessage = (content: React.ReactNode, type: "user" | "bot") => {
     setMessages((prev) => [
@@ -229,9 +234,31 @@ const ChatbotSurvey = () => {
   };
 
   const onSubmitSurvey = async () => {
-    const success = await handleSubmit();
-    if (success) {
-      addMessage(`Great! Your database is being processed and soon you will receive an email at ${surveyData.userEmail} with your personalized contacts.`, "bot");
+    setIsSubmitting(true);
+    try {
+      const id = await handleSubmit();
+      if (id) {
+        setSurveyId(id);
+      }
+      setShowSuccess(true);
+      addMessage(
+        <div className="flex items-center gap-2 text-green-600">
+          <CheckCircle2 className="h-5 w-5" />
+          <span>Onboarding concluído com sucesso! Redirecionando...</span>
+        </div>,
+        "bot"
+      );
+      setTimeout(() => {
+        navigate("/outbound");
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: "Error submitting survey",
+        description: "There was an error submitting the survey. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

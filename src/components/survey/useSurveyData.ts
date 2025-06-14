@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SurveyData } from "./types";
 import { toast } from "@/components/ui/use-toast";
@@ -17,6 +16,7 @@ export const useSurveyData = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [createdSurveyId, setCreatedSurveyId] = useState<string | null>(null);
 
   const updateSurveyData = (field: keyof SurveyData, value: any) => {
     setSurveyData(prev => ({ ...prev, [field]: value }));
@@ -78,12 +78,17 @@ export const useSurveyData = () => {
         return;
       }
 
+      // Salva o id criado no estado
+      if (data && data.length > 0 && data[0].id) {
+        setCreatedSurveyId(data[0].id);
+      }
+
       console.log('Survey data saved:', data);
       setIsSubmitting(false);
       
       // Mark as submitted to prevent multiple submissions
       setHasSubmitted(true);
-      return true;
+      return data && data.length > 0 ? data[0].id : true;
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -101,6 +106,7 @@ export const useSurveyData = () => {
     updateSurveyData,
     isSubmitting,
     hasSubmitted,
-    handleSubmit
+    handleSubmit,
+    createdSurveyId
   };
 };

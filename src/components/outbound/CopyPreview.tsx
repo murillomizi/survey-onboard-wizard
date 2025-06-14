@@ -11,7 +11,7 @@ import ProspectCard from "./ProspectCard";
 import FollowUpSelector from "./FollowUpSelector";
 import ContentEditor from "./ContentEditor";
 import CopyPreviewActions from "./CopyPreviewActions";
-import { mockProspects } from "@/data/prospects";
+import { usePersonalizedReturn } from '@/hooks/usePersonalizedReturn';
 
 interface CopyPreviewProps {
   contentType: ContentType;
@@ -46,12 +46,23 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     seniority: "",
     location: "",
   });
-  const [filteredProspects, setFilteredProspects] = useState(mockProspects);
+  const surveyId = /* obter surveyId do contexto, props ou URL */;
+  const { data: personalizedProspects, loading, error } = usePersonalizedReturn(surveyId);
+  const [filteredProspects, setFilteredProspects] = useState<any[]>([]);
   
   // Current prospect
-  const currentProspect = filteredProspects.length > 0 
-    ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0] 
-    : mockProspects[0];
+  type ProspectReturn = {
+    id: string;
+    copy: string;
+    cargo: string;
+    nome?: string;
+    first_name?: string;
+    // ... outros campos
+  };
+
+  const currentProspect: ProspectReturn | undefined = filteredProspects.length > 0
+    ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0]
+    : undefined;
   
   // Extrair assunto e corpo do email ao carregar ou alterar o conteúdo
   useEffect(() => {
@@ -64,6 +75,10 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     setEmailBody(body);
     setLinkedinContent(generatedContent.linkedin);
   }, [generatedContent]);
+
+  useEffect(() => {
+    setFilteredProspects(personalizedProspects || []);
+  }, [personalizedProspects]);
 
   const handlePersonaSelection = (source: string) => {
     setSelectedPersonaSource(source);
@@ -79,7 +94,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
 
   // Aplicar filtros
   useEffect(() => {
-    let result = mockProspects;
+    let result = personalizedProspects || [];
     
     if (filters.industry && filters.industry !== "all") {
       result = result.filter(p => p.industry === filters.industry);
@@ -103,7 +118,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     if (currentProspectIndex >= result.length && result.length > 0) {
       setCurrentProspectIndex(0);
     }
-  }, [filters, currentProspectIndex]);
+  }, [filters, currentProspectIndex, personalizedProspects]);
 
   const handlePreviousProspect = () => {
     setCurrentProspectIndex(prev => (prev > 0 ? prev - 1 : filteredProspects.length - 1));
@@ -121,7 +136,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
       seniority: "",
       location: ""
     });
-    setFilteredProspects(mockProspects);
+    setFilteredProspects(personalizedProspects || []);
     setCurrentProspectIndex(0);
   };
 
@@ -328,7 +343,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               filters={filters}
               setFilters={setFilters}
               filteredProspectsCount={filteredProspects.length}
-              totalProspectsCount={mockProspects.length}
+              totalProspectsCount={personalizedProspects?.length || 0}
               resetFilters={resetFilters}
             />
             
