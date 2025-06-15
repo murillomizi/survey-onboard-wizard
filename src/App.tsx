@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import SimpleHome from "./pages/SimpleHome";
 import React from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import OutboundPage from "./pages/outbound";
+import OnboardingSuccess from "./pages/onboarding-success";
 
 // Create the client outside of the component
 const queryClient = new QueryClient();
@@ -41,8 +43,10 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/outbound/:surveyId" element={<OutboundPage />} />
               <Route path="/outbound" element={<OutboundGenerator />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
+              <Route path="/onboarding-success/:surveyId" element={<OnboardingSuccess />} />
               <Route 
                 path="/simple" 
                 element={

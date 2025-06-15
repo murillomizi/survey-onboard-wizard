@@ -7,8 +7,12 @@ export function usePersonalizedReturn(surveyId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!surveyId) return;
+    if (!surveyId) {
+      console.log("usePersonalizedReturn: surveyId não fornecido");
+      return;
+    }
 
+    console.log("usePersonalizedReturn: Buscando dados para surveyId:", surveyId);
     setLoading(true);
     setError(null);
 
@@ -17,9 +21,13 @@ export function usePersonalizedReturn(surveyId: string | undefined) {
       .select("*")
       .eq("mizi_ai_id", surveyId)
       .then(({ data, error }) => {
+        console.log("usePersonalizedReturn: Resposta do Supabase:", { data, error });
+        
         if (error) {
+          console.error("usePersonalizedReturn: Erro ao buscar dados:", error);
           setError(error.message);
         } else {
+          console.log("usePersonalizedReturn: Dados encontrados:", data?.length || 0, "registros");
           setData(data || []);
         }
         setLoading(false);

@@ -140,7 +140,7 @@ export const useOnboardingWizard = () => {
       }
       
       // Insert data into Supabase
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('mizi_ai_surveys')
         .insert({
           website_url: finalData.websiteUrl || '',
@@ -150,7 +150,9 @@ export const useOnboardingWizard = () => {
           persuasion_trigger: finalData.gatilhos || '',
           csv_file_name: finalData.csvFileName || '',
           csv_data: csvData.length > 0 ? csvData : null
-        });
+        })
+        .select('id')
+        .single();
       
       if (error) {
         console.error('Error saving data to Supabase:', error);
@@ -159,10 +161,10 @@ export const useOnboardingWizard = () => {
           description: error.message || "Não foi possível salvar os dados. Tente novamente.",
           variant: "destructive",
         });
-        return false;
+        return null;
       }
       
-      return true;
+      return data?.id || null;
     } catch (error) {
       console.error('Error in saveSurveyData:', error);
       toast({
@@ -170,7 +172,7 @@ export const useOnboardingWizard = () => {
         description: "Não foi possível processar sua solicitação.",
         variant: "destructive",
       });
-      return false;
+      return null;
     }
   };
   
@@ -178,10 +180,9 @@ export const useOnboardingWizard = () => {
     setIsLoggingIn(true);
     
     try {
-      // Save survey data to Supabase
-      const saveSuccess = await saveSurveyData();
-      
-      if (!saveSuccess) {
+      // Salva e pega o ID do survey criado
+      const surveyId = await saveSurveyData();
+      if (!surveyId) {
         setIsLoggingIn(false);
         return;
       }
@@ -233,7 +234,7 @@ export const useOnboardingWizard = () => {
         
         // Navigate to outbound after successful submission
         setTimeout(() => {
-          navigate('/outbound');
+          navigate(`/onboarding-success/${surveyId}`);
         }, 1500);
 
       } catch (err) {
@@ -251,7 +252,7 @@ export const useOnboardingWizard = () => {
         // Continue with navigation despite webhook error
         setIsCompleted(true);
         setTimeout(() => {
-          navigate('/outbound');
+          navigate(`/onboarding-success/${surveyId}`);
         }, 1500);
       }
 
