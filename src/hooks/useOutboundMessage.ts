@@ -1,7 +1,6 @@
 import { RefObject } from "react";
 import { Message } from "@/types/outbound";
 import { toast } from "@/components/ui/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 
 export const useOutboundMessage = (
   messages: Message[],
@@ -11,13 +10,8 @@ export const useOutboundMessage = (
   isLoading: boolean,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   generatedContent: { email: string; linkedin: string },
-  setGeneratedContent: React.Dispatch<React.SetStateAction<{ email: string; linkedin: string }>>,
-  setShowOnboarding: React.Dispatch<React.SetStateAction<boolean>>,
-  setInitialDialogTab: React.Dispatch<React.SetStateAction<string>>,
-  setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>
+  setGeneratedContent: React.Dispatch<React.SetStateAction<{ email: string; linkedin: string }>>
 ) => {
-
-  const { user } = useAuth();
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -169,19 +163,9 @@ Inova Digital`;
     setInput(e.target.value);
   };
 
-  const handleAskMizi = () => {
-    if (user) {
-      setShowOnboarding(true); // Usuário logado: abre direto o onboarding
-    } else {
-      setInitialDialogTab("register"); // Usuário não logado: pede cadastro/login
-      setShowLoginDialog(true);
-    }
-  };
-
   return {
     handleSendMessage,
     handleKeyDown,
     handleInputChange,
-    handleAskMizi,
   };
 };

@@ -64,7 +64,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   };
 
   const currentProspect: ProspectReturn | undefined = filteredProspects.length > 0
-    ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0]
+    ? filteredProspects[currentProspectIndex < filteredProspects.length ? currentProspectIndex : 0] 
     : undefined;
   
   // Extrair assunto e corpo do email ao carregar ou alterar o conteúdo
@@ -356,14 +356,14 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               totalProspectsCount={personalizedProspects?.length || 0}
               resetFilters={resetFilters}
             />
-
+            
             {/* Setas de navegação centralizadas */}
             <div className="flex justify-center items-center my-4 gap-4">
               <button onClick={handlePreviousProspect} className="p-2 rounded bg-gray-200 hover:bg-gray-300">←</button>
               <span className="text-sm text-gray-600">{filteredProspects.length ? currentProspectIndex + 1 : 0} / {filteredProspects.length}</span>
               <button onClick={handleNextProspect} className="p-2 rounded bg-gray-200 hover:bg-gray-300">→</button>
             </div>
-
+            
             {/* Seletor de Follow-ups */}
             <FollowUpSelector 
               contentType={contentType}
@@ -394,7 +394,7 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
                 </span>
               </div>
             )}
-
+            
             <CardContent className="p-0">
               {/* Editor de Conteúdo */}
               <ContentEditor 
