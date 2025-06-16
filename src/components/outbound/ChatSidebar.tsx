@@ -47,6 +47,7 @@ interface ChatSidebarProps {
   onSendMessage: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   chatEndRef: React.RefObject<HTMLDivElement>;
+  surveyId: string;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -57,6 +58,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onSendMessage,
   onKeyDown,
   chatEndRef,
+  surveyId,
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFileInputOpen, setIsFileInputOpen] = useState(false);
@@ -172,7 +174,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none" asChild>
             <div className="flex items-center cursor-pointer">
-              <span className="text-sm font-medium text-minimal-white">mizi-project-1</span>
+              <span className="text-sm font-medium text-minimal-white">mizi-project-{surveyId}</span>
               <ChevronDown size={12} className="ml-1 text-minimal-gray-400" />
             </div>
           </DropdownMenuTrigger>

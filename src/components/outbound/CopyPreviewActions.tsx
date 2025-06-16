@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Send, Share2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,36 +23,33 @@ const CopyPreviewActions: React.FC<CopyPreviewActionsProps> = ({
   onDownload
 }) => {
   return (
-    <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex justify-between items-center">
-      <div className="flex items-center">
+    <div className="p-4 bg-gradient-to-r from-minimal-white to-minimal-gray-100 border-t border-minimal-gray-300 flex flex-col items-center w-full">
+      <div className="flex items-center mb-2">
         {followUpsCount > 0 && (
           <Badge variant="outline" className="bg-minimal-white text-xs">
             {followUpsCount} follow-ups na sequência
           </Badge>
         )}
       </div>
-      
-      <div className="flex gap-3">
+      <div className="flex flex-wrap justify-center gap-3 w-full">
         <Button 
-          className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6"
+          className="bg-minimal-black hover:bg-minimal-gray-800 text-minimal-white flex items-center gap-2 shadow-lg hover:shadow-xl transition-all px-6 min-w-[120px]"
           onClick={onDispatch}
         >
           <Send size={16} className="text-white" />
           Enviar{activeFollowUpIndex !== null ? ` #${activeFollowUpIndex + 1}` : ""}
         </Button>
-        
         <Button 
           variant="outline"
-          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
+          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all min-w-[120px]"
           onClick={onDownload}
         >
           <Download size={16} className="text-black" />
           Baixar
         </Button>
-        
         <Button 
           variant="outline"
-          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
+          className="border-minimal-gray-300 bg-minimal-white hover:bg-minimal-gray-100 flex items-center gap-2 shadow-md hover:shadow-lg transition-all min-w-[120px]"
           onClick={onShare}
         >
           <Share2 size={16} className="text-black" />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Database, Copy, Edit, LogOut, UserRound } from "lucide-react";
 import {
   DropdownMenu,
@@ -40,6 +40,7 @@ const Logo = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { surveyId } = useParams();
   
   const isOutboundPage = location.pathname === "/outbound";
   const isLandingPage = location.pathname === "/landing";
@@ -117,7 +118,7 @@ const Logo = ({
                 <span className={`font-semibold tracking-tight ${textColor}`} style={{
                   fontSize: "calc(" + sizeClasses[size].fontSize + " * " + fontSizeMultiplier + ")"
                 }}>
-                  mizi-project-1
+                  {surveyId ? `mizi-project-${surveyId}` : "mizi-project"}
                 </span>
               ) : (
                 <span 
@@ -127,7 +128,7 @@ const Logo = ({
                   }}
                   onClick={handleProjectNameClick}
                 >
-                  {user ? "mizi-project-1" : projectName}
+                  {user ? (surveyId ? `mizi-project-${surveyId}` : "mizi-project") : projectName}
                 </span>
               )}
               {showProjectArrow && (

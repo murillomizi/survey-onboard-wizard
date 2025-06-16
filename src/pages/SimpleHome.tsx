@@ -6,24 +6,26 @@ import { LoginDialog } from "@/components/ui/login-dialog";
 import Navigation from "@/components/home/Navigation";
 import HeroSection from "@/components/home/HeroSection";
 import ProjectsSection from "@/components/home/ProjectsSection";
+import OnboardingWizard from "@/components/OnboardingWizard/OnboardingWizard";
+import { Button } from "@/components/ui/button";
 
 // Mock projects data - in a real app this would come from Supabase
 const mockProjects = [
   {
     id: 1,
-    name: "mizi-project-1",
+    name: `mizi-project-1`,
     createdAt: "2024-05-10",
     updatedAt: "2024-05-11",
   },
   {
     id: 2,
-    name: "mizi-project-2",
+    name: `mizi-project-2`,
     createdAt: "2024-05-09",
     updatedAt: "2024-05-09",
   },
   {
     id: 3,
-    name: "mizi-project-3",
+    name: `mizi-project-3`,
     createdAt: "2024-05-08",
     updatedAt: "2024-05-10",
   }
@@ -35,6 +37,7 @@ const SimpleHome = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [initialDialogTab, setInitialDialogTab] = useState<"login" | "register">("login");
   const [projects, setProjects] = useState(mockProjects);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   const handleOpenLoginDialog = () => {
     setInitialDialogTab("login");
@@ -67,6 +70,22 @@ const SimpleHome = () => {
     }
   };
 
+  const handleAskMizi = () => {
+    if (user) {
+      setShowOnboarding(true);
+    } else {
+      setInitialDialogTab("register");
+      setShowLoginDialog(true);
+    }
+  };
+
+  const handleOnboardingComplete = (surveyId) => {
+    setShowOnboarding(false);
+    if (surveyId) {
+      navigate(`/outbound/${surveyId}`);
+    }
+  };
+
   return (
     <div className="bg-minimal-white min-h-screen w-full text-minimal-black font-sans">
       {/* Login Dialog */}
@@ -91,6 +110,13 @@ const SimpleHome = () => {
         projects={projects}
         onViewProject={handleViewProject}
       />
+
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <OnboardingWizard onComplete={handleOnboardingComplete} onClose={() => setShowOnboarding(false)} />
+      )}
+
+      <Button onClick={handleAskMizi}>Ask Mizi to create a campaign</Button>
     </div>
   );
 };

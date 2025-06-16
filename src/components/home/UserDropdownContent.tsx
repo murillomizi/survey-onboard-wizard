@@ -1,6 +1,5 @@
-
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { LogOut, Database, UserRound } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -14,6 +13,7 @@ interface UserDropdownContentProps {
 const UserDropdownContent: React.FC<UserDropdownContentProps> = ({ user }) => {
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const { surveyId } = useParams();
   
   if (!user) return null;
 
@@ -67,7 +67,7 @@ const UserDropdownContent: React.FC<UserDropdownContentProps> = ({ user }) => {
           onClick={handleNavigateToOutbound}
         >
           <div className="flex items-center gap-2">
-            <span>mizi-project-1</span>
+            <span>{surveyId ? `mizi-project-${surveyId}` : "mizi-project"}</span>
           </div>
         </DropdownMenuItem>
       </div>

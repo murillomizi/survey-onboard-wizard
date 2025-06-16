@@ -1,32 +1,77 @@
+import React, { useRef } from "react";
+import ChatSidebar from "@/components/outbound/ChatSidebar";
+import CopyPreview from "@/components/outbound/CopyPreview";
+import { useOutboundState } from "@/hooks/useOutboundState";
+import { useOutboundMessage } from "@/hooks/useOutboundMessage";
+import { useOutboundContent } from "@/hooks/useOutboundContent";
 import { useParams } from "react-router-dom";
-import { usePersonalizedReturn } from "@/hooks/usePersonalizedReturn";
 
-export default function OutboundPage() {
+const OutboundPage = () => {
+  const {
+    messages,
+    setMessages,
+    input,
+    setInput,
+    contentType,
+    setContentType,
+    isLoading,
+    setIsLoading,
+    generatedContent,
+    setGeneratedContent
+  } = useOutboundState();
+  
+  const {
+    handleSendMessage,
+    handleKeyDown,
+    handleInputChange
+  } = useOutboundMessage(
+    messages,
+    setMessages,
+    input,
+    setInput,
+    isLoading,
+    setIsLoading,
+    generatedContent,
+    setGeneratedContent
+  );
+  
+  const {
+    handleContentTypeChange,
+    handleContentUpdate
+  } = useOutboundContent(
+    contentType,
+    setContentType,
+    generatedContent,
+    setGeneratedContent
+  );
+  
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Pega o surveyId da URL (usado internamente pelo CopyPreview)
   const { surveyId } = useParams();
-  const { data, loading, error } = usePersonalizedReturn(surveyId);
-
-  if (loading) return <div>Carregando...</div>;
-  if (error) return <div>Erro: {error}</div>;
-  if (!data.length) return <div>Nenhum resultado encontrado para esse survey.</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="mb-6 text-2xl font-bold">Resultados Personalizados</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.map(item => (
-          <div key={item.id} className="border rounded-lg p-4 bg-white shadow">
-            <h2 className="font-bold text-lg mb-2">{item["primeiro nome"]} ({item.empresa})</h2>
-            <div className="mb-2">
-              <span className="font-semibold">Email:</span>
-              <div className="bg-gray-100 p-2 rounded whitespace-pre-wrap">{item.copy}</div>
-            </div>
-            <div>
-              <span className="font-semibold">LinkedIn:</span>
-              <div className="bg-blue-50 p-2 rounded break-all">{item["linkedin pessoal"]}</div>
-            </div>
-          </div>
-        ))}
+    <div className="flex h-full min-h-screen bg-minimal-gray-100 overflow-hidden">
+      <ChatSidebar 
+        messages={messages}
+        input={input}
+        isLoading={isLoading}
+        onInputChange={handleInputChange}
+        onSendMessage={handleSendMessage}
+        onKeyDown={handleKeyDown}
+        chatEndRef={chatEndRef}
+      />
+      
+      <div className="ml-80 flex-1 h-full overflow-y-auto">
+        <CopyPreview 
+          contentType={contentType}
+          generatedContent={generatedContent}
+          onContentTypeChange={handleContentTypeChange}
+          onContentUpdate={handleContentUpdate}
+        />
       </div>
     </div>
   );
-} 
+};
+
+export default OutboundPage; 

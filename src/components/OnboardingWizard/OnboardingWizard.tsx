@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WizardStep from './WizardStep';
@@ -7,7 +6,12 @@ import WizardFooter from './WizardFooter';
 import WizardProgress from './WizardProgress';
 import { useOnboardingWizard } from './useOnboardingWizard';
 
-const OnboardingWizard: React.FC = () => {
+interface OnboardingWizardProps {
+  onComplete?: (surveyId: string) => void;
+  onClose?: () => void;
+}
+
+const OnboardingWizard: React.FC<OnboardingWizardProps> = (props) => {
   const {
     currentStep,
     formData,
@@ -21,6 +25,10 @@ const OnboardingWizard: React.FC = () => {
     handleBack,
   } = useOnboardingWizard();
   
+  const handleFinish = (surveyId: string) => {
+    if (props.onComplete) props.onComplete(surveyId);
+  };
+
   return (
     <div className="flex flex-col min-h-screen items-center justify-center p-4 md:p-6 lg:p-8 bg-gradient-to-br from-indigo-50 to-purple-50">
       <div className="w-full max-w-xl">

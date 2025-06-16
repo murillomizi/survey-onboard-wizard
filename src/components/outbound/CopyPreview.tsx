@@ -56,6 +56,8 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
     id: string;
     copy: string;
     cargo: string;
+    empresa?: string;
+    setor?: string;
     nome?: string;
     first_name?: string;
     // ... outros campos
@@ -80,6 +82,13 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
   useEffect(() => {
     setFilteredProspects(personalizedProspects || []);
   }, [personalizedProspects]);
+
+  // Atualizar corpo do email ao trocar de prospect
+  useEffect(() => {
+    if (contentType === "email" && currentProspect && currentProspect.copy) {
+      setEmailBody(currentProspect.copy);
+    }
+  }, [currentProspect, contentType]);
 
   const handlePersonaSelection = (source: string) => {
     setSelectedPersonaSource(source);
@@ -347,16 +356,14 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               totalProspectsCount={personalizedProspects?.length || 0}
               resetFilters={resetFilters}
             />
-            
-            {/* Cartão de Prospect */}
-            <ProspectCard 
-              currentProspect={currentProspect}
-              currentProspectIndex={currentProspectIndex}
-              totalProspects={filteredProspects.length}
-              onPreviousProspect={handlePreviousProspect}
-              onNextProspect={handleNextProspect}
-            />
-            
+
+            {/* Setas de navegação centralizadas */}
+            <div className="flex justify-center items-center my-4 gap-4">
+              <button onClick={handlePreviousProspect} className="p-2 rounded bg-gray-200 hover:bg-gray-300">←</button>
+              <span className="text-sm text-gray-600">{filteredProspects.length ? currentProspectIndex + 1 : 0} / {filteredProspects.length}</span>
+              <button onClick={handleNextProspect} className="p-2 rounded bg-gray-200 hover:bg-gray-300">→</button>
+            </div>
+
             {/* Seletor de Follow-ups */}
             <FollowUpSelector 
               contentType={contentType}
@@ -366,13 +373,34 @@ const CopyPreview: React.FC<CopyPreviewProps> = ({
               onDeleteFollowUp={handleDeleteFollowUp}
               onAddFollowUp={addFollowUp}
             />
-            
+
+            {/* Nome, cargo, empresa e setor do prospect dinâmico em linha única */}
+            {currentProspect && (
+              <div className="flex flex-row flex-wrap items-center justify-center gap-4 my-4">
+                <span className="text-lg font-bold text-gray-800">
+                  {currentProspect.nome || currentProspect["primeiro nome"] || currentProspect.first_name || "(Sem nome)"}
+                </span>
+                <span className="text-xs text-gray-400">|</span>
+                <span className="text-base text-gray-600">
+                  {currentProspect.cargo || "(Sem cargo)"}
+                </span>
+                <span className="text-xs text-gray-400">|</span>
+                <span className="text-sm text-gray-700 font-medium">
+                  {currentProspect.empresa || "(Sem empresa)"}
+                </span>
+                <span className="text-xs text-gray-400">|</span>
+                <span className="text-sm text-gray-500">
+                  {currentProspect.setor || "(Sem setor)"}
+                </span>
+              </div>
+            )}
+
             <CardContent className="p-0">
               {/* Editor de Conteúdo */}
               <ContentEditor 
                 contentType={contentType}
                 emailSubject={emailSubject}
-                emailBody={emailBody}
+                emailBody={currentProspect?.copy || ""}
                 linkedinContent={linkedinContent}
                 onEmailSubjectChange={handleEmailSubjectChange}
                 onEmailBodyChange={handleEmailBodyChange}
